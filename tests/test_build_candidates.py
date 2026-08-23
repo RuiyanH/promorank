@@ -13,6 +13,7 @@ So the guard is tested, not just written.
 import json
 
 import pytest
+from pyspark.sql import functions as F
 
 from marketrank.jobs import build_candidates as BC
 
@@ -178,3 +179,110 @@ def test_chunk_content_args_exclude_the_cost_knobs():
     for k in ("n_repurchase", "n_category", "n_global_pop", "n_covisit",
               "covisit_lookback", "covisit_max_basket", "recent_k"):
         assert k in BC.CHUNK_CONTENT_ARGS, f"{k} changes content but is not compared"
+
+
+# ---------------------------------------------------------------------------
+# union_daily vs union_candidates. The docstring claims restricting to one day
+# yields exactly the single-day version's output -- that claim is what makes the
+# checksum a test of the writer rather than of a parallel implementation, and
+# every other equivalence claim in this build has a test. The checksum itself
+# would catch a divergence, but only on misha; this runs in CI.
+# ---------------------------------------------------------------------------
+def _src(spark, rows):
+    from pyspark.sql.types import IntegerType, StringType, StructField, StructType
+
+    return spark.createDataFrame(
+        rows,
+        StructType([
+            StructField("customer_id", StringType(), False),
+            StructField("day_index", IntegerType(), False),
+            StructField("article_id", StringType(), False),
+            StructField("source_rank", IntegerType(), False),
+        ]),
+    )
+
+
+def _overlapping_sources(spark, day, other_day):
+    """Candidates shared across sources, plus a second day that must not leak in."""
+    from marketrank import candidates as C
+
+    return {
+        C.SOURCE_REPURCHASE: _src(spark, [
+            ("c1", day, "A", 1), ("c1", day, "B", 2), ("c2", day, "C", 1),
+            ("c1", other_day, "Z", 1),
+        ]),
+        C.SOURCE_CATEGORY: _src(spark, [
+            ("c1", day, "B", 3), ("c2", day, "D", 7), ("c1", other_day, "Z", 2),
+        ]),
+        C.SOURCE_GLOBAL_POP: _src(spark, [
+            ("c1", day, "A", 5), ("c2", day, "C", 5), ("c1", other_day, "Y", 1),
+        ]),
+        C.SOURCE_COVISIT: _src(spark, [("c1", day, "E", 2), ("c2", day, "D", 1)]),
+        C.SOURCE_ANN: _src(spark, [("c1", day, "A", 9), ("c2", day, "F", 4)]),
+    }
+
+
+@pytest.mark.spark
+def test_union_daily_restricted_to_one_day_equals_union_candidates(spark):
+    from marketrank import candidates as C
+
+    day, other = 692, 685
+    sources = _overlapping_sources(spark, day, other)
+    names = BC.source_names(sources)
+
+    daily = BC.union_daily(sources, names).filter(F.col("day_index") == day)
+    single = C.union_candidates(
+        *[
+            sources[n].filter(F.col("day_index") == day)
+            .drop("day_index")
+            .withColumn("source", F.lit(n))
+            for n in names
+        ],
+        source_names=names,
+    )
+
+    cols = ["customer_id", "article_id", "n_sources", "best_source_rank"] + [
+        f"from_{n}" for n in names
+    ]
+    got = sorted(tuple(r) for r in daily.select(*cols).collect())
+    want = sorted(tuple(r) for r in single.select(*cols).collect())
+    assert got == want
+
+    # And the other day is genuinely excluded rather than merged in -- an
+    # unpartitioned group key would fold "Z" from day 685 into day 692's rows.
+    assert not any(r[1] in ("Y", "Z") for r in got)
+
+
+@pytest.mark.spark
+def test_union_daily_keeps_days_separate(spark):
+    """
+    Same (customer, article) on two days must stay two rows.
+
+    Dropping `day_index` from the group key would collapse them and take
+    `min(source_rank)` across days -- a candidate ranked by information from a
+    day it cannot see.
+    """
+    from marketrank import candidates as C
+
+    sources = dict.fromkeys(BC.SOURCE_ORDER)
+    for n in BC.SOURCE_ORDER:
+        sources[n] = _src(spark, [("c1", 692, "A", 9), ("c1", 685, "A", 1)])
+    out = BC.union_daily(sources, BC.source_names(sources))
+
+    rows = {(r.day_index, r.best_source_rank) for r in out.collect()}
+    assert rows == {(692, 9), (685, 1)}, rows
+
+
+# ---------------------------------------------------------------------------
+# Missing sources
+# ---------------------------------------------------------------------------
+def test_source_names_requires_all_five():
+    from marketrank import candidates as C
+
+    complete = dict.fromkeys(BC.SOURCE_ORDER, object())
+    assert BC.source_names(complete) == BC.SOURCE_ORDER
+
+    partial = {n: object() for n in BC.SOURCE_ORDER if n != C.SOURCE_ANN}
+    with pytest.raises(SystemExit) as e:
+        BC.source_names(partial)
+    assert C.SOURCE_ANN in str(e.value)

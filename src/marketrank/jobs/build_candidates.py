@@ -206,11 +206,7 @@ def union_daily(sources: dict[str, DataFrame], names: tuple[str, ...]) -> DataFr
     """
     from functools import reduce
 
-    tagged = [
-        sources[n].withColumn("source", F.lit(n))
-        for n in names
-        if n in sources
-    ]
+    tagged = [sources[n].withColumn("source", F.lit(n)) for n in names]
     out = (
         reduce(lambda a, b: a.unionByName(b), tagged)
         .groupBy("customer_id", "day_index", "article_id")
@@ -287,40 +283,24 @@ def materialize_shared(
     return spark.read.parquet(str(path))
 
 
-def _as_single_day(df: DataFrame, day: int) -> DataFrame:
-    """Drop `day_index` so `candidates`' single-day helpers apply unchanged."""
-    return df.filter(F.col("day_index") == day).select(
-        "customer_id", "article_id", "source_rank"
-    )
+def source_names(sources: dict) -> tuple[str, ...]:
+    """
+    Every candidate table carries ALL five sources, or the job stops.
 
-
-def content_of(a) -> dict:
-    """The chunk's content args, in one place so writer and reader agree."""
-    return {
-        "n_repurchase": a.n_repurchase, "n_category": a.n_category,
-        "n_global_pop": a.n_global_pop, "n_covisit": a.n_covisit,
-        "covisit_lookback": a.covisit_lookback,
-        "covisit_max_basket": a.covisit_max_basket, "recent_k": a.recent_k,
-    }
-
-
-def write_chunk(spark, out: Path, ch: dict, union: DataFrame, content: dict,
-                extra: dict | None = None) -> int:
-    """Write one chunk, then mark it. The mark goes last, always."""
-    import time as _t
-
-    t0 = _t.time()
-    path = PT.part_path(out, CHUNK_KEY, ch["chunk"])
-    union.write.mode("overwrite").partitionBy("day_index").parquet(str(path))
-    n = spark.read.parquet(str(path)).count()
-    PT.write_part_meta(out, CHUNK_KEY, ch["chunk"], {
-        "chunk": ch["chunk"], "day_range": [ch["lo"], ch["hi"]],
-        "anchors": ch["anchors"], "rows": int(n), "args": content,
-        "seconds": round(_t.time() - t0, 1), **(extra or {}),
-    })
-    print(f"CHUNK {ch['chunk']:>5}  days {ch['lo']}..{ch['hi']}  "
-          f"rows {n:>10}  {_t.time() - t0:6.1f}s")
-    return n
+    `tuple(n for n in SOURCE_ORDER if n in sources)` reads as defensive and is
+    the opposite: a source missing from the dict would be silently dropped, the
+    slot budget would change, and every marginal-per-slot number R.6's rule
+    reads would move -- with nothing raising. That is the same silent-skip class
+    the chunk-coverage tests exist to catch, so it gets the same treatment.
+    """
+    missing = [n for n in SOURCE_ORDER if n not in sources]
+    if missing:
+        raise SystemExit(
+            f"missing candidate source(s): {missing}. All of {list(SOURCE_ORDER)} "
+            "are required -- a dropped source changes the budget and every "
+            "per-slot number without failing."
+        )
+    return SOURCE_ORDER
 
 
 def run_checksum(spark, args, phase: int) -> dict:
@@ -366,7 +346,7 @@ def run_checksum(spark, args, phase: int) -> dict:
         recent_k=args.recent_k, covisit_lookback=args.covisit_lookback,
         covisit_max_basket=args.covisit_max_basket,
     )
-    names = tuple(n for n in SOURCE_ORDER if n in sources)
+    names = source_names(sources)
 
     # THROUGH THE PRODUCTION WRITER, not beside it. A width-1 chunk exercises the
     # same union, the same partitioning and the same markers, so the gate tests
@@ -551,7 +531,7 @@ def main(argv=None) -> dict:
             covisit_max_basket=a.covisit_max_basket,
             global_pop_df=gp, category_pop_df=cat,
         )
-        names = tuple(n for n in SOURCE_ORDER if n in sources)
+        names = source_names(sources)
         # The write is the action that truncates the lineage -- that, not the
         # loop itself, is what bounds plan size and peak shuffle.
         write_chunk(spark, a.out, ch, union_daily(sources, names), content)
