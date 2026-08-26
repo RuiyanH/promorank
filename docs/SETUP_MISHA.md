@@ -1,11 +1,11 @@
-# Runbook — Bring `marketrank` up on Yale misha (HPC)
+# Runbook — Bring `marketrank` up on misha (HPC cluster)
 
 **Status:** NOT YET EXECUTED — deferred to **Week 4** (decided 2026-08-14).
 Weeks 1–3 run on the laptop: ~18 GB free is enough for the data layer's <5 GB footprint, and the
 local REPL loop is faster and needs no VPN. Week 4's candidate generation needs 40–160 GB, which
 is the trigger to move. Run this then, or earlier if local disk gets tight.
 
-**Audience:** an agent (or a human) with a shell on `misha.ycrc.yale.edu`.
+**Audience:** an agent (or a human) with a shell on `<cluster-host>`.
 **Goal:** the Iceberg data layer running on misha, with the repo working *unchanged* on both laptop and cluster.
 **Estimated time:** 30–45 min, most of it the Kaggle download.
 
@@ -22,10 +22,10 @@ Execute phases in order. Each phase ends with a **CHECKPOINT** stating the expec
 
 | Fact | Value |
 |---|---|
-| Login | `rh849@misha.ycrc.yale.edu` (Yale VPN required) |
-| Group | `dijk` |
-| `~/project` | → `/gpfs/radev/project/dijk/rh849` — never purged, **no backup**. 4 TiB is the *fileset* size, NOT your quota: a 2026-08-18 write died with `Disk quota exceeded` here. **Do not put bulk data here** |
-| `~/scratch` | → `/gpfs/radev/scratch/dijk/rh849` — 10 TiB, **purged after 60 days** |
+| Login | `<netid>@<cluster-host>` (institutional VPN required) |
+| Group | `<group>` |
+| `~/project` | → `<gpfs>/project/<group>/<netid>` — never purged, **no backup**. 4 TiB is the *fileset* size, NOT your quota: a 2026-08-18 write died with `Disk quota exceeded` here. **Do not put bulk data here** |
+| `~/scratch` | → `<gpfs>/scratch/<group>/<netid>` — 10 TiB, **purged after 60 days** |
 | `~` (home) | 125 GiB quota, **~26 GiB free**, backed up. File limit 500k, ~138k used |
 | `/tmp` | 3.4 TB node-local NVMe, 3.3 TB free — **not** GPFS |
 | `$TMPDIR` | per-job dir under `/tmp`, auto-deleted at job end |
@@ -208,7 +208,7 @@ topology config stays in `get_spark()`.
 cd ~/marketrank && source env.misha.sh && python -c "from marketrank import config; print(config.WAREHOUSE); print(config.SPARK_TMP)" && java -version 2>&1 | head -1
 ```
 
-Expect the warehouse under `/gpfs/radev/scratch/dijk/rh849/...`, spark tmp under `/tmp/...`,
+Expect the warehouse under `<gpfs>/scratch/<group>/<netid>/...`, spark tmp under `/tmp/...`,
 and `openjdk version "17.0.4"`. **If Java reports 21, the module load failed — stop.**
 
 Commit and push these changes.
@@ -220,7 +220,7 @@ Commit and push these changes.
 ### 4a. On the LAPTOP: copy the Kaggle token (38 bytes, not the 3.5 GB of CSVs)
 
 ```bash
-scp ~/.kaggle/access_token rh849@misha.ycrc.yale.edu:~/.kaggle/
+scp ~/.kaggle/access_token <netid>@<cluster-host>:~/.kaggle/
 ```
 
 The cluster has fast direct internet, so re-downloading there beats pushing 3.5 GB up a home
@@ -388,7 +388,7 @@ python -m marketrank.jobs.backfill
 | Job killed at 1 hour | no `--time` | add `#SBATCH --time=HH:MM:SS` |
 | Disk full during shuffle | spill landed on GPFS or home | verify `spark.local.dir` resolves under `/tmp` |
 | `Disk quota exceeded` on a warehouse write | bulk data on `project` or home, not `scratch` | check `config.WAREHOUSE` is under `~/scratch`; `df` will **not** show this — it reports the 3.7 PiB filesystem, not your quota |
-| `getquota` numbers contradict the error | report is per-group and may name a group your data is not in (it printed `timmermans`; this account's data is under `dijk`), and its Usage Details block is a once-daily snapshot | trust the failure over the table; confirm the real fileset with `readlink -f ~/scratch` |
+| `getquota` numbers contradict the error | report is per-group and may name a group your data is not in (it printed a different group; this account's data is under `<group>`), and its Usage Details block is a once-daily snapshot | trust the failure over the table; confirm the real fileset with `readlink -f ~/scratch` |
 | Iceberg table unreadable after moving the warehouse | Hadoop catalog stores **absolute** paths in `.metadata.json` and every manifest | a moved warehouse is not portable — delete it and re-run the load |
 
 ---
@@ -408,14 +408,14 @@ python -m marketrank.jobs.backfill
 ## Appendix D — Open items carried from the 2026-08-14 recon
 
 **1. ~~How long does this account live?~~ RESOLVED 2026-08-15 — access runs through ~2027-08.**
-Storage sits under the `dijk` *group* allocation, not a personal one, and the Stanford move ends
-the Yale affiliation eventually — but not for another year. The whole 10-week build finishes with
+Storage sits under the `<group>` *group* allocation, not a personal one, and an upcoming
+institutional move ends the cluster affiliation eventually — but not for another year. The whole 10-week build finishes with
 roughly nine months of margin, so **this is no longer a sequencing constraint**: weeks 4–8 can all
 assume misha, and the serving path can be planned on its merits rather than around an expiry date.
 
 Two things this does *not* resolve, so don't let the margin turn into complacency:
 
-- Item 2 below still stands on its own — a demo behind Yale's VPN is not demoable to a recruiter
+- Item 2 below still stands on its own — a demo behind the cluster's VPN is not demoable to a recruiter
   regardless of how long the account lives.
 - Re-confirm before any work lands after ~2027-05. A year of margin quietly becomes three months,
   and group allocations can change ahead of the affiliation ending.
@@ -425,7 +425,7 @@ rebuilt by re-running Phase 5 against Kaggle. Losing access costs a re-run, not 
 project.
 
 **2. The flagship must stay demoable.** "Deployed and pokeable" is one of the plan's deliverables,
-and nothing behind Yale's VPN is pokeable by a recruiter. Weeks 5–6's serving path should land
+and nothing behind the cluster's VPN is pokeable by a recruiter. Weeks 5–6's serving path should land
 somewhere public regardless of where training runs.
 
 **3. `pyproject.toml` declares no dependencies.** ~~Move the pins into `[project] dependencies`
