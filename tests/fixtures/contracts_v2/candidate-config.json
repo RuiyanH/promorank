@@ -1,0 +1,40 @@
+{
+  "schema_version": "candidate-config.v2",
+  "candidate_config_id": "v2-five-source-30-40-40-40-50",
+  "spine_types": ["active_day", "replay_day"],
+  "warm_up_days": 90,
+  "article_eligibility": "first_observed_transaction_date_lt_scoring_date",
+  "sources": {
+    "repurchase": {"depth": 30},
+    "category_pop": {"depth": 40},
+    "global_pop": {"depth": 40},
+    "covisit": {
+      "depth": 40,
+      "lookback_days": 30,
+      "max_basket": 20,
+      "cadence_days": 7,
+      "recent_k": 10
+    },
+    "ann": {
+      "display_name": "embedding_retrieval",
+      "depth": 50,
+      "algorithm": "exact_batched_inner_product",
+      "dtype": "float32",
+      "tie_break": "article_id_ascending",
+      "bundle_contract": "inference-bundle.json"
+    }
+  },
+  "rrf_comparator": {
+    "k": 60,
+    "weights": {
+      "repurchase": 1,
+      "category_pop": 1,
+      "global_pop": 1,
+      "covisit": 1,
+      "ann": 1
+    },
+    "missing_source_contribution": 0,
+    "duplicate_merge": "one_rank_per_named_source",
+    "ordering": ["score_descending", "article_id_ascending"]
+  }
+}

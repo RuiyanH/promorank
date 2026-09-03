@@ -1,0 +1,93 @@
+{
+  "schema_version": "candidate-set.v2",
+  "candidate_config_id": "v2-five-source-30-40-40-40-50",
+  "bundle_id": "v2_pit_safe_synthetic_fixture",
+  "date_manifests": [
+    {
+      "scoring_date": "2020-07-15",
+      "day_index": 664,
+      "eligible_article_count": 3,
+      "source_artifacts": ["repurchase", "category_pop", "global_pop", "covisit", "ann"]
+    },
+    {
+      "scoring_date": "2020-07-16",
+      "day_index": 665,
+      "eligible_article_count": 4,
+      "source_artifacts": ["repurchase", "category_pop", "global_pop", "covisit", "ann"]
+    },
+    {
+      "scoring_date": "2020-07-17",
+      "day_index": 666,
+      "eligible_article_count": 4,
+      "source_artifacts": ["repurchase", "category_pop", "global_pop", "covisit", "ann"]
+    }
+  ],
+  "articles": [
+    {"article_id": "0000000001", "first_observed_transaction_date": "2019-01-01"},
+    {"article_id": "0000000002", "first_observed_transaction_date": "2020-07-01"},
+    {"article_id": "0000000003", "first_observed_transaction_date": "2020-07-14"},
+    {"article_id": "0000000004", "first_observed_transaction_date": "2020-07-15"}
+  ],
+  "groups": [
+    {
+      "customer_key": "synthetic_customer_001",
+      "scoring_date": "2020-07-15",
+      "spine_type": "active_day",
+      "truth_articles": ["0000000004"],
+      "candidates": [
+        {
+          "article_id": "0000000001",
+          "repurchase_rank": 1,
+          "category_pop_rank": null,
+          "global_pop_rank": 2,
+          "covisit_rank": null,
+          "ann_rank": 2,
+          "source_count": 3
+        },
+        {
+          "article_id": "0000000003",
+          "repurchase_rank": null,
+          "category_pop_rank": 1,
+          "global_pop_rank": 1,
+          "covisit_rank": 1,
+          "ann_rank": 1,
+          "source_count": 4
+        }
+      ]
+    },
+    {
+      "customer_key": "synthetic_customer_002",
+      "scoring_date": "2020-07-16",
+      "spine_type": "replay_day",
+      "truth_articles": [],
+      "candidates": [
+        {
+          "article_id": "0000000004",
+          "repurchase_rank": null,
+          "category_pop_rank": null,
+          "global_pop_rank": 1,
+          "covisit_rank": null,
+          "ann_rank": 1,
+          "source_count": 2
+        }
+      ]
+    },
+    {
+      "customer_key": "synthetic_customer_003",
+      "scoring_date": "2020-07-17",
+      "spine_type": "active_day",
+      "truth_articles": ["0000000002"],
+      "candidates": [
+        {
+          "article_id": "0000000002",
+          "repurchase_rank": null,
+          "category_pop_rank": 1,
+          "global_pop_rank": 1,
+          "covisit_rank": null,
+          "ann_rank": 2,
+          "source_count": 3
+        }
+      ]
+    }
+  ]
+}

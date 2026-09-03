@@ -15,8 +15,15 @@ and a slice used twice tells you less than you think it does:
 
 `holdout` is the last 7 days so it mirrors the Kaggle test week's shape.
 
-Nothing in weeks 3-7 may read `ope_env`. That is a rule, not a preference.
+V2 narrows the old blanket `ope_env` prohibition. Its rows may be antecedent
+context for a target date after the slice ends, but may never become labels,
+fit/tune/calibration inputs, OPE evidence, or standalone reported metrics. The
+permission check and audit record below make that distinction executable.
 """
+
+from __future__ import annotations
+
+from datetime import date
 
 SPLITS: dict[str, tuple[str, str]] = {
     "train":     ("2018-09-20", "2020-08-11"),
@@ -32,13 +39,25 @@ CONSUMED_BY = {
     "train":     "two-tower (wk 3), ranker (wk 5)",
     "val_tune":  "ranker early stopping / hyperparameters (wk 5); retrieval recall (wk 3)",
     "val_calib": "isotonic calibration fit (wk 5.3) -- nothing else",
-    "ope_env":   "week 8's reward model / environment -- nothing else",
+    "ope_env":   "reserved outcomes; context_only for target dates after 2020-09-08",
     "test":      "reported NDCG, AUC, revenue numbers",
     "holdout":   "local MAP@12 sanity check (wks 3-5)",
 }
 
 DATA_START = SPLITS["train"][0]
 DATA_END = SPLITS["holdout"][1]
+
+OPE_ENV_CONTEXT_USAGE = "context_only"
+OPE_ENV_FORBIDDEN_USAGES = frozenset(
+    {
+        "label",
+        "fit",
+        "tune",
+        "calibration",
+        "ope",
+        "standalone_metric",
+    }
+)
 
 
 def bounds(name: str) -> tuple[str, str]:
@@ -48,3 +67,71 @@ def bounds(name: str) -> tuple[str, str]:
 def sql_filter(name: str, col: str = "feature_date") -> str:
     lo, hi = SPLITS[name]
     return f"{col} between date'{lo}' and date'{hi}'"
+
+
+def assert_slice_usage(
+    source_slice: str,
+    *,
+    usage: str,
+    target_date: str | None = None,
+) -> None:
+    """Reject an unauthorized use of a reserved temporal slice.
+
+    Other slices retain their established consumers. `ope_env` is special:
+    the only V2 exception is antecedent context for a scoring date strictly
+    after the reserved slice. Callers must still persist an audit record.
+    """
+
+    if source_slice not in SPLITS:
+        raise ValueError(f"unknown split: {source_slice}")
+    if source_slice != "ope_env":
+        return
+    if usage != OPE_ENV_CONTEXT_USAGE:
+        raise ValueError(
+            "ope_env is reserved: only usage='context_only' is permitted; "
+            f"got {usage!r}"
+        )
+    if target_date is None:
+        raise ValueError("ope_env context usage requires a target_date")
+    try:
+        target = date.fromisoformat(target_date)
+    except ValueError as exc:
+        raise ValueError(f"invalid target_date: {target_date!r}") from exc
+    reserved_end = date.fromisoformat(SPLITS["ope_env"][1])
+    if target <= reserved_end:
+        raise ValueError(
+            "ope_env context is allowed only for target dates after "
+            f"{reserved_end.isoformat()}; got {target.isoformat()}"
+        )
+
+
+def ope_env_context_audit(
+    *,
+    consumer_job: str,
+    target_dates: list[str] | tuple[str, ...],
+    row_count: int,
+    input_snapshot: str,
+) -> dict[str, object]:
+    """Return the manifest record required for an allowed context-only read."""
+
+    if not consumer_job.strip():
+        raise ValueError("consumer_job is required")
+    if not input_snapshot.strip():
+        raise ValueError("input_snapshot is required")
+    if row_count < 0:
+        raise ValueError("row_count must be nonnegative")
+    normalized = sorted(set(target_dates))
+    if not normalized:
+        raise ValueError("at least one target date is required")
+    for scoring_date in normalized:
+        assert_slice_usage(
+            "ope_env", usage=OPE_ENV_CONTEXT_USAGE, target_date=scoring_date
+        )
+    return {
+        "source_slice": "ope_env",
+        "usage": OPE_ENV_CONTEXT_USAGE,
+        "consumer_job": consumer_job,
+        "target_dates": normalized,
+        "row_count": row_count,
+        "input_snapshot": input_snapshot,
+    }

@@ -26,6 +26,12 @@ jobs:
         with:
           python-version: "3.11"
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: workbench/package-lock.json
+
       # Without a JDK the Spark tests fail differently and more confusingly than
       # they would for any reason in our own code.
       - uses: actions/setup-java@v4
@@ -54,3 +60,19 @@ jobs:
       # machine rather than by discipline.
       - name: pytest (includes the Spark and PIT tests)
         run: pytest -v
+
+      - name: Install workbench dependencies
+        working-directory: workbench
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
+      - name: Build workbench
+        working-directory: workbench
+        run: npm run build
+
+      - name: Test workbench
+        working-directory: workbench
+        run: npm test
+
+      - name: Lint workbench
+        working-directory: workbench
+        run: npm run lint

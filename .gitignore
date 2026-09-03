@@ -8,6 +8,11 @@ __pycache__/
 data/
 !data/.gitkeep
 
+# The workbench release is a compact, privacy-safe product fixture generated
+# from validated artifacts. It is application data, not the raw dataset.
+!workbench/public/data/
+!workbench/public/data/demo-release.json
+
 # Iceberg tables — these are data, not source.
 warehouse/
 

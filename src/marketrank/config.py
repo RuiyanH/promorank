@@ -1,4 +1,5 @@
 import os
+import sys
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -48,9 +49,10 @@ SPARK_TMP = Path(os.environ.get("MARKETRANK_SPARK_TMP", PROJECT_ROOT / ".spark-t
 _MACOS_JDK = Path("/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home")
 if _MACOS_JDK.exists():
     os.environ.setdefault("JAVA_HOME", str(_MACOS_JDK))
+_PROJECT_PYTHON = PROJECT_ROOT / ".venv" / "bin" / "python"
 os.environ.setdefault(
     "PYSPARK_PYTHON",
-    str(PROJECT_ROOT / ".venv" / "bin" / "python"),
+    str(_PROJECT_PYTHON if _PROJECT_PYTHON.exists() else Path(sys.executable)),
 )
 
 CATALOG = "local"
