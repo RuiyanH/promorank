@@ -1,0 +1,2847 @@
+{
+  "customers": [
+    {
+      "customer_ref": "demo_40f952cd1fb7bcdd",
+      "display_label": "Demo customer 01",
+      "recommendations": [
+        {
+          "article_id": "0372860002",
+          "fusion_score": 0.032266458495966696,
+          "metadata": {
+            "colour_group_name": "White",
+            "department_name": "Shopbasket Socks",
+            "garment_group_name": "Socks and Tights",
+            "index_group_name": "Ladieswear",
+            "product_name": "7p Basic Shaftless",
+            "product_type_name": "Socks"
+          },
+          "position": 1,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: ann, global pop"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 1
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 3
+            }
+          ]
+        },
+        {
+          "article_id": "0759871002",
+          "fusion_score": 0.03225806451612903,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "EQ Divided Basics",
+            "garment_group_name": "Jersey Basic",
+            "index_group_name": "Divided",
+            "product_name": "Tilda tank",
+            "product_type_name": "Vest top"
+          },
+          "position": 2,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: ann, global pop"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 2
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 2
+            }
+          ]
+        },
+        {
+          "article_id": "0751471001",
+          "fusion_score": 0.02862400327131466,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Trouser",
+            "garment_group_name": "Trousers",
+            "index_group_name": "Ladieswear",
+            "product_name": "Pluto RW slacks (1)",
+            "product_type_name": "Trousers"
+          },
+          "position": 3,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: ann, global pop"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 7
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 13
+            }
+          ]
+        },
+        {
+          "article_id": "0599580038",
+          "fusion_score": 0.02821939586645469,
+          "metadata": {
+            "colour_group_name": "Red",
+            "department_name": "Swimwear",
+            "garment_group_name": "Swimwear",
+            "index_group_name": "Ladieswear",
+            "product_name": "Timeless Midrise Brief",
+            "product_type_name": "Swimwear bottom"
+          },
+          "position": 4,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: ann, global pop"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 8
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 14
+            }
+          ]
+        },
+        {
+          "article_id": "0610776002",
+          "fusion_score": 0.027984344422700588,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Jersey Basic",
+            "garment_group_name": "Jersey Basic",
+            "index_group_name": "Ladieswear",
+            "product_name": "Tilly (1)",
+            "product_type_name": "T-shirt"
+          },
+          "position": 5,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: ann, global pop"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 13
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 10
+            }
+          ]
+        },
+        {
+          "article_id": "0559616013",
+          "fusion_score": 0.027730294396961064,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Swimwear",
+            "garment_group_name": "Swimwear",
+            "index_group_name": "Ladieswear",
+            "product_name": "Timeless Push Triangle(1)",
+            "product_type_name": "Bikini top"
+          },
+          "position": 6,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: ann, global pop"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 21
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 5
+            }
+          ]
+        },
+        {
+          "article_id": "0610776001",
+          "fusion_score": 0.02722222222222222,
+          "metadata": {
+            "colour_group_name": "White",
+            "department_name": "Jersey Basic",
+            "garment_group_name": "Jersey Basic",
+            "index_group_name": "Ladieswear",
+            "product_name": "Tilly (1)",
+            "product_type_name": "T-shirt"
+          },
+          "position": 7,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: ann, global pop"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 12
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 15
+            }
+          ]
+        },
+        {
+          "article_id": "0841383002",
+          "fusion_score": 0.02619047619047619,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Jersey Basic",
+            "garment_group_name": "Jersey Basic",
+            "index_group_name": "Ladieswear",
+            "product_name": "Vanessa 2-pack",
+            "product_type_name": "Vest top"
+          },
+          "position": 8,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: ann, global pop"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 10
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 24
+            }
+          ]
+        },
+        {
+          "article_id": "0783346001",
+          "fusion_score": 0.025974025974025976,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Trouser",
+            "garment_group_name": "Trousers",
+            "index_group_name": "Ladieswear",
+            "product_name": "Primo slacks",
+            "product_type_name": "Trousers"
+          },
+          "position": 9,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: ann, global pop"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 3
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 39
+            }
+          ]
+        },
+        {
+          "article_id": "0806225002",
+          "fusion_score": 0.025816993464052286,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Swimwear",
+            "garment_group_name": "Swimwear",
+            "index_group_name": "Ladieswear",
+            "product_name": "All That Jazz Push Up Bra",
+            "product_type_name": "Bikini top"
+          },
+          "position": 10,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: ann, global pop"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 30
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 8
+            }
+          ]
+        },
+        {
+          "article_id": "0372860001",
+          "fusion_score": 0.02532051282051282,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Shopbasket Socks",
+            "garment_group_name": "Socks and Tights",
+            "index_group_name": "Ladieswear",
+            "product_name": "7p Basic Shaftless",
+            "product_type_name": "Socks"
+          },
+          "position": 11,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: ann, global pop"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 20
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 18
+            }
+          ]
+        },
+        {
+          "article_id": "0778064028",
+          "fusion_score": 0.025015634771732333,
+          "metadata": {
+            "colour_group_name": "Off White",
+            "department_name": "Jersey Basic",
+            "garment_group_name": "Jersey Basic",
+            "index_group_name": "Ladieswear",
+            "product_name": "Claudine",
+            "product_type_name": "T-shirt"
+          },
+          "position": 12,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: ann, global pop"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 18
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 22
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "customer_ref": "demo_63d8888d21852311",
+      "display_label": "Demo customer 02",
+      "recommendations": [
+        {
+          "article_id": "0572797002",
+          "fusion_score": 0.028693528693528692,
+          "metadata": {
+            "colour_group_name": "White",
+            "department_name": "Jersey",
+            "garment_group_name": "Jersey Fancy",
+            "index_group_name": "Ladieswear",
+            "product_name": "ESSENTIAL TANKTOP LACE TVP",
+            "product_type_name": "Vest top"
+          },
+          "position": 1,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: repurchase, covisit"
+          },
+          "source_evidence": [
+            {
+              "source": "repurchase",
+              "source_rank": 3
+            },
+            {
+              "source": "covisit",
+              "source_rank": 18
+            }
+          ]
+        },
+        {
+          "article_id": "0864953006",
+          "fusion_score": 0.028283227848101267,
+          "metadata": {
+            "colour_group_name": "White",
+            "department_name": "Jersey Basic",
+            "garment_group_name": "Jersey Basic",
+            "index_group_name": "Ladieswear",
+            "product_name": "Noelia Rib Tank",
+            "product_type_name": "Vest top"
+          },
+          "position": 2,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: repurchase, covisit"
+          },
+          "source_evidence": [
+            {
+              "source": "repurchase",
+              "source_rank": 4
+            },
+            {
+              "source": "covisit",
+              "source_rank": 19
+            }
+          ]
+        },
+        {
+          "article_id": "0760084003",
+          "fusion_score": 0.02738245361196181,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Trousers",
+            "garment_group_name": "Trousers",
+            "index_group_name": "Divided",
+            "product_name": "Victorville HW Pull-on TRS",
+            "product_type_name": "Trousers"
+          },
+          "position": 3,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: global pop, covisit"
+          },
+          "source_evidence": [
+            {
+              "source": "global_pop",
+              "source_rank": 1
+            },
+            {
+              "source": "covisit",
+              "source_rank": 31
+            }
+          ]
+        },
+        {
+          "article_id": "0779781008",
+          "fusion_score": 0.0266553480475382,
+          "metadata": {
+            "colour_group_name": "Light Pink",
+            "department_name": "Trouser",
+            "garment_group_name": "Trousers",
+            "index_group_name": "Ladieswear",
+            "product_name": "Vermont essential slacks",
+            "product_type_name": "Trousers"
+          },
+          "position": 4,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: repurchase, covisit"
+          },
+          "source_evidence": [
+            {
+              "source": "repurchase",
+              "source_rank": 2
+            },
+            {
+              "source": "covisit",
+              "source_rank": 35
+            }
+          ]
+        },
+        {
+          "article_id": "0875451003",
+          "fusion_score": 0.02632034632034632,
+          "metadata": {
+            "colour_group_name": "Light Pink",
+            "department_name": "Jersey fancy",
+            "garment_group_name": "Jersey Fancy",
+            "index_group_name": "Ladieswear",
+            "product_name": "Ginseng top",
+            "product_type_name": "Top"
+          },
+          "position": 5,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: ann, repurchase"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 15
+            },
+            {
+              "source": "repurchase",
+              "source_rank": 17
+            }
+          ]
+        },
+        {
+          "article_id": "0843777001",
+          "fusion_score": 0.02602291325695581,
+          "metadata": {
+            "colour_group_name": "White",
+            "department_name": "Casual Lingerie",
+            "garment_group_name": "Under-, Nightwear",
+            "index_group_name": "Ladieswear",
+            "product_name": "Anglaise padded softbra OPT3",
+            "product_type_name": "Bra"
+          },
+          "position": 6,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: ann, category pop"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 34
+            },
+            {
+              "source": "category_pop",
+              "source_rank": 5
+            }
+          ]
+        },
+        {
+          "article_id": "0751471001",
+          "fusion_score": 0.02519288301054952,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Trouser",
+            "garment_group_name": "Trousers",
+            "index_group_name": "Ladieswear",
+            "product_name": "Pluto RW slacks (1)",
+            "product_type_name": "Trousers"
+          },
+          "position": 7,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: repurchase, global pop"
+          },
+          "source_evidence": [
+            {
+              "source": "repurchase",
+              "source_rank": 27
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 13
+            }
+          ]
+        },
+        {
+          "article_id": "0717490010",
+          "fusion_score": 0.024614919963757174,
+          "metadata": {
+            "colour_group_name": "White",
+            "department_name": "Basic 1",
+            "garment_group_name": "Jersey Basic",
+            "index_group_name": "Divided",
+            "product_name": "Cat Tee.",
+            "product_type_name": "T-shirt"
+          },
+          "position": 8,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: global pop, covisit"
+          },
+          "source_evidence": [
+            {
+              "source": "global_pop",
+              "source_rank": 26
+            },
+            {
+              "source": "covisit",
+              "source_rank": 17
+            }
+          ]
+        },
+        {
+          "article_id": "0572797001",
+          "fusion_score": 0.01639344262295082,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Jersey",
+            "garment_group_name": "Jersey Fancy",
+            "index_group_name": "Ladieswear",
+            "product_name": "ESSENTIAL TANKTOP LACE TVP",
+            "product_type_name": "Vest top"
+          },
+          "position": 9,
+          "reason": {
+            "code": "frequently_together",
+            "text": "Often purchased alongside recent historical choices"
+          },
+          "source_evidence": [
+            {
+              "source": "covisit",
+              "source_rank": 1
+            }
+          ]
+        },
+        {
+          "article_id": "0723469001",
+          "fusion_score": 0.01639344262295082,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Casual Lingerie",
+            "garment_group_name": "Under-, Nightwear",
+            "index_group_name": "Ladieswear",
+            "product_name": "Kelly 2pk Melbourne push ct",
+            "product_type_name": "Bra"
+          },
+          "position": 10,
+          "reason": {
+            "code": "preferred_category",
+            "text": "Popular in this historical customer's preferred category"
+          },
+          "source_evidence": [
+            {
+              "source": "category_pop",
+              "source_rank": 1
+            }
+          ]
+        },
+        {
+          "article_id": "0875451001",
+          "fusion_score": 0.01639344262295082,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Jersey fancy",
+            "garment_group_name": "Jersey Fancy",
+            "index_group_name": "Ladieswear",
+            "product_name": "Ginseng top",
+            "product_type_name": "Top"
+          },
+          "position": 11,
+          "reason": {
+            "code": "similar_patterns",
+            "text": "Similar from historical customer and article patterns"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 1
+            }
+          ]
+        },
+        {
+          "article_id": "0908489007",
+          "fusion_score": 0.01639344262295082,
+          "metadata": {
+            "colour_group_name": "Pink",
+            "department_name": "Jersey",
+            "garment_group_name": "Jersey Fancy",
+            "index_group_name": "Ladieswear",
+            "product_name": "String top",
+            "product_type_name": "Vest top"
+          },
+          "position": 12,
+          "reason": {
+            "code": "previously_purchased",
+            "text": "Previously purchased by this historical customer"
+          },
+          "source_evidence": [
+            {
+              "source": "repurchase",
+              "source_rank": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "customer_ref": "demo_ce295be2e52b5990",
+      "display_label": "Demo customer 03",
+      "recommendations": [
+        {
+          "article_id": "0599580038",
+          "fusion_score": 0.04603598839452885,
+          "metadata": {
+            "colour_group_name": "Red",
+            "department_name": "Swimwear",
+            "garment_group_name": "Swimwear",
+            "index_group_name": "Ladieswear",
+            "product_name": "Timeless Midrise Brief",
+            "product_type_name": "Swimwear bottom"
+          },
+          "position": 1,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 3 historical candidate sources: ann, category pop, global pop"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 2
+            },
+            {
+              "source": "category_pop",
+              "source_rank": 1
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 14
+            }
+          ]
+        },
+        {
+          "article_id": "0739590032",
+          "fusion_score": 0.0447979551128783,
+          "metadata": {
+            "colour_group_name": "Light Blue",
+            "department_name": "Swimwear",
+            "garment_group_name": "Swimwear",
+            "index_group_name": "Ladieswear",
+            "product_name": "Timeless Cheeky Brief",
+            "product_type_name": "Swimwear bottom"
+          },
+          "position": 2,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 3 historical candidate sources: ann, repurchase, category pop"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 1
+            },
+            {
+              "source": "repurchase",
+              "source_rank": 13
+            },
+            {
+              "source": "category_pop",
+              "source_rank": 8
+            }
+          ]
+        },
+        {
+          "article_id": "0351484039",
+          "fusion_score": 0.04251650246575944,
+          "metadata": {
+            "colour_group_name": "Light Blue",
+            "department_name": "Swimwear",
+            "garment_group_name": "Swimwear",
+            "index_group_name": "Ladieswear",
+            "product_name": "Lazer Razer Brief",
+            "product_type_name": "Swimwear bottom"
+          },
+          "position": 3,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 3 historical candidate sources: ann, category pop, global pop"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 6
+            },
+            {
+              "source": "category_pop",
+              "source_rank": 2
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 29
+            }
+          ]
+        },
+        {
+          "article_id": "0879944002",
+          "fusion_score": 0.03695504637559383,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Swimwear",
+            "garment_group_name": "Swimwear",
+            "index_group_name": "Ladieswear",
+            "product_name": "Timeless MR Tie Tanga(1)",
+            "product_type_name": "Swimwear bottom"
+          },
+          "position": 4,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 3 historical candidate sources: ann, category pop, global pop"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 27
+            },
+            {
+              "source": "category_pop",
+              "source_rank": 6
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 37
+            }
+          ]
+        },
+        {
+          "article_id": "0868283001",
+          "fusion_score": 0.03200204813108039,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Ladies Sport Bras",
+            "garment_group_name": "Jersey Fancy",
+            "index_group_name": "Sport",
+            "product_name": "Cindy cropped top",
+            "product_type_name": "Top"
+          },
+          "position": 5,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: repurchase, covisit"
+          },
+          "source_evidence": [
+            {
+              "source": "repurchase",
+              "source_rank": 3
+            },
+            {
+              "source": "covisit",
+              "source_rank": 2
+            }
+          ]
+        },
+        {
+          "article_id": "0861803014",
+          "fusion_score": 0.03128054740957967,
+          "metadata": {
+            "colour_group_name": "Dark Pink",
+            "department_name": "Ladies Sport Bras",
+            "garment_group_name": "Jersey Fancy",
+            "index_group_name": "Sport",
+            "product_name": "Sunspot Seamless Crop Top",
+            "product_type_name": "Top"
+          },
+          "position": 6,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: repurchase, covisit"
+          },
+          "source_evidence": [
+            {
+              "source": "repurchase",
+              "source_rank": 2
+            },
+            {
+              "source": "covisit",
+              "source_rank": 6
+            }
+          ]
+        },
+        {
+          "article_id": "0559616013",
+          "fusion_score": 0.031009615384615385,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Swimwear",
+            "garment_group_name": "Swimwear",
+            "index_group_name": "Ladieswear",
+            "product_name": "Timeless Push Triangle(1)",
+            "product_type_name": "Bikini top"
+          },
+          "position": 7,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: ann, global pop"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 4
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 5
+            }
+          ]
+        },
+        {
+          "article_id": "0906729003",
+          "fusion_score": 0.03055037313432836,
+          "metadata": {
+            "colour_group_name": "White",
+            "department_name": "Ladies Sport Bottoms",
+            "garment_group_name": "Jersey Fancy",
+            "index_group_name": "Sport",
+            "product_name": "Strong seamless Biker",
+            "product_type_name": "Shorts"
+          },
+          "position": 8,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: repurchase, covisit"
+          },
+          "source_evidence": [
+            {
+              "source": "repurchase",
+              "source_rank": 4
+            },
+            {
+              "source": "covisit",
+              "source_rank": 7
+            }
+          ]
+        },
+        {
+          "article_id": "0806225002",
+          "fusion_score": 0.030090497737556562,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Swimwear",
+            "garment_group_name": "Swimwear",
+            "index_group_name": "Ladieswear",
+            "product_name": "All That Jazz Push Up Bra",
+            "product_type_name": "Bikini top"
+          },
+          "position": 9,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: ann, global pop"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 5
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 8
+            }
+          ]
+        },
+        {
+          "article_id": "0759871002",
+          "fusion_score": 0.030017921146953404,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "EQ Divided Basics",
+            "garment_group_name": "Jersey Basic",
+            "index_group_name": "Divided",
+            "product_name": "Tilda tank",
+            "product_type_name": "Vest top"
+          },
+          "position": 10,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: ann, global pop"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 12
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 2
+            }
+          ]
+        },
+        {
+          "article_id": "0833530002",
+          "fusion_score": 0.029198635976129584,
+          "metadata": {
+            "colour_group_name": "Dark Blue",
+            "department_name": "Swimwear",
+            "garment_group_name": "Swimwear",
+            "index_group_name": "Ladieswear",
+            "product_name": "Surfs Up Tanga",
+            "product_type_name": "Swimwear bottom"
+          },
+          "position": 11,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: ann, category pop"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 8
+            },
+            {
+              "source": "category_pop",
+              "source_rank": 9
+            }
+          ]
+        },
+        {
+          "article_id": "0464297007",
+          "fusion_score": 0.02877846790890269,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Casual Lingerie",
+            "garment_group_name": "Under-, Nightwear",
+            "index_group_name": "Ladieswear",
+            "product_name": "Greta Thong Mynta Low 3p",
+            "product_type_name": "Underwear bottom"
+          },
+          "position": 12,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: ann, global pop"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 10
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 9
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "customer_ref": "demo_10aeca252d1fee44",
+      "display_label": "Demo customer 04",
+      "recommendations": [
+        {
+          "article_id": "0372860002",
+          "fusion_score": 0.027637721755368813,
+          "metadata": {
+            "colour_group_name": "White",
+            "department_name": "Shopbasket Socks",
+            "garment_group_name": "Socks and Tights",
+            "index_group_name": "Ladieswear",
+            "product_name": "7p Basic Shaftless",
+            "product_type_name": "Socks"
+          },
+          "position": 1,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: global pop, covisit"
+          },
+          "source_evidence": [
+            {
+              "source": "global_pop",
+              "source_rank": 3
+            },
+            {
+              "source": "covisit",
+              "source_rank": 25
+            }
+          ]
+        },
+        {
+          "article_id": "0610776001",
+          "fusion_score": 0.027417840375586856,
+          "metadata": {
+            "colour_group_name": "White",
+            "department_name": "Jersey Basic",
+            "garment_group_name": "Jersey Basic",
+            "index_group_name": "Ladieswear",
+            "product_name": "Tilly (1)",
+            "product_type_name": "T-shirt"
+          },
+          "position": 2,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: ann, global pop"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 11
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 15
+            }
+          ]
+        },
+        {
+          "article_id": "0610776002",
+          "fusion_score": 0.026785714285714284,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Jersey Basic",
+            "garment_group_name": "Jersey Basic",
+            "index_group_name": "Ladieswear",
+            "product_name": "Tilly (1)",
+            "product_type_name": "T-shirt"
+          },
+          "position": 3,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: ann, global pop"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 20
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 10
+            }
+          ]
+        },
+        {
+          "article_id": "0372860001",
+          "fusion_score": 0.026334026334026334,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Shopbasket Socks",
+            "garment_group_name": "Socks and Tights",
+            "index_group_name": "Ladieswear",
+            "product_name": "7p Basic Shaftless",
+            "product_type_name": "Socks"
+          },
+          "position": 4,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: global pop, covisit"
+          },
+          "source_evidence": [
+            {
+              "source": "global_pop",
+              "source_rank": 18
+            },
+            {
+              "source": "covisit",
+              "source_rank": 14
+            }
+          ]
+        },
+        {
+          "article_id": "0751471001",
+          "fusion_score": 0.025893752088205813,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Trouser",
+            "garment_group_name": "Trousers",
+            "index_group_name": "Ladieswear",
+            "product_name": "Pluto RW slacks (1)",
+            "product_type_name": "Trousers"
+          },
+          "position": 5,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: ann, global pop"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 22
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 13
+            }
+          ]
+        },
+        {
+          "article_id": "0783346001",
+          "fusion_score": 0.02502638323533846,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Trouser",
+            "garment_group_name": "Trousers",
+            "index_group_name": "Ladieswear",
+            "product_name": "Primo slacks",
+            "product_type_name": "Trousers"
+          },
+          "position": 6,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: ann, global pop"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 7
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 39
+            }
+          ]
+        },
+        {
+          "article_id": "0816423004",
+          "fusion_score": 0.02399425287356322,
+          "metadata": {
+            "colour_group_name": "Light Blue",
+            "department_name": "Shorts",
+            "garment_group_name": "Shorts",
+            "index_group_name": "Divided",
+            "product_name": "Ozzy  HW Denim Shorts",
+            "product_type_name": "Shorts"
+          },
+          "position": 7,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: global pop, covisit"
+          },
+          "source_evidence": [
+            {
+              "source": "global_pop",
+              "source_rank": 20
+            },
+            {
+              "source": "covisit",
+              "source_rank": 27
+            }
+          ]
+        },
+        {
+          "article_id": "0778064028",
+          "fusion_score": 0.021286031042128603,
+          "metadata": {
+            "colour_group_name": "Off White",
+            "department_name": "Jersey Basic",
+            "garment_group_name": "Jersey Basic",
+            "index_group_name": "Ladieswear",
+            "product_name": "Claudine",
+            "product_type_name": "T-shirt"
+          },
+          "position": 8,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: ann, global pop"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 50
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 22
+            }
+          ]
+        },
+        {
+          "article_id": "0879944002",
+          "fusion_score": 0.020410288451525566,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Swimwear",
+            "garment_group_name": "Swimwear",
+            "index_group_name": "Ladieswear",
+            "product_name": "Timeless MR Tie Tanga(1)",
+            "product_type_name": "Swimwear bottom"
+          },
+          "position": 9,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: global pop, covisit"
+          },
+          "source_evidence": [
+            {
+              "source": "global_pop",
+              "source_rank": 37
+            },
+            {
+              "source": "covisit",
+              "source_rank": 39
+            }
+          ]
+        },
+        {
+          "article_id": "0599580061",
+          "fusion_score": 0.02021535960991467,
+          "metadata": {
+            "colour_group_name": "Off White",
+            "department_name": "Swimwear",
+            "garment_group_name": "Swimwear",
+            "index_group_name": "Ladieswear",
+            "product_name": "Timeless Midrise Brief",
+            "product_type_name": "Swimwear bottom"
+          },
+          "position": 10,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: ann, global pop"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 47
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 32
+            }
+          ]
+        },
+        {
+          "article_id": "0473954014",
+          "fusion_score": 0.01639344262295082,
+          "metadata": {
+            "colour_group_name": "Yellowish Brown",
+            "department_name": "Clean Lingerie",
+            "garment_group_name": "Under-, Nightwear",
+            "index_group_name": "Ladieswear",
+            "product_name": "OP Cheeky hipster 2p",
+            "product_type_name": "Unknown"
+          },
+          "position": 11,
+          "reason": {
+            "code": "previously_purchased",
+            "text": "Previously purchased by this historical customer"
+          },
+          "source_evidence": [
+            {
+              "source": "repurchase",
+              "source_rank": 1
+            }
+          ]
+        },
+        {
+          "article_id": "0723469001",
+          "fusion_score": 0.01639344262295082,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Casual Lingerie",
+            "garment_group_name": "Under-, Nightwear",
+            "index_group_name": "Ladieswear",
+            "product_name": "Kelly 2pk Melbourne push ct",
+            "product_type_name": "Bra"
+          },
+          "position": 12,
+          "reason": {
+            "code": "preferred_category",
+            "text": "Popular in this historical customer's preferred category"
+          },
+          "source_evidence": [
+            {
+              "source": "category_pop",
+              "source_rank": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "customer_ref": "demo_e2519c4890f20ef6",
+      "display_label": "Demo customer 05",
+      "recommendations": [
+        {
+          "article_id": "0559616013",
+          "fusion_score": 0.04648394036050738,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Swimwear",
+            "garment_group_name": "Swimwear",
+            "index_group_name": "Ladieswear",
+            "product_name": "Timeless Push Triangle(1)",
+            "product_type_name": "Bikini top"
+          },
+          "position": 1,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 3 historical candidate sources: ann, category pop, global pop"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 8
+            },
+            {
+              "source": "category_pop",
+              "source_rank": 1
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 5
+            }
+          ]
+        },
+        {
+          "article_id": "0806225002",
+          "fusion_score": 0.04512062889671998,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Swimwear",
+            "garment_group_name": "Swimwear",
+            "index_group_name": "Ladieswear",
+            "product_name": "All That Jazz Push Up Bra",
+            "product_type_name": "Bikini top"
+          },
+          "position": 2,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 3 historical candidate sources: ann, category pop, global pop"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 10
+            },
+            {
+              "source": "category_pop",
+              "source_rank": 2
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 8
+            }
+          ]
+        },
+        {
+          "article_id": "0866383006",
+          "fusion_score": 0.044882896049597755,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Swimwear",
+            "garment_group_name": "Swimwear",
+            "index_group_name": "Ladieswear",
+            "product_name": "Push it Push Bra",
+            "product_type_name": "Bikini top"
+          },
+          "position": 3,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 3 historical candidate sources: ann, category pop, global pop"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 7
+            },
+            {
+              "source": "category_pop",
+              "source_rank": 3
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 11
+            }
+          ]
+        },
+        {
+          "article_id": "0811925009",
+          "fusion_score": 0.039194139194139194,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Swimwear",
+            "garment_group_name": "Swimwear",
+            "index_group_name": "Ladieswear",
+            "product_name": "Knot Bitter Top",
+            "product_type_name": "Bikini top"
+          },
+          "position": 4,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 3 historical candidate sources: ann, category pop, global pop"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 18
+            },
+            {
+              "source": "category_pop",
+              "source_rank": 5
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 31
+            }
+          ]
+        },
+        {
+          "article_id": "0759871002",
+          "fusion_score": 0.03252247488101533,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "EQ Divided Basics",
+            "garment_group_name": "Jersey Basic",
+            "index_group_name": "Divided",
+            "product_name": "Tilda tank",
+            "product_type_name": "Vest top"
+          },
+          "position": 5,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: ann, global pop"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 1
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 2
+            }
+          ]
+        },
+        {
+          "article_id": "0372860002",
+          "fusion_score": 0.03200204813108039,
+          "metadata": {
+            "colour_group_name": "White",
+            "department_name": "Shopbasket Socks",
+            "garment_group_name": "Socks and Tights",
+            "index_group_name": "Ladieswear",
+            "product_name": "7p Basic Shaftless",
+            "product_type_name": "Socks"
+          },
+          "position": 6,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: ann, global pop"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 2
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 3
+            }
+          ]
+        },
+        {
+          "article_id": "0706016001",
+          "fusion_score": 0.03149801587301587,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Trousers",
+            "garment_group_name": "Trousers",
+            "index_group_name": "Divided",
+            "product_name": "Jade HW Skinny Denim TRS",
+            "product_type_name": "Trousers"
+          },
+          "position": 7,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: ann, global pop"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 3
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 4
+            }
+          ]
+        },
+        {
+          "article_id": "0488561026",
+          "fusion_score": 0.02832415420928403,
+          "metadata": {
+            "colour_group_name": "Dark Turquoise",
+            "department_name": "Shorts",
+            "garment_group_name": "Shorts",
+            "index_group_name": "Menswear",
+            "product_name": "Teddy jogger.",
+            "product_type_name": "Shorts"
+          },
+          "position": 8,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: repurchase, covisit"
+          },
+          "source_evidence": [
+            {
+              "source": "repurchase",
+              "source_rank": 2
+            },
+            {
+              "source": "covisit",
+              "source_rank": 22
+            }
+          ]
+        },
+        {
+          "article_id": "0895002002",
+          "fusion_score": 0.028309409888357256,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Jersey fancy",
+            "garment_group_name": "Jersey Fancy",
+            "index_group_name": "Ladieswear",
+            "product_name": "Steam smock top",
+            "product_type_name": "Top"
+          },
+          "position": 9,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: ann, global pop"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 6
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 16
+            }
+          ]
+        },
+        {
+          "article_id": "0759871025",
+          "fusion_score": 0.02804284323271665,
+          "metadata": {
+            "colour_group_name": "White",
+            "department_name": "EQ Divided Basics",
+            "garment_group_name": "Jersey Basic",
+            "index_group_name": "Divided",
+            "product_name": "Tilda tank",
+            "product_type_name": "Vest top"
+          },
+          "position": 10,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: ann, global pop"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 5
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 19
+            }
+          ]
+        },
+        {
+          "article_id": "0464297007",
+          "fusion_score": 0.02800626713670192,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Casual Lingerie",
+            "garment_group_name": "Under-, Nightwear",
+            "index_group_name": "Ladieswear",
+            "product_name": "Greta Thong Mynta Low 3p",
+            "product_type_name": "Underwear bottom"
+          },
+          "position": 11,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: ann, global pop"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 14
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 9
+            }
+          ]
+        },
+        {
+          "article_id": "0827968001",
+          "fusion_score": 0.027651515151515153,
+          "metadata": {
+            "colour_group_name": "White",
+            "department_name": "Jersey Basic",
+            "garment_group_name": "Jersey Basic",
+            "index_group_name": "Ladieswear",
+            "product_name": "Antonia heavy t-shirt",
+            "product_type_name": "T-shirt"
+          },
+          "position": 12,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: ann, global pop"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 20
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 6
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "customer_ref": "demo_a0b80a783c536404",
+      "display_label": "Demo customer 06",
+      "recommendations": [
+        {
+          "article_id": "0559616013",
+          "fusion_score": 0.06303568926519747,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Swimwear",
+            "garment_group_name": "Swimwear",
+            "index_group_name": "Ladieswear",
+            "product_name": "Timeless Push Triangle(1)",
+            "product_type_name": "Bikini top"
+          },
+          "position": 1,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 4 historical candidate sources: ann, category pop, global pop, covisit"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 5
+            },
+            {
+              "source": "category_pop",
+              "source_rank": 1
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 5
+            },
+            {
+              "source": "covisit",
+              "source_rank": 3
+            }
+          ]
+        },
+        {
+          "article_id": "0806225002",
+          "fusion_score": 0.0592051359389735,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Swimwear",
+            "garment_group_name": "Swimwear",
+            "index_group_name": "Ladieswear",
+            "product_name": "All That Jazz Push Up Bra",
+            "product_type_name": "Bikini top"
+          },
+          "position": 2,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 4 historical candidate sources: ann, category pop, global pop, covisit"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 10
+            },
+            {
+              "source": "category_pop",
+              "source_rank": 2
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 8
+            },
+            {
+              "source": "covisit",
+              "source_rank": 11
+            }
+          ]
+        },
+        {
+          "article_id": "0811925009",
+          "fusion_score": 0.04765263033514307,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Swimwear",
+            "garment_group_name": "Swimwear",
+            "index_group_name": "Ladieswear",
+            "product_name": "Knot Bitter Top",
+            "product_type_name": "Bikini top"
+          },
+          "position": 3,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 4 historical candidate sources: ann, category pop, global pop, covisit"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 33
+            },
+            {
+              "source": "category_pop",
+              "source_rank": 5
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 31
+            },
+            {
+              "source": "covisit",
+              "source_rank": 35
+            }
+          ]
+        },
+        {
+          "article_id": "0860819001",
+          "fusion_score": 0.045771578029642546,
+          "metadata": {
+            "colour_group_name": "Blue",
+            "department_name": "Swimwear",
+            "garment_group_name": "Swimwear",
+            "index_group_name": "Ladieswear",
+            "product_name": "Mermaid Push Bra",
+            "product_type_name": "Bikini top"
+          },
+          "position": 4,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 3 historical candidate sources: repurchase, category pop, covisit"
+          },
+          "source_evidence": [
+            {
+              "source": "repurchase",
+              "source_rank": 2
+            },
+            {
+              "source": "category_pop",
+              "source_rank": 14
+            },
+            {
+              "source": "covisit",
+              "source_rank": 2
+            }
+          ]
+        },
+        {
+          "article_id": "0866383006",
+          "fusion_score": 0.04261575076337066,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Swimwear",
+            "garment_group_name": "Swimwear",
+            "index_group_name": "Ladieswear",
+            "product_name": "Push it Push Bra",
+            "product_type_name": "Bikini top"
+          },
+          "position": 5,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 3 historical candidate sources: ann, category pop, global pop"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 19
+            },
+            {
+              "source": "category_pop",
+              "source_rank": 3
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 11
+            }
+          ]
+        },
+        {
+          "article_id": "0860820001",
+          "fusion_score": 0.04197519636004436,
+          "metadata": {
+            "colour_group_name": "Blue",
+            "department_name": "Swimwear",
+            "garment_group_name": "Swimwear",
+            "index_group_name": "Ladieswear",
+            "product_name": "Mermaid Tie Tanga",
+            "product_type_name": "Swimwear bottom"
+          },
+          "position": 6,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 3 historical candidate sources: ann, repurchase, covisit"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 43
+            },
+            {
+              "source": "repurchase",
+              "source_rank": 3
+            },
+            {
+              "source": "covisit",
+              "source_rank": 1
+            }
+          ]
+        },
+        {
+          "article_id": "0599580038",
+          "fusion_score": 0.04082677995721474,
+          "metadata": {
+            "colour_group_name": "Red",
+            "department_name": "Swimwear",
+            "garment_group_name": "Swimwear",
+            "index_group_name": "Ladieswear",
+            "product_name": "Timeless Midrise Brief",
+            "product_type_name": "Swimwear bottom"
+          },
+          "position": 7,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 3 historical candidate sources: ann, global pop, covisit"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 9
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 14
+            },
+            {
+              "source": "covisit",
+              "source_rank": 18
+            }
+          ]
+        },
+        {
+          "article_id": "0879944002",
+          "fusion_score": 0.04064016070345664,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Swimwear",
+            "garment_group_name": "Swimwear",
+            "index_group_name": "Ladieswear",
+            "product_name": "Timeless MR Tie Tanga(1)",
+            "product_type_name": "Swimwear bottom"
+          },
+          "position": 8,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 3 historical candidate sources: ann, repurchase, global pop"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 8
+            },
+            {
+              "source": "repurchase",
+              "source_rank": 4
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 37
+            }
+          ]
+        },
+        {
+          "article_id": "0776237011",
+          "fusion_score": 0.03888395875591616,
+          "metadata": {
+            "colour_group_name": "Red",
+            "department_name": "Swimwear",
+            "garment_group_name": "Swimwear",
+            "index_group_name": "Ladieswear",
+            "product_name": "Shake it in Balconette",
+            "product_type_name": "Bikini top"
+          },
+          "position": 9,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 3 historical candidate sources: category pop, global pop, covisit"
+          },
+          "source_evidence": [
+            {
+              "source": "category_pop",
+              "source_rank": 4
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 27
+            },
+            {
+              "source": "covisit",
+              "source_rank": 25
+            }
+          ]
+        },
+        {
+          "article_id": "0351484039",
+          "fusion_score": 0.03481961777027727,
+          "metadata": {
+            "colour_group_name": "Light Blue",
+            "department_name": "Swimwear",
+            "garment_group_name": "Swimwear",
+            "index_group_name": "Ladieswear",
+            "product_name": "Lazer Razer Brief",
+            "product_type_name": "Swimwear bottom"
+          },
+          "position": 10,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 3 historical candidate sources: ann, global pop, covisit"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 50
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 29
+            },
+            {
+              "source": "covisit",
+              "source_rank": 9
+            }
+          ]
+        },
+        {
+          "article_id": "0860949002",
+          "fusion_score": 0.03386110855777186,
+          "metadata": {
+            "colour_group_name": "Light Blue",
+            "department_name": "Swimwear",
+            "garment_group_name": "Swimwear",
+            "index_group_name": "Ladieswear",
+            "product_name": "Tiger Bandeau",
+            "product_type_name": "Bikini top"
+          },
+          "position": 11,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 3 historical candidate sources: ann, category pop, covisit"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 26
+            },
+            {
+              "source": "category_pop",
+              "source_rank": 28
+            },
+            {
+              "source": "covisit",
+              "source_rank": 32
+            }
+          ]
+        },
+        {
+          "article_id": "0684209004",
+          "fusion_score": 0.032878963142121034,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Swimwear",
+            "garment_group_name": "Swimwear",
+            "index_group_name": "Ladieswear",
+            "product_name": "Simple as That Triangle Top",
+            "product_type_name": "Bikini top"
+          },
+          "position": 12,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 3 historical candidate sources: ann, category pop, covisit"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 28
+            },
+            {
+              "source": "category_pop",
+              "source_rank": 35
+            },
+            {
+              "source": "covisit",
+              "source_rank": 31
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "customer_ref": "demo_9ca75ad51753cb8d",
+      "display_label": "Demo customer 07",
+      "recommendations": [
+        {
+          "article_id": "0751471001",
+          "fusion_score": 0.04106589888356539,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Trouser",
+            "garment_group_name": "Trousers",
+            "index_group_name": "Ladieswear",
+            "product_name": "Pluto RW slacks (1)",
+            "product_type_name": "Trousers"
+          },
+          "position": 1,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 3 historical candidate sources: ann, category pop, global pop"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 27
+            },
+            {
+              "source": "category_pop",
+              "source_rank": 3
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 13
+            }
+          ]
+        },
+        {
+          "article_id": "0838321001",
+          "fusion_score": 0.04058624031007752,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Trouser",
+            "garment_group_name": "Trousers",
+            "index_group_name": "Ladieswear",
+            "product_name": "Brigitte HW trouser",
+            "product_type_name": "Trousers"
+          },
+          "position": 2,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 3 historical candidate sources: repurchase, category pop, covisit"
+          },
+          "source_evidence": [
+            {
+              "source": "repurchase",
+              "source_rank": 4
+            },
+            {
+              "source": "category_pop",
+              "source_rank": 15
+            },
+            {
+              "source": "covisit",
+              "source_rank": 26
+            }
+          ]
+        },
+        {
+          "article_id": "0778064028",
+          "fusion_score": 0.03439024390243903,
+          "metadata": {
+            "colour_group_name": "Off White",
+            "department_name": "Jersey Basic",
+            "garment_group_name": "Jersey Basic",
+            "index_group_name": "Ladieswear",
+            "product_name": "Claudine",
+            "product_type_name": "T-shirt"
+          },
+          "position": 3,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 3 historical candidate sources: ann, global pop, covisit"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 22
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 22
+            },
+            {
+              "source": "covisit",
+              "source_rank": 40
+            }
+          ]
+        },
+        {
+          "article_id": "0783346001",
+          "fusion_score": 0.03434343434343434,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Trouser",
+            "garment_group_name": "Trousers",
+            "index_group_name": "Ladieswear",
+            "product_name": "Primo slacks",
+            "product_type_name": "Trousers"
+          },
+          "position": 4,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 3 historical candidate sources: ann, category pop, global pop"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 50
+            },
+            {
+              "source": "category_pop",
+              "source_rank": 6
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 39
+            }
+          ]
+        },
+        {
+          "article_id": "0760084003",
+          "fusion_score": 0.03278688524590164,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Trousers",
+            "garment_group_name": "Trousers",
+            "index_group_name": "Divided",
+            "product_name": "Victorville HW Pull-on TRS",
+            "product_type_name": "Trousers"
+          },
+          "position": 5,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: category pop, global pop"
+          },
+          "source_evidence": [
+            {
+              "source": "category_pop",
+              "source_rank": 1
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 1
+            }
+          ]
+        },
+        {
+          "article_id": "0879248001",
+          "fusion_score": 0.032400568717993884,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Jersey Basic",
+            "garment_group_name": "Jersey Basic",
+            "index_group_name": "Ladieswear",
+            "product_name": "Glamping",
+            "product_type_name": "Shorts"
+          },
+          "position": 6,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 3 historical candidate sources: ann, global pop, covisit"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 34
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 35
+            },
+            {
+              "source": "covisit",
+              "source_rank": 29
+            }
+          ]
+        },
+        {
+          "article_id": "0706016001",
+          "fusion_score": 0.031754032258064516,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Trousers",
+            "garment_group_name": "Trousers",
+            "index_group_name": "Divided",
+            "product_name": "Jade HW Skinny Denim TRS",
+            "product_type_name": "Trousers"
+          },
+          "position": 7,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: category pop, global pop"
+          },
+          "source_evidence": [
+            {
+              "source": "category_pop",
+              "source_rank": 2
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 4
+            }
+          ]
+        },
+        {
+          "article_id": "0739819010",
+          "fusion_score": 0.03076923076923077,
+          "metadata": {
+            "colour_group_name": "Pink",
+            "department_name": "Jersey",
+            "garment_group_name": "Jersey Fancy",
+            "index_group_name": "Ladieswear",
+            "product_name": "Polly strap dress",
+            "product_type_name": "Dress"
+          },
+          "position": 8,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: ann, covisit"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 5
+            },
+            {
+              "source": "covisit",
+              "source_rank": 5
+            }
+          ]
+        },
+        {
+          "article_id": "0717727014",
+          "fusion_score": 0.029850746268656716,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Dresses",
+            "garment_group_name": "Dresses Ladies",
+            "index_group_name": "Divided",
+            "product_name": "Mel maxi dress  W",
+            "product_type_name": "Dress"
+          },
+          "position": 9,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: ann, covisit"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 7
+            },
+            {
+              "source": "covisit",
+              "source_rank": 7
+            }
+          ]
+        },
+        {
+          "article_id": "0880186003",
+          "fusion_score": 0.028629032258064516,
+          "metadata": {
+            "colour_group_name": "Dark Blue",
+            "department_name": "Dress",
+            "garment_group_name": "Dresses Ladies",
+            "index_group_name": "Ladieswear",
+            "product_name": "Katja Dress",
+            "product_type_name": "Dress"
+          },
+          "position": 10,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: ann, covisit"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 2
+            },
+            {
+              "source": "covisit",
+              "source_rank": 20
+            }
+          ]
+        },
+        {
+          "article_id": "0706016003",
+          "fusion_score": 0.027673192771084338,
+          "metadata": {
+            "colour_group_name": "Dark Blue",
+            "department_name": "Trousers",
+            "garment_group_name": "Trousers",
+            "index_group_name": "Divided",
+            "product_name": "Jade HW Skinny Denim TRS",
+            "product_type_name": "Trousers"
+          },
+          "position": 11,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: category pop, global pop"
+          },
+          "source_evidence": [
+            {
+              "source": "category_pop",
+              "source_rank": 4
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 23
+            }
+          ]
+        },
+        {
+          "article_id": "0749615012",
+          "fusion_score": 0.027583600982429624,
+          "metadata": {
+            "colour_group_name": "Light Green",
+            "department_name": "Trouser",
+            "garment_group_name": "Trousers",
+            "index_group_name": "Ladieswear",
+            "product_name": "Lia Slacks tie belt",
+            "product_type_name": "Trousers"
+          },
+          "position": 12,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: repurchase, covisit"
+          },
+          "source_evidence": [
+            {
+              "source": "repurchase",
+              "source_rank": 7
+            },
+            {
+              "source": "covisit",
+              "source_rank": 19
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "customer_ref": "demo_1121666dfb1a09bc",
+      "display_label": "Demo customer 08",
+      "recommendations": [
+        {
+          "article_id": "0559616013",
+          "fusion_score": 0.056483940360507384,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Swimwear",
+            "garment_group_name": "Swimwear",
+            "index_group_name": "Ladieswear",
+            "product_name": "Timeless Push Triangle(1)",
+            "product_type_name": "Bikini top"
+          },
+          "position": 1,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 4 historical candidate sources: ann, category pop, global pop, covisit"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 8
+            },
+            {
+              "source": "category_pop",
+              "source_rank": 1
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 5
+            },
+            {
+              "source": "covisit",
+              "source_rank": 40
+            }
+          ]
+        },
+        {
+          "article_id": "0866383006",
+          "fusion_score": 0.056157658141773786,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Swimwear",
+            "garment_group_name": "Swimwear",
+            "index_group_name": "Ladieswear",
+            "product_name": "Push it Push Bra",
+            "product_type_name": "Bikini top"
+          },
+          "position": 2,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 4 historical candidate sources: ann, category pop, global pop, covisit"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 27
+            },
+            {
+              "source": "category_pop",
+              "source_rank": 3
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 11
+            },
+            {
+              "source": "covisit",
+              "source_rank": 8
+            }
+          ]
+        },
+        {
+          "article_id": "0832330003",
+          "fusion_score": 0.04670793048402157,
+          "metadata": {
+            "colour_group_name": "Dark Orange",
+            "department_name": "Swimwear",
+            "garment_group_name": "Swimwear",
+            "index_group_name": "Ladieswear",
+            "product_name": "Wowcha Top",
+            "product_type_name": "Bikini top"
+          },
+          "position": 3,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 3 historical candidate sources: repurchase, category pop, covisit"
+          },
+          "source_evidence": [
+            {
+              "source": "repurchase",
+              "source_rank": 3
+            },
+            {
+              "source": "category_pop",
+              "source_rank": 8
+            },
+            {
+              "source": "covisit",
+              "source_rank": 2
+            }
+          ]
+        },
+        {
+          "article_id": "0806225002",
+          "fusion_score": 0.045327668234194096,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Swimwear",
+            "garment_group_name": "Swimwear",
+            "index_group_name": "Ladieswear",
+            "product_name": "All That Jazz Push Up Bra",
+            "product_type_name": "Bikini top"
+          },
+          "position": 4,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 3 historical candidate sources: ann, category pop, global pop"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 9
+            },
+            {
+              "source": "category_pop",
+              "source_rank": 2
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 8
+            }
+          ]
+        },
+        {
+          "article_id": "0372860002",
+          "fusion_score": 0.044404259594133015,
+          "metadata": {
+            "colour_group_name": "White",
+            "department_name": "Shopbasket Socks",
+            "garment_group_name": "Socks and Tights",
+            "index_group_name": "Ladieswear",
+            "product_name": "7p Basic Shaftless",
+            "product_type_name": "Socks"
+          },
+          "position": 5,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 3 historical candidate sources: ann, global pop, covisit"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 3
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 3
+            },
+            {
+              "source": "covisit",
+              "source_rank": 19
+            }
+          ]
+        },
+        {
+          "article_id": "0464297007",
+          "fusion_score": 0.04183939072592307,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Casual Lingerie",
+            "garment_group_name": "Under-, Nightwear",
+            "index_group_name": "Ladieswear",
+            "product_name": "Greta Thong Mynta Low 3p",
+            "product_type_name": "Underwear bottom"
+          },
+          "position": 6,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 3 historical candidate sources: ann, global pop, covisit"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 6
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 9
+            },
+            {
+              "source": "covisit",
+              "source_rank": 22
+            }
+          ]
+        },
+        {
+          "article_id": "0811925009",
+          "fusion_score": 0.04045813341587989,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Swimwear",
+            "garment_group_name": "Swimwear",
+            "index_group_name": "Ladieswear",
+            "product_name": "Knot Bitter Top",
+            "product_type_name": "Bikini top"
+          },
+          "position": 7,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 3 historical candidate sources: category pop, global pop, covisit"
+          },
+          "source_evidence": [
+            {
+              "source": "category_pop",
+              "source_rank": 5
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 31
+            },
+            {
+              "source": "covisit",
+              "source_rank": 11
+            }
+          ]
+        },
+        {
+          "article_id": "0822946001",
+          "fusion_score": 0.03948844316084188,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Swimwear",
+            "garment_group_name": "Swimwear",
+            "index_group_name": "Ladieswear",
+            "product_name": "Scary Spice Top",
+            "product_type_name": "Bikini top"
+          },
+          "position": 8,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 3 historical candidate sources: category pop, global pop, covisit"
+          },
+          "source_evidence": [
+            {
+              "source": "category_pop",
+              "source_rank": 6
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 34
+            },
+            {
+              "source": "covisit",
+              "source_rank": 13
+            }
+          ]
+        },
+        {
+          "article_id": "0879944002",
+          "fusion_score": 0.03320305124428836,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Swimwear",
+            "garment_group_name": "Swimwear",
+            "index_group_name": "Ladieswear",
+            "product_name": "Timeless MR Tie Tanga(1)",
+            "product_type_name": "Swimwear bottom"
+          },
+          "position": 9,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 3 historical candidate sources: ann, global pop, covisit"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 24
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 37
+            },
+            {
+              "source": "covisit",
+              "source_rank": 31
+            }
+          ]
+        },
+        {
+          "article_id": "0759871002",
+          "fusion_score": 0.03225806451612903,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "EQ Divided Basics",
+            "garment_group_name": "Jersey Basic",
+            "index_group_name": "Divided",
+            "product_name": "Tilda tank",
+            "product_type_name": "Vest top"
+          },
+          "position": 10,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: ann, global pop"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 2
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 2
+            }
+          ]
+        },
+        {
+          "article_id": "0832331003",
+          "fusion_score": 0.03201844262295082,
+          "metadata": {
+            "colour_group_name": "Dark Orange",
+            "department_name": "Swimwear",
+            "garment_group_name": "Swimwear",
+            "index_group_name": "Ladieswear",
+            "product_name": "Wowcha HR Brief",
+            "product_type_name": "Swimwear bottom"
+          },
+          "position": 11,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: repurchase, covisit"
+          },
+          "source_evidence": [
+            {
+              "source": "repurchase",
+              "source_rank": 4
+            },
+            {
+              "source": "covisit",
+              "source_rank": 1
+            }
+          ]
+        },
+        {
+          "article_id": "0610776002",
+          "fusion_score": 0.02967032967032967,
+          "metadata": {
+            "colour_group_name": "Black",
+            "department_name": "Jersey Basic",
+            "garment_group_name": "Jersey Basic",
+            "index_group_name": "Ladieswear",
+            "product_name": "Tilly (1)",
+            "product_type_name": "T-shirt"
+          },
+          "position": 12,
+          "reason": {
+            "code": "multiple_sources",
+            "text": "Supported by 2 historical candidate sources: ann, global pop"
+          },
+          "source_evidence": [
+            {
+              "source": "ann",
+              "source_rank": 5
+            },
+            {
+              "source": "global_pop",
+              "source_rank": 10
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "diagnostics": {
+    "candidate_recall_ceiling": 0.1077706285795093,
+    "definitions": {
+      "candidate_recall_ceiling": "Share of held-out purchased customer/article pairs found anywhere in the full candidate union.",
+      "fusion_score": "Ordering-only reciprocal-rank-fusion value; it is not a probability or confidence.",
+      "mean_candidate_count": "Mean number of unique union candidates per customer in the full metric cohort.",
+      "source_recall_ceiling": "Share of held-out purchased pairs found by one candidate source before fusion."
+    },
+    "mean_candidate_count": 138.1128,
+    "scope": "Full historical val_tune cohort on 2020-08-12; source diagnostics cover 20,000 customers, while the browser exposes only a compact deterministic sample. Article labels are current-state snapshot attributes, not point-in-time history.",
+    "source_metrics": [
+      {
+        "candidate_rows": 1000000,
+        "reach_customers": 20000,
+        "reach_fraction": 1.0,
+        "solo_recall_ceiling": 0.041561196351552004,
+        "source": "ann"
+      },
+      {
+        "candidate_rows": 418242,
+        "reach_customers": 18576,
+        "reach_fraction": 0.9288,
+        "solo_recall_ceiling": 0.029159301421197766,
+        "source": "repurchase"
+      },
+      {
+        "candidate_rows": 742573,
+        "reach_customers": 18576,
+        "reach_fraction": 0.9288,
+        "solo_recall_ceiling": 0.021622003818143252,
+        "source": "category_pop"
+      },
+      {
+        "candidate_rows": 800000,
+        "reach_customers": 20000,
+        "reach_fraction": 1.0,
+        "solo_recall_ceiling": 0.03167644771264937,
+        "source": "global_pop"
+      },
+      {
+        "candidate_rows": 332721,
+        "reach_customers": 9179,
+        "reach_fraction": 0.45895,
+        "solo_recall_ceiling": 0.028027999717174575,
+        "source": "covisit"
+      }
+    ],
+    "union_candidate_rows": 2762256
+  },
+  "meta": {
+    "as_of": "2020-08-12",
+    "cohort_customer_count": 20000,
+    "demo_customer_count": 8,
+    "provenance_status": "backfilled",
+    "ranking_mode": "baseline_fusion",
+    "ranking_version": "equal-weight-rrf-v1",
+    "release_id": "historical-demo-2020-08-12-v1",
+    "rrf": {
+      "k": 60,
+      "source_weights": {
+        "ann": 1.0,
+        "category_pop": 1.0,
+        "covisit": 1.0,
+        "global_pop": 1.0,
+        "repurchase": 1.0
+      }
+    },
+    "schema_version": "1.0.0",
+    "slice": "val_tune",
+    "warning": "Candidate-only baseline with no trained ranker; historical data, not live recommendations."
+  }
+}

@@ -18,6 +18,7 @@ dev = [
     "dbt-spark[session]",
     "dbt-duckdb",
     "pytest",
+    "jsonschema",
     # week 3 onward
     "torch",
     "lightgbm",

@@ -1,0 +1,194 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://marketrank.local/contracts/workbench-release.schema.json",
+  "title": "MarketRank historical workbench release v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["meta", "diagnostics", "customers"],
+  "properties": {
+    "meta": {"$ref": "#/$defs/meta"},
+    "diagnostics": {"$ref": "#/$defs/diagnostics"},
+    "customers": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/customer"}
+    }
+  },
+  "$defs": {
+    "source": {
+      "enum": ["ann", "repurchase", "category_pop", "global_pop", "covisit"]
+    },
+    "meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version", "release_id", "as_of", "slice", "ranking_mode",
+        "ranking_version", "warning", "provenance_status",
+        "demo_customer_count", "cohort_customer_count", "rrf"
+      ],
+      "properties": {
+        "schema_version": {"const": "1.0.0"},
+        "release_id": {"type": "string", "minLength": 1},
+        "as_of": {"type": "string", "format": "date"},
+        "slice": {"type": "string", "minLength": 1},
+        "ranking_mode": {"const": "baseline_fusion"},
+        "ranking_version": {"const": "equal-weight-rrf-v1"},
+        "warning": {"type": "string", "minLength": 1},
+        "provenance_status": {"const": "backfilled"},
+        "demo_customer_count": {"type": "integer", "minimum": 1},
+        "cohort_customer_count": {"type": "integer", "minimum": 1},
+        "rrf": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["k", "source_weights"],
+          "properties": {
+            "k": {"const": 60},
+            "source_weights": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["ann", "repurchase", "category_pop", "global_pop", "covisit"],
+              "properties": {
+                "ann": {"const": 1.0},
+                "repurchase": {"const": 1.0},
+                "category_pop": {"const": 1.0},
+                "global_pop": {"const": 1.0},
+                "covisit": {"const": 1.0}
+              }
+            }
+          }
+        }
+      }
+    },
+    "diagnostics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidate_recall_ceiling", "mean_candidate_count",
+        "union_candidate_rows", "source_metrics", "definitions", "scope"
+      ],
+      "properties": {
+        "candidate_recall_ceiling": {"type": "number", "minimum": 0, "maximum": 1},
+        "mean_candidate_count": {"type": "number", "minimum": 0},
+        "union_candidate_rows": {"type": "integer", "minimum": 0},
+        "source_metrics": {
+          "type": "array",
+          "minItems": 5,
+          "maxItems": 5,
+          "items": {"$ref": "#/$defs/source_metric"},
+          "allOf": [
+            {"contains": {"type": "object", "properties": {"source": {"const": "ann"}}, "required": ["source"]}, "minContains": 1, "maxContains": 1},
+            {"contains": {"type": "object", "properties": {"source": {"const": "repurchase"}}, "required": ["source"]}, "minContains": 1, "maxContains": 1},
+            {"contains": {"type": "object", "properties": {"source": {"const": "category_pop"}}, "required": ["source"]}, "minContains": 1, "maxContains": 1},
+            {"contains": {"type": "object", "properties": {"source": {"const": "global_pop"}}, "required": ["source"]}, "minContains": 1, "maxContains": 1},
+            {"contains": {"type": "object", "properties": {"source": {"const": "covisit"}}, "required": ["source"]}, "minContains": 1, "maxContains": 1}
+          ]
+        },
+        "definitions": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "candidate_recall_ceiling", "mean_candidate_count",
+            "source_recall_ceiling", "fusion_score"
+          ],
+          "properties": {
+            "candidate_recall_ceiling": {"type": "string", "minLength": 1},
+            "mean_candidate_count": {"type": "string", "minLength": 1},
+            "source_recall_ceiling": {"type": "string", "minLength": 1},
+            "fusion_score": {"type": "string", "minLength": 1}
+          }
+        },
+        "scope": {"type": "string", "minLength": 1}
+      }
+    },
+    "source_metric": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source", "candidate_rows", "solo_recall_ceiling",
+        "reach_customers", "reach_fraction"
+      ],
+      "properties": {
+        "source": {"$ref": "#/$defs/source"},
+        "candidate_rows": {"type": "integer", "minimum": 0},
+        "solo_recall_ceiling": {"type": "number", "minimum": 0, "maximum": 1},
+        "reach_customers": {"type": "integer", "minimum": 0},
+        "reach_fraction": {"type": "number", "minimum": 0, "maximum": 1}
+      }
+    },
+    "customer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["customer_ref", "display_label", "recommendations"],
+      "properties": {
+        "customer_ref": {"type": "string", "pattern": "^demo_[0-9a-f]{16}$"},
+        "display_label": {"type": "string", "pattern": "^Demo customer [0-9]{2}$"},
+        "recommendations": {
+          "type": "array",
+          "minItems": 12,
+          "maxItems": 12,
+          "items": {"$ref": "#/$defs/recommendation"}
+        }
+      }
+    },
+    "recommendation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "position", "article_id", "metadata", "fusion_score",
+        "source_evidence", "reason"
+      ],
+      "properties": {
+        "position": {"type": "integer", "minimum": 1, "maximum": 12},
+        "article_id": {"type": "string", "pattern": "^[0-9]{10}$"},
+        "metadata": {"$ref": "#/$defs/article_metadata"},
+        "fusion_score": {"type": "number", "exclusiveMinimum": 0},
+        "source_evidence": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 5,
+          "items": {"$ref": "#/$defs/source_evidence"}
+        },
+        "reason": {"$ref": "#/$defs/reason"}
+      }
+    },
+    "article_metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "product_name", "product_type_name", "colour_group_name",
+        "department_name", "index_group_name", "garment_group_name"
+      ],
+      "properties": {
+        "product_name": {"type": "string"},
+        "product_type_name": {"type": "string"},
+        "colour_group_name": {"type": "string"},
+        "department_name": {"type": "string"},
+        "index_group_name": {"type": "string"},
+        "garment_group_name": {"type": "string"}
+      }
+    },
+    "source_evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source", "source_rank"],
+      "properties": {
+        "source": {"$ref": "#/$defs/source"},
+        "source_rank": {"type": "integer", "minimum": 1}
+      }
+    },
+    "reason": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "text"],
+      "properties": {
+        "code": {
+          "enum": [
+            "similar_patterns", "previously_purchased", "preferred_category",
+            "historically_popular", "frequently_together", "multiple_sources"
+          ]
+        },
+        "text": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}

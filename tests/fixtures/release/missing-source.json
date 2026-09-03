@@ -1,0 +1,6 @@
+{
+  "ann": [{"customer_id": "customer", "article_id": "0000000001", "source": "ann", "source_rank": 1}],
+  "repurchase": [{"customer_id": "customer", "article_id": "0000000001", "source": "repurchase", "source_rank": 1}],
+  "category_pop": [{"customer_id": "customer", "article_id": "0000000001", "source": "category_pop", "source_rank": 1}],
+  "global_pop": [{"customer_id": "customer", "article_id": "0000000001", "source": "global_pop", "source_rank": 1}]
+}

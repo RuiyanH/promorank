@@ -1,0 +1,66 @@
+{
+  "sources": {
+    "ann": [
+      {"customer_id": "raw-customer-a", "article_id": "0000000001", "source": "ann", "source_rank": 1},
+      {"customer_id": "raw-customer-a", "article_id": "0000000002", "source": "ann", "source_rank": 2},
+      {"customer_id": "raw-customer-a", "article_id": "0000000003", "source": "ann", "source_rank": 3},
+      {"customer_id": "raw-customer-a", "article_id": "0000000004", "source": "ann", "source_rank": 4},
+      {"customer_id": "raw-customer-a", "article_id": "0000000005", "source": "ann", "source_rank": 5},
+      {"customer_id": "raw-customer-a", "article_id": "0000000006", "source": "ann", "source_rank": 6},
+      {"customer_id": "raw-customer-a", "article_id": "0000000007", "source": "ann", "source_rank": 7},
+      {"customer_id": "raw-customer-a", "article_id": "0000000008", "source": "ann", "source_rank": 8},
+      {"customer_id": "raw-customer-a", "article_id": "0000000009", "source": "ann", "source_rank": 9},
+      {"customer_id": "raw-customer-a", "article_id": "0000000010", "source": "ann", "source_rank": 10},
+      {"customer_id": "raw-customer-a", "article_id": "0000000011", "source": "ann", "source_rank": 11},
+      {"customer_id": "raw-customer-a", "article_id": "0000000012", "source": "ann", "source_rank": 12}
+    ],
+    "repurchase": [
+      {"customer_id": "raw-customer-a", "article_id": "0000000001", "source": "repurchase", "source_rank": 1}
+    ],
+    "category_pop": [
+      {"customer_id": "raw-customer-a", "article_id": "0000000002", "source": "category_pop", "source_rank": 1}
+    ],
+    "global_pop": [
+      {"customer_id": "raw-customer-a", "article_id": "0000000003", "source": "global_pop", "source_rank": 1}
+    ],
+    "covisit": [
+      {"customer_id": "raw-customer-a", "article_id": "0000000004", "source": "covisit", "source_rank": 1}
+    ]
+  },
+  "ceiling": {
+    "run": {
+      "as_of": "2020-08-12",
+      "slice": "val_tune",
+      "sources": ["repurchase", "category_pop", "global_pop", "covisit", "ann"]
+    },
+    "stats": {
+      "n_customers": 1,
+      "n_candidate_rows": 12,
+      "mean_candidates_per_customer": 12.0,
+      "rows_from_ann": 12,
+      "rows_from_repurchase": 1,
+      "rows_from_category_pop": 1,
+      "rows_from_global_pop": 1,
+      "rows_from_covisit": 1
+    },
+    "ceiling": {
+      "recall_ceiling": 0.25,
+      "by_ann": 0.20,
+      "by_repurchase": 0.05,
+      "by_category_pop": 0.04,
+      "by_global_pop": 0.03,
+      "by_covisit": 0.02
+    },
+    "marginal": {
+      "union_ceiling": 0.25,
+      "mean_candidates_per_customer": 12.0,
+      "sources": {
+        "ann": {"reach_customers": 1, "reach_frac": 1.0},
+        "repurchase": {"reach_customers": 1, "reach_frac": 1.0},
+        "category_pop": {"reach_customers": 1, "reach_frac": 1.0},
+        "global_pop": {"reach_customers": 1, "reach_frac": 1.0},
+        "covisit": {"reach_customers": 1, "reach_frac": 1.0}
+      }
+    }
+  }
+}
