@@ -1,0 +1,45 @@
+{
+  "schema_version": "retrieval-bundle.v2",
+  "bundle_id": "v2_pit_safe_synthetic_fixture",
+  "data_mode": "synthetic_fixture",
+  "retrieval_fit": ["2018-12-19", "2020-06-30"],
+  "retrieval_select": ["2020-07-01", "2020-07-14"],
+  "artifact_available_after": "2020-07-14",
+  "article_volume": false,
+  "embedding": {
+    "dimension": 4,
+    "normalization": "recorded_by_model",
+    "dtype": "float32"
+  },
+  "search": {
+    "algorithm": "exact_batched_inner_product",
+    "score_order": "descending",
+    "tie_break": "article_id_ascending"
+  },
+  "allowed_customer_inputs": [
+    "customer_id_embedding",
+    "recent_article_sequence",
+    "days_since_last_purchase",
+    "purchase_count_7d",
+    "purchase_count_30d",
+    "purchase_count_90d"
+  ],
+  "forbidden_customer_inputs": [
+    "age",
+    "age_bucket",
+    "club_member_status",
+    "fashion_news_frequency",
+    "fn",
+    "active"
+  ],
+  "required_artifacts": [
+    "model_weights",
+    "training_arguments",
+    "metrics",
+    "customer_vocabulary",
+    "article_vocabulary",
+    "catalog_arrays",
+    "schema",
+    "checksums"
+  ]
+}

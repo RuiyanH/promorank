@@ -1,0 +1,46 @@
+{
+  "schema_version": "ranker-frame.v2",
+  "spine_type": "active_day",
+  "sampling": {
+    "split": "train",
+    "all_positives_retained": true,
+    "negative_retention_probability": 0.05,
+    "fit_uses_sample_weight": false,
+    "odds_correction_count": 1
+  },
+  "rows": [
+    {
+      "customer_key": "synthetic_customer_001",
+      "scoring_date": "2020-07-15",
+      "article_id": "0000000001",
+      "group_id": "synthetic_customer_001:2020-07-15",
+      "label": 0,
+      "ann_rank": 2,
+      "global_pop_rank": 2,
+      "source_count": 3,
+      "article_trailing_price": 0.021,
+      "article_trailing_price_missing": false
+    },
+    {
+      "customer_key": "synthetic_customer_003",
+      "scoring_date": "2020-07-17",
+      "article_id": "0000000002",
+      "group_id": "synthetic_customer_003:2020-07-17",
+      "label": 1,
+      "ann_rank": 2,
+      "global_pop_rank": 1,
+      "source_count": 3,
+      "article_trailing_price": null,
+      "article_trailing_price_missing": true
+    }
+  ],
+  "forbidden_primary_features": [
+    "same_day_price",
+    "age",
+    "age_bucket",
+    "club_member_status",
+    "fashion_news_frequency",
+    "fn",
+    "active"
+  ]
+}

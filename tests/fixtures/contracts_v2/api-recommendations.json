@@ -1,0 +1,38 @@
+{
+  "schema_version": "workbench-api.v2",
+  "release_id": "v2_synthetic_release_001",
+  "as_of": "2020-09-09",
+  "ranking_mode": "trained_ranker",
+  "score_semantics": "ordering_only",
+  "warning": "Historical replay from the static H&M Kaggle dataset. Scores order candidates only; they are not probabilities, confidence, current availability, or evidence of business uplift.",
+  "model_available_after": "2020-08-25",
+  "calibrator_available_after": "2020-09-01",
+  "customer_ref": "v2c_0123456789abcdef01234567",
+  "recommendations": [
+    {
+      "position": 1,
+      "article_id": "0000000003",
+      "ordering_score": 1.75,
+      "source_evidence": [
+        {"source": "ann", "display_name": "embedding_retrieval", "source_rank": 1},
+        {"source": "global_pop", "display_name": "global_pop", "source_rank": 2}
+      ],
+      "article_metadata": {
+        "product_type_name": "Synthetic garment",
+        "metadata_status": "static_snapshot_attribute"
+      }
+    },
+    {
+      "position": 2,
+      "article_id": "0000000001",
+      "ordering_score": 1.25,
+      "source_evidence": [
+        {"source": "repurchase", "display_name": "repurchase", "source_rank": 1}
+      ],
+      "article_metadata": {
+        "product_type_name": null,
+        "metadata_status": "partial_static_snapshot"
+      }
+    }
+  ]
+}

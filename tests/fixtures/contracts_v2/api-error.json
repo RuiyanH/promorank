@@ -1,0 +1,14 @@
+{
+  "schema_version": "workbench-error.v2",
+  "error": {
+    "code": "CUSTOMER_NOT_FOUND",
+    "message": "The requested historical customer reference was not found in this release.",
+    "request_id": "req_0123456789abcdef"
+  },
+  "cursor_contract": {
+    "encoding": "opaque_signed",
+    "bound_fields": ["release_id", "sort", "position"],
+    "maximum_page_size": 100,
+    "allowed_sort_values": ["display_label_asc", "display_label_desc"]
+  }
+}

@@ -33,7 +33,11 @@ from pathlib import Path
 from pyspark.sql import DataFrame, SparkSession, functions as F
 
 from marketrank import candidates as C, candidates_daily as CD, config, partitions as PT
+from marketrank.candidate_pipeline.config import load_candidate_config
+from marketrank.candidate_pipeline.guards import assert_large_output_path
+from marketrank.candidate_pipeline.spines import build_active_day_spine, build_replay_day_spine
 from marketrank.retrieval import baselines as B
+from marketrank.retrieval.daily_ann import read_daily_ann_range, validate_daily_ann_range
 
 SHIPPED_CEILING = Path("artifacts/candidates_misha_90_50/ceiling.json")
 
@@ -190,6 +194,8 @@ CHUNK_KEY = "chunk"
 CHUNK_CONTENT_ARGS = (
     "n_repurchase", "n_category", "n_global_pop", "n_covisit",
     "covisit_lookback", "covisit_max_basket", "recent_k",
+    "ann_root", "ann_bundle_id", "ann_candidate_config_id", "ann_cohort_id",
+    "spine_type", "ann_partition_checksums",
 )
 
 
@@ -219,6 +225,46 @@ def union_daily(sources: dict[str, DataFrame], names: tuple[str, ...]) -> DataFr
     for name in names:
         out = out.withColumn(f"from_{name}", F.array_contains("sources", name))
     return out
+
+
+def union_daily_v2(
+    sources: dict[str, DataFrame],
+    names: tuple[str, ...],
+    *,
+    spine_type: str,
+) -> DataFrame:
+    """V2 union with fixed nullable ranks, flags, count, and spine grain."""
+
+    from functools import reduce
+
+    if names != SOURCE_ORDER:
+        raise SystemExit(f"V2 candidate union requires ordered sources {list(SOURCE_ORDER)}")
+    if spine_type not in {"active_day", "replay_day"}:
+        raise SystemExit(f"invalid V2 spine_type: {spine_type}")
+    tagged = [sources[name].withColumn("source", F.lit(name)) for name in names]
+    combined = reduce(lambda left, right: left.unionByName(right), tagged)
+    aggregations = [
+        F.min(F.when(F.col("source") == name, F.col("source_rank"))).alias(f"{name}_rank")
+        for name in names
+    ]
+    out = combined.groupBy("customer_id", "day_index", "article_id").agg(*aggregations)
+    for name in names:
+        out = out.withColumn(f"from_{name}", F.col(f"{name}_rank").isNotNull())
+    count_expression = sum(
+        (F.col(f"from_{name}").cast("int") for name in names),
+        F.lit(0),
+    )
+    return out.withColumn("source_count", count_expression).withColumn(
+        "spine_type", F.lit(spine_type)
+    ).select(
+        "customer_id",
+        "day_index",
+        "article_id",
+        "spine_type",
+        *(f"{name}_rank" for name in names),
+        *(f"from_{name}" for name in names),
+        "source_count",
+    )
 
 
 def chunks_for(anchors: list[int], cadence: int, lo: int, hi: int, width: int) -> list[dict]:
@@ -281,6 +327,134 @@ def materialize_shared(
     else:
         print(f"SHARED {name:<20} reused    -> {path}")
     return spark.read.parquet(str(path))
+
+
+def content_of(a, ann_manifests: list[dict] | None = None) -> dict:
+    """The chunk's content arguments, including the exact daily ANN identity."""
+
+    return {
+        "n_repurchase": a.n_repurchase,
+        "n_category": a.n_category,
+        "n_global_pop": a.n_global_pop,
+        "n_covisit": a.n_covisit,
+        "covisit_lookback": a.covisit_lookback,
+        "covisit_max_basket": a.covisit_max_basket,
+        "recent_k": a.recent_k,
+        "ann_root": str(a.ann_root.resolve()) if a.ann_root is not None else None,
+        "ann_bundle_id": a.ann_bundle_id,
+        "ann_candidate_config_id": a.ann_candidate_config_id,
+        "ann_cohort_id": a.ann_cohort_id,
+        "spine_type": a.spine_type,
+        "ann_partition_checksums": (
+            [
+                {
+                    "scoring_date": manifest["scoring_date"],
+                    "partition_checksum": manifest["partition_checksum"],
+                    "manifest_checksum": hashlib.sha256(
+                        (
+                            json.dumps(
+                                manifest,
+                                sort_keys=True,
+                                separators=(",", ":"),
+                                ensure_ascii=True,
+                            )
+                            + "\n"
+                        ).encode()
+                    ).hexdigest(),
+                    "input_hashes": manifest["input_hashes"],
+                }
+                for manifest in sorted(ann_manifests, key=lambda item: item["scoring_date"])
+            ]
+            if ann_manifests is not None
+            else None
+        ),
+    }
+
+
+def write_chunk(
+    spark, out: Path, ch: dict, union: DataFrame, content: dict,
+    extra: dict | None = None,
+) -> int:
+    """Write one chunk and record metadata only after Spark commits it."""
+
+    import time as _time
+
+    t0 = _time.time()
+    path = PT.part_path(out, CHUNK_KEY, ch["chunk"])
+    union.write.mode("overwrite").partitionBy("day_index").parquet(str(path))
+    rows = spark.read.parquet(str(path)).count()
+    meta = {
+        "chunk": ch["chunk"],
+        "anchors": ch["anchors"],
+        "day_range": [ch["lo"], ch["hi"]],
+        "rows": int(rows),
+        "seconds": round(_time.time() - t0, 1),
+        "args": content,
+    }
+    meta.update(extra or {})
+    PT.write_part_meta(out, CHUNK_KEY, ch["chunk"], meta)
+    print(
+        f"CHUNK {ch['chunk']:>5}  days {ch['lo']}..{ch['hi']}  "
+        f"rows {rows:>10}  {_time.time() - t0:6.1f}s"
+    )
+    return int(rows)
+
+
+def load_ann_root_for_days(
+    spark: SparkSession,
+    root: Path,
+    days: list[int],
+    *,
+    bundle_id: str | None = None,
+    candidate_config_id: str | None = None,
+    cohort_id: str | None = None,
+    spine_type: str = "active_day",
+    expected_partition_checksums: dict[str, str] | None = None,
+) -> tuple[DataFrame, list[dict]]:
+    """Load only requested checksum-validated daily ANN partitions."""
+
+    zero = _dt.date.fromisoformat(CD.ft.DAY_ZERO)
+    dates = [(zero + _dt.timedelta(days=day)).isoformat() for day in days]
+    expected = {"spine_type": spine_type}
+    for key, value in {
+        "bundle_id": bundle_id,
+        "candidate_config_id": candidate_config_id,
+        "cohort_id": cohort_id,
+    }.items():
+        if value is not None:
+            expected[key] = value
+    loaded = read_daily_ann_range(root, dates, expected=expected)
+    if expected_partition_checksums is not None:
+        actual = {
+            manifest["scoring_date"]: manifest["partition_checksum"]
+            for manifest in loaded["partitions"]
+        }
+        if actual != expected_partition_checksums:
+            raise SystemExit("daily ANN partition changed after resume preflight")
+    by_date = {manifest["scoring_date"]: manifest for manifest in loaded["partitions"]}
+    for day, date in zip(days, dates, strict=True):
+        if by_date[date]["day_index"] != day:
+            raise SystemExit(
+                f"daily ANN partition {date} declares day_index {by_date[date]['day_index']} != {day}"
+            )
+    schema = "customer_id string, day_index int, article_id string, source string, source_rank int"
+    frame = spark.createDataFrame(
+        [tuple(row[key] for key in ("customer_id", "day_index", "article_id", "source", "source_rank"))
+         for row in loaded["rows"]],
+        schema=schema,
+    )
+    return assert_ann_contract(frame), loaded["partitions"]
+
+
+def assert_ann_matches_spine(ann: DataFrame, spine: DataFrame) -> DataFrame:
+    """Reject ANN rows outside the exact customer/day scoring spine."""
+
+    keys = ["customer_id", "day_index"]
+    spine_keys = spine.select(*keys).distinct()
+    outside = ann.select(*keys).distinct().join(spine_keys, keys, "left_anti").limit(1).count()
+    if outside:
+        raise SystemExit("daily ANN contains a customer/day outside the requested scoring spine")
+    return ann.join(spine_keys, keys, "inner")
 
 
 def source_names(sources: dict) -> tuple[str, ...]:
@@ -446,16 +620,78 @@ def parse_args(argv=None) -> argparse.Namespace:
                    help="single-day ANN parquet, checksum fixture ONLY")
     p.add_argument("--ann-snapshot-day", type=int, default=None,
                    help="the day that snapshot belongs to; defaults to val_tune day 0")
+    p.add_argument("--ann-root", type=Path, default=None,
+                   help="V2 checksum-complete per-date ANN partition root")
+    p.add_argument("--candidate-config", type=Path, default=None,
+                   help="frozen candidate-config.v2 JSON; required with --ann-root")
+    p.add_argument("--ann-bundle-id", default=None,
+                   help="required bundle ID when reading --ann-root")
+    p.add_argument("--ann-candidate-config-id", default=None,
+                   help="required candidate config ID when reading --ann-root")
+    p.add_argument("--ann-cohort-id", default=None,
+                   help="required cohort/spine ID when reading --ann-root")
+    p.add_argument("--spine-type", choices=("active_day", "replay_day"), default="active_day")
+    p.add_argument("--cohort", type=Path, default=None,
+                   help="fixed cohort parquet; required for replay_day V2 builds")
+    p.add_argument("--scratch-root", type=Path, default=None,
+                   help="approved scratch root; required with --ann-root")
     p.add_argument("--expect-from", type=Path, default=SHIPPED_CEILING)
     p.add_argument("--expect-pairs", type=int, default=70_715)
     p.add_argument("--driver-memory", default="48g")
     return p.parse_args(argv)
 
 
+def prepare_args(a: argparse.Namespace) -> argparse.Namespace:
+    """Resolve paths and fail unsafe/cross-contract inputs before Spark starts."""
+
+    if a.pairs is None:
+        a.pairs = config.TABLES / "covisit_pairs"
+    if a.out is None:
+        a.out = config.TABLES / "candidates"
+    if a.checksum_out is None:
+        a.checksum_out = config.TABLES / "candidates_checksum"
+    if a.ann_snapshot is not None and a.ann_root is not None:
+        raise SystemExit("choose exactly one of --ann-snapshot and --ann-root")
+    if a.checksum_day:
+        if a.ann_root is not None:
+            raise SystemExit("--checksum-day uses the legacy single-day --ann-snapshot only")
+        if a.ann_snapshot is None:
+            raise SystemExit("--checksum-day needs --ann-snapshot")
+        return a
+    if a.ann_snapshot is None and a.ann_root is None:
+        raise SystemExit(
+            "no ANN source: pass --ann-root for V2 daily partitions or use the "
+            "single-day --ann-snapshot checksum fixture"
+        )
+    if a.ann_root is not None:
+        if a.candidate_config is None:
+            raise SystemExit("--ann-root requires --candidate-config")
+        if a.scratch_root is None:
+            raise SystemExit("--ann-root requires --scratch-root")
+        if not a.ann_bundle_id or not a.ann_cohort_id:
+            raise SystemExit("--ann-root requires --ann-bundle-id and --ann-cohort-id")
+        if a.spine_type == "replay_day" and a.cohort is None:
+            raise SystemExit("replay_day --ann-root builds require --cohort")
+        v2_config = load_candidate_config(a.candidate_config)
+        a.n_repurchase = v2_config.depth("repurchase")
+        a.n_category = v2_config.depth("category_pop")
+        a.n_global_pop = v2_config.depth("global_pop")
+        a.n_covisit = v2_config.depth("covisit")
+        a.covisit_lookback = v2_config.raw["sources"]["covisit"]["lookback_days"]
+        a.covisit_max_basket = v2_config.raw["sources"]["covisit"]["max_basket"]
+        a.cadence = v2_config.raw["sources"]["covisit"]["cadence_days"]
+        a.recent_k = v2_config.recent_k
+        if a.ann_candidate_config_id not in (None, v2_config.candidate_config_id):
+            raise SystemExit("--ann-candidate-config-id conflicts with --candidate-config")
+        a.ann_candidate_config_id = v2_config.candidate_config_id
+        assert_large_output_path(a.out, a.scratch_root)
+    return a
+
+
 def main(argv=None) -> dict:
     from marketrank.spark import get_spark
 
-    a = parse_args(argv)
+    a = prepare_args(parse_args(argv))
     spark = get_spark("build_candidates", driver_memory=a.driver_memory)
     spark.conf.set("spark.sql.adaptive.enabled", "true")
     spark.conf.set("spark.sql.adaptive.skewJoin.enabled", "true")
@@ -463,28 +699,13 @@ def main(argv=None) -> dict:
     phase = CD.covisit_phase(spark)
     if a.ann_snapshot_day is None:
         a.ann_snapshot_day = phase
-    if a.pairs is None:
-        a.pairs = config.TABLES / "covisit_pairs"
-    if a.out is None:
-        a.out = config.TABLES / "candidates"
-    if a.checksum_out is None:
-        a.checksum_out = config.TABLES / "candidates_checksum"
-
     if a.checksum_day:
-        if a.ann_snapshot is None:
-            raise SystemExit("--checksum-day needs --ann-snapshot")
         return run_checksum(spark, a, phase)
 
     lo = CD.WARM_UP_DAYS if a.lo_day is None else a.lo_day
     hi = (phase - 1) if a.hi_day is None else a.hi_day
     assert_snapshot_single_day(lo, hi, a.ann_snapshot, a.ann_snapshot_day)
-    if a.ann_snapshot is None:
-        raise SystemExit(
-            "no ANN source: the per-day GPU stage is not written yet. Run "
-            "--checksum-day to gate the rest of the pipeline meanwhile."
-        )
 
-    content = content_of(a)
     anchors = CD.anchor_days_for(spark, lo, hi, a.cadence, phase)
     chunks = chunks_for(anchors, a.cadence, lo, hi, a.chunk_weeks)
     print(f"DAYS {lo}..{hi}  ANCHORS {len(anchors)}  "
@@ -501,17 +722,61 @@ def main(argv=None) -> dict:
         {"n_category": a.n_category}, ("n_category",), lo, hi, a.force)
 
     keys = [c["chunk"] for c in chunks]
-    todo, states = PT.plan(a.out, CHUNK_KEY, keys, content, CHUNK_CONTENT_ARGS,
-                           force=a.force)
+    manifests_by_day: dict[int, dict] = {}
+    if a.ann_root is not None:
+        requested_days = list(range(lo, hi + 1))
+        requested_dates = [
+            (_dt.date.fromisoformat(CD.ft.DAY_ZERO) + _dt.timedelta(days=day)).isoformat()
+            for day in requested_days
+        ]
+        manifests = validate_daily_ann_range(
+            a.ann_root,
+            requested_dates,
+            expected={
+                "bundle_id": a.ann_bundle_id,
+                "candidate_config_id": a.ann_candidate_config_id,
+                "cohort_id": a.ann_cohort_id,
+                "spine_type": a.spine_type,
+            },
+        )
+        manifests_by_day = {manifest["day_index"]: manifest for manifest in manifests}
+    content_by_chunk = {
+        ch["chunk"]: content_of(
+            a,
+            [manifests_by_day[day] for day in range(ch["lo"], ch["hi"] + 1)]
+            if manifests_by_day
+            else None,
+        )
+        for ch in chunks
+    }
+    todo = []
+    states = {}
+    for ch in chunks:
+        chunk_todo, chunk_states = PT.plan(
+            a.out,
+            CHUNK_KEY,
+            [ch["chunk"]],
+            content_by_chunk[ch["chunk"]],
+            CHUNK_CONTENT_ARGS,
+            force=a.force,
+        )
+        todo.extend(chunk_todo)
+        states.update(chunk_states)
     print(f"STATE ok={len(keys) - len(todo)} todo={len(todo)}")
 
     all_pairs = spark.read.parquet(str(a.pairs))
     _zero = _dt.date.fromisoformat(CD.ft.DAY_ZERO)
-    events_all = CD.scoring_events(
-        spark,
-        (_zero + _dt.timedelta(days=lo)).isoformat(),
-        (_zero + _dt.timedelta(days=hi)).isoformat(),
-    )
+    if a.ann_root is not None and a.spine_type == "replay_day":
+        cohort = spark.read.parquet(str(a.cohort))
+        events_all = build_replay_day_spine(spark, cohort, range(lo, hi + 1))
+    else:
+        events_all = build_active_day_spine(
+            CD.scoring_events(
+                spark,
+                (_zero + _dt.timedelta(days=lo)).isoformat(),
+                (_zero + _dt.timedelta(days=hi)).isoformat(),
+            )
+        )
 
     for ch in chunks:
         if ch["chunk"] not in todo:
@@ -523,8 +788,29 @@ def main(argv=None) -> dict:
             F.col("day_index").between(ch["lo"], ch["hi"])
         ).cache()
         pairs = all_pairs.filter(F.col("anchor_day").isin(ch["anchors"]))
+        ann_meta = None
+        if a.ann_root is not None:
+            ann, ann_meta = load_ann_root_for_days(
+                spark,
+                a.ann_root,
+                list(range(ch["lo"], ch["hi"] + 1)),
+                bundle_id=a.ann_bundle_id,
+                candidate_config_id=a.ann_candidate_config_id,
+                cohort_id=a.ann_cohort_id,
+                spine_type=a.spine_type,
+                expected_partition_checksums={
+                    manifests_by_day[day]["scoring_date"]: manifests_by_day[day]["partition_checksum"]
+                    for day in range(ch["lo"], ch["hi"] + 1)
+                },
+            )
+        else:
+            ann, snapshot_meta = load_ann_snapshot(
+                spark, a.ann_snapshot, a.ann_snapshot_day, strict=False
+            )
+            ann_meta = [snapshot_meta]
+        ann = assert_ann_matches_spine(ann, events)
         sources = build_sources(
-            spark, events, pairs, phase=phase, cadence=a.cadence, ann=None,
+            spark, events, pairs, phase=phase, cadence=a.cadence, ann=ann,
             n_repurchase=a.n_repurchase, n_category=a.n_category,
             n_global_pop=a.n_global_pop, n_covisit=a.n_covisit,
             recent_k=a.recent_k, covisit_lookback=a.covisit_lookback,
@@ -534,13 +820,31 @@ def main(argv=None) -> dict:
         names = source_names(sources)
         # The write is the action that truncates the lineage -- that, not the
         # loop itself, is what bounds plan size and peak shuffle.
-        write_chunk(spark, a.out, ch, union_daily(sources, names), content)
+        union = (
+            union_daily_v2(sources, names, spine_type=a.spine_type)
+            if a.ann_root is not None
+            else union_daily(sources, names)
+        )
+        write_chunk(
+            spark,
+            a.out,
+            ch,
+            union,
+            content_by_chunk[ch["chunk"]],
+            extra={"ann_partitions": ann_meta},
+        )
         events.unpersist()
 
+    run_content = content_of(
+        a,
+        [manifests_by_day[day] for day in sorted(manifests_by_day)]
+        if manifests_by_day
+        else None,
+    )
     run = PT.derive_run_meta(a.out, CHUNK_KEY, keys, extra={
         "day_range": [lo, hi], "chunk_weeks": a.chunk_weeks,
         "cadence": a.cadence, "phase": phase,
-        "warm_up_days": CD.WARM_UP_DAYS, "args": content,
+        "warm_up_days": CD.WARM_UP_DAYS, "args": run_content,
         "sources": list(SOURCE_ORDER),
     })
     print(f"TOTAL chunks {len(keys)}  rows {run['total_rows']}  "

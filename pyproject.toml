@@ -1,7 +1,7 @@
 [project]
 name = "marketrank"
 version = "0.1.0"
-requires-python = ">=3.11"
+requires-python = ">=3.11,<3.12"
 
 # pyspark is a hard dependency, not a dev extra: get_spark() is library code.
 # The version is pinned exactly because config.py's Iceberg runtime jar
@@ -13,20 +13,51 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-# CI and the laptop install ".[dev]"; misha installs "." (no dbt, no pytest).
+# V2 uses exact batched inner-product retrieval. hnswlib is deliberately absent;
+# adding approximate search requires a new design review and agreement test.
+retrieval = [
+    "torch==2.13.0",
+    "numpy==2.4.6",
+    "pyarrow==25.0.1",
+]
+
+ranking = [
+    "lightgbm==4.7.0",
+    "numpy==2.4.6",
+    "scikit-learn==1.9.0",
+    "pyarrow==25.0.1",
+    "joblib==1.5.3",
+    "PyYAML==6.0.3",
+]
+
+service = [
+    "fastapi==0.141.1",
+    "uvicorn[standard]==0.52.4",
+    "duckdb==1.5.5",
+    "pydantic==2.13.4",
+    "httpx==0.28.1",
+]
+
+# CI and the laptop install ".[dev]"; misha installs the groups its job needs.
+# Keep direct development requirements exact; uv.lock freezes transitives.
 dev = [
-    "dbt-spark[session]",
-    "dbt-duckdb",
-    "pytest",
-    "jsonschema",
-    # week 3 onward
-    "torch",
-    "lightgbm",
-    "hnswlib",
-    "numpy",
-    "scikit-learn",
-    "matplotlib",
-    "pyarrow",
+    "dbt-spark[session]==1.11.0",
+    "dbt-duckdb==1.11.0",
+    "pytest==9.1.1",
+    "jsonschema==4.26.0",
+    "torch==2.13.0",
+    "lightgbm==4.7.0",
+    "numpy==2.4.6",
+    "scikit-learn==1.9.0",
+    "matplotlib==3.11.1",
+    "pyarrow==25.0.1",
+    "joblib==1.5.3",
+    "PyYAML==6.0.3",
+    "fastapi==0.141.1",
+    "uvicorn[standard]==0.52.4",
+    "duckdb==1.5.5",
+    "pydantic==2.13.4",
+    "httpx==0.28.1",
 ]
 
 [build-system]
