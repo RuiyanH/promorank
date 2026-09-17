@@ -28,6 +28,9 @@ def run(root: Path):
     results = {}
     for split in ("test", "holdout"):
         table, groups, provenance = load_frames(root / split, split)
+        expected=manifest["frame_provenance"]["val_tune"][0]
+        for field in ("bundle_manifest_sha256","candidate_config_id","builder_source_sha256"):
+            if expected[field]!=provenance[0][field]:raise ValueError("evaluation pipeline differs from frozen model")
         x = feature_matrix(table)
         margin = model.predict(x, raw_score=True, num_threads=4)
         model_report, model_groups = evaluate(table, margin, groups)

@@ -14,6 +14,7 @@ from marketrank.ranking.model import train_ranker
 
 def load_frames(root: Path, split: str):
     frames, groups, provenance = [], [], []
+    identities=set()
     manifests = sorted(root.glob("*/manifest.json"))
     if not manifests:
         raise ValueError("no complete frame partitions")
@@ -30,9 +31,20 @@ def load_frames(root: Path, split: str):
         for name in ("frame.parquet", "groups.parquet"):
             if sha256(path.parent / name) != manifest["files"][name]:
                 raise ValueError("frame artifact checksum mismatch")
-        frames.append(pq.read_table(path.parent / "frame.parquet"))
-        groups.append(pq.read_table(path.parent / "groups.parquet"))
-        provenance.append({"manifest_sha256": sha256(path), "date": manifest["dates"][0]})
+        frame=pq.read_table(path.parent / "frame.parquet")
+        spine=pq.read_table(path.parent / "groups.parquet")
+        if len(frame)!=manifest["frame_rows"] or len(spine)!=manifest["groups"] or sum(frame["label"].to_pylist())!=manifest["positive_rows"]:
+            raise ValueError("physical frame counts or positive retention mismatch")
+        if split!="ranker_fit" and len(frame)!=manifest["candidate_rows"]:
+            raise ValueError("later splits must retain all candidates")
+        identity=manifest["identity"]
+        fields=("bundle_manifest_sha256","candidate_config_id","builder_source_sha256")
+        identities.add(tuple(identity[f] for f in fields))
+        frames.append(frame)
+        groups.append(spine)
+        provenance.append({"manifest_sha256": sha256(path), "date": manifest["dates"][0], **{f:identity[f] for f in fields}})
+    if len(identities)!=1:
+        raise ValueError("mixed candidate pipelines or retrievers within split")
     return pa.concat_tables(frames), pa.concat_tables(groups), provenance
 
 
@@ -45,6 +57,9 @@ def main(argv=None):
     a = p.parse_args(argv)
     fit, _, fit_provenance = load_frames(a.fit, "ranker_fit")
     tune, groups, tune_provenance = load_frames(a.tune, "val_tune")
+    for field in ("bundle_manifest_sha256","candidate_config_id","builder_source_sha256"):
+        if fit_provenance[0][field]!=tune_provenance[0][field]:
+            raise ValueError("fit and tune must use the same candidate pipeline")
     manifest = train_ranker(fit, tune, groups, a.out, threads=a.threads)
     manifest["frame_provenance"] = {"ranker_fit": fit_provenance, "val_tune": tune_provenance}
     write_json(a.out / "manifest.json", manifest)

@@ -31,6 +31,9 @@ def run(root: Path, output: Path, release_id: str):
         manifest=json.loads((partition/"manifest.json").read_text())
         if manifest["spine_type"]!="replay_day" or manifest["groups"]!=20000 or manifest["features"]!=list(FEATURES):
             raise ValueError("replay requires the complete frozen cohort and feature contract")
+        expected=meta["frame_provenance"]["val_tune"][0]
+        for field in ("bundle_manifest_sha256","candidate_config_id","builder_source_sha256"):
+            if manifest["identity"][field]!=expected[field]:raise ValueError("replay pipeline differs from frozen model")
         for name,digest in manifest["files"].items():
             if sha256(partition/name)!=digest:raise ValueError("replay input checksum mismatch")
         table=pq.read_table(partition/"frame.parquet")

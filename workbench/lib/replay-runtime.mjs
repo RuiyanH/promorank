@@ -85,7 +85,12 @@ export function serverReplayMode() { return false; }
 
 export async function requestReplay(path, signal) {
   // This adapter is deliberately local until a private hosted API is verified.
-  const response = await fetch(`http://127.0.0.1:8070${path}`, { signal, cache: "no-store" });
+  let response;
+  try { response=await fetch(`http://127.0.0.1:8070${path}`, { signal, cache: "no-store" }); }
+  catch(error) {
+    if(error?.name==="AbortError") throw new Error("The historical service took too long to respond. Please retry.");
+    throw new Error("The local historical replay service is unavailable. Start the service and retry.");
+  }
   if (!response.ok) throw new Error(response.status === 404 ? "This historical customer or release was not found." : "The historical replay service is unavailable. Start the local service and retry.");
   try { return await response.json(); } catch { throw new Error("The historical service returned unreadable data."); }
 }
