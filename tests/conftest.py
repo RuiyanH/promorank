@@ -1,4 +1,16 @@
+import os
+import tempfile
+from pathlib import Path
+
 import pytest
+
+# Tests own their catalog and spill directory. In particular they must never
+# write to (or depend on a mount for) the developer's real Iceberg warehouse.
+_test_runtime = tempfile.TemporaryDirectory(prefix="marketrank-pytest-")
+_test_root = Path(_test_runtime.name)
+os.environ["MARKETRANK_WAREHOUSE"] = str(_test_root / "warehouse")
+os.environ["MARKETRANK_SPARK_TMP"] = str(_test_root / "spill")
+os.environ["SPARK_CONF_DIR"] = str(_test_root / "conf")
 
 # Importing marketrank.config is what sets SPARK_CONF_DIR and renders
 # conf/spark-defaults.conf, which is where the Iceberg catalog is defined. It

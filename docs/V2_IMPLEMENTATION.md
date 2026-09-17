@@ -2,9 +2,15 @@
 
 **Depends on:** `docs/V2_DESIGN.md`
 
-**Document state:** A0 independently approved for component integration; G0b and full fan-out remain `NO-GO`
+**Document state:** A0 integrated; project owner authorized V2 execution on 2026-09-16.
+Current results and deviations: [V2_EXECUTION.md](V2_EXECUTION.md).
 
-**Execution rule:** The independent manager conditionally authorized only foundation Slice A0 after G0a. Full Slices A/B/C require accepted G0b evidence; Slice D additionally requires the API-fixture hash gate. Slice owners stop at component completion; the project owner handles integration, final verification, promotion, and publication.
+**Execution rule:** The project owner handles implementation, pilot acceptance,
+integration and verification under the user's 2026-09-16 authorization. Component
+work may proceed while compute is pending, but full real-data compute and release
+claims remain gated by the measured evidence below. Historical authorization
+statements later in this document describe the original A0 handoff, not a current
+requirement to ask the user again. Independent review must remain independent.
 
 ## 1. Delivery strategy
 

@@ -1,9 +1,14 @@
 # marketrank
 
-Retail personalization + promotion allocation on the H&M Personalized Fashion
-Recommendations dataset: an Iceberg/dbt lakehouse, a point-in-time-correct Spark
-feature pipeline, two-stage retrieval and ranking, a budget-constrained pricing
-decision, and off-policy evaluation of that decision.
+Historical retail personalization on the H&M Personalized Fashion Recommendations
+dataset: an Iceberg/dbt lakehouse, leakage-tested behavioral features, five-source
+candidate retrieval, and an internal candidate exploration workbench. V2 adds a
+trained ranker and historical replay service; its implementation and verification
+status are recorded in [`docs/V2_EXECUTION.md`](docs/V2_EXECUTION.md).
+
+Promotion optimization and off-policy evaluation are outside V2. Current-state
+customer dimensions are not historically dated and are excluded from its primary
+model path. Offline measurements do not establish live quality or business uplift.
 
 Build log with every measured number: [`BUILD_NOTES.md`](BUILD_NOTES.md).
 
