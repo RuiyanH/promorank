@@ -34,11 +34,12 @@ review and the five-person usability study cannot be self-certified by the build
 
 ## Verification status
 
-The measured real-data pilot and development-frame builds are complete. The
-eight-configuration model-selection run is in progress; final evaluation and
-real-release operational verification remain pending. Synthetic UI/API checks
-are complete, separately from real-data evidence. Later sections preserve the
-sequence of earlier checks and superseded pilot measurements.
+The measured pilot, full development/final frames, eight-configuration model
+selection, calibration and frozen final evaluation are complete. Both offline
+quality gates pass. Both 20,000-customer replay frames are complete; immutable
+packaging and real-release operational verification are in progress. Synthetic
+UI/API checks are complete, separately from real-data evidence. Later sections
+preserve the sequence of earlier checks and superseded pilot measurements.
 
 ## Execution adaptation and measured pilot
 
@@ -155,3 +156,46 @@ after a crash. Synthetic recovery and idempotence tests pass. API documentation
 does not load third-party CDN scripts on the private origin. A `verified` status
 is rejected unless offline, technical, independent and five-user acceptances
 are all present; this run does not invent those external acceptances.
+
+## Frozen final evaluation
+
+All eight configurations completed. The selected model is
+`leaves31_lr0.03_min200`, with 1,993 boosting rounds, fit on 2,851,225 sampled
+candidate rows. The training spine contains 361,245 active customer-days,
+244,760 customers and 1,094,127 distinct truth positives; 135,540 retrieved
+positives are retained in the sampled frame. Calibration uses 704,199 unsampled
+rows and 2,071 positives, with one prior-odds correction.
+
+The running environment was reconciled to the frozen lock after training ended.
+The original development source sidecar was preserved in the freeze before the
+store was extended. Freeze SHA-256:
+`abbf7461f9dc613a439be825adb84c498522b6bfd330a480c33d8762268da929`.
+The later export binds that freeze and the original transaction snapshot; it
+contains 31,788,324 rows through 2020-09-22. No final-slice retuning occurred.
+
+| Final slice | Ranker NDCG@12 | RRF NDCG@12 | Relative change | Paired absolute-delta 95% interval | Gate |
+|---|---:|---:|---:|---|---|
+| Test Sep 9–15 | 0.0733463 | 0.0233907 | +213.57% | [0.0437199, 0.0563139] | Pass |
+| Holdout Sep 16–22 | 0.0697404 | 0.0215482 | +223.65% | [0.0424626, 0.0542958] | Pass |
+
+These are end-to-end, observed-active-day metrics, not live quality or business
+uplift. Test covers 3,478 active days from 2,880 customers; holdout covers 3,410
+days from 2,850 customers. Both pass observed-segment, coverage and concentration
+rules. Only low/high activity segments are present: cohort membership requires
+val_tune purchases, so no final customer is cold under the 90-day definition.
+Cold-start quality is therefore unvalidated, not implicitly passed.
+The complete records are `artifacts/v2/quality-report.json` and
+`artifacts/v2/model-card.json`.
+
+Retrieval remains the principal limit: candidate recall ceilings are 16.42% and
+17.13%. Isotonic calibration improves held-out ECE, but slightly worsens Brier
+on both slices and log loss on holdout. It remains an offline diagnostic and is
+not served as a purchase probability.
+
+The physical audit reconciles 455 files across 65 partitions, including both
+full-cohort replay anchors (6,476,952 candidates, no outcome labels). The global
+`ope_env` context-only read audit records 264,657 rows; no labels or fitting rows
+come from that slice. Daily manifests separately count personalized-spine context.
+
+Clean GitHub run `35174124558` on `66be130` passed 194 Python tests (Spark included),
+19 dbt checks, 22 workbench tests, production build, lint and TypeScript checking.

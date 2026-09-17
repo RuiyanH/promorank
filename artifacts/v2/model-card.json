@@ -1,0 +1,202 @@
+{
+  "schema_version": "marketrank-model-card.v2",
+  "release_id": "v2_candidate_20260916",
+  "status": "candidate",
+  "intended_use": "Private historical retail personalization replay; not live recommendations or business-impact estimation",
+  "dataset": {
+    "name": "H&M Personalized Fashion Recommendations",
+    "transaction_snapshot": "5931284054021401369",
+    "source_transactions": 31788324,
+    "product_cohort_customers": 20000,
+    "cohort_sorted_id_sha256": "6c49cf25819dd75c1f8c2d03d196ffcb2f248bd69538c62c28a728b921381fcf"
+  },
+  "retrieval": {
+    "architecture": "64-dimensional two-tower, exact float32 inner-product search",
+    "training_customers": 100000,
+    "selection_customers": 10000,
+    "training_positive_rows": 1680131,
+    "selection_rows": 4108,
+    "fitted_articles": 95909,
+    "selection_recall_at_100": 0.031888997078870496,
+    "fit_dates": [
+      "2018-12-19",
+      "2020-06-30"
+    ],
+    "selection_dates": [
+      "2020-07-01",
+      "2020-07-14"
+    ],
+    "sources": {
+      "repurchase": 30,
+      "category_pop": 40,
+      "global_pop": 40,
+      "covisit": 40,
+      "ann": 50
+    }
+  },
+  "training": {
+    "objective": "unweighted LightGBM binary classification over candidate rows",
+    "fit_dates": [
+      "2020-07-15",
+      "2020-08-11"
+    ],
+    "active_customer_days": 361245,
+    "customers": 244760,
+    "truth_positives": 1094127,
+    "union_candidate_rows": 54424918,
+    "sampled_frame_rows": 2851225,
+    "retained_candidate_positives": 135540,
+    "negative_retention_probability": 0.05,
+    "sample_weights": false,
+    "features": [
+      "repurchase_rank",
+      "category_pop_rank",
+      "global_pop_rank",
+      "covisit_rank",
+      "ann_rank",
+      "source_count",
+      "purchase_count_7d",
+      "purchase_count_30d",
+      "purchase_count_90d",
+      "days_since_last_purchase",
+      "article_count_7d",
+      "article_count_30d",
+      "article_trailing_price",
+      "article_trailing_price_missing",
+      "customer_trailing_price",
+      "customer_trailing_price_missing",
+      "price_ratio",
+      "product_type_no",
+      "customer_category_count_90d",
+      "customer_article_count_90d",
+      "customer_article_recency"
+    ],
+    "seed": 20260903,
+    "selection_dates": [
+      "2020-08-12",
+      "2020-08-25"
+    ],
+    "selection_rows": 3715398,
+    "selection_rule": "end-to-end NDCG@12, then candidate-conditional NDCG@12, fewer leaves, configuration ID",
+    "configurations": [
+      {
+        "configuration_id": "leaves31_lr0.03_min200",
+        "num_leaves": 31,
+        "learning_rate": 0.03,
+        "min_data_in_leaf": 200,
+        "best_iteration": 1993,
+        "val_tune_end_to_end_ndcg_at_12": 0.055678281597460834
+      },
+      {
+        "configuration_id": "leaves31_lr0.03_min1000",
+        "num_leaves": 31,
+        "learning_rate": 0.03,
+        "min_data_in_leaf": 1000,
+        "best_iteration": 1769,
+        "val_tune_end_to_end_ndcg_at_12": 0.05543190437241957
+      },
+      {
+        "configuration_id": "leaves31_lr0.05_min200",
+        "num_leaves": 31,
+        "learning_rate": 0.05,
+        "min_data_in_leaf": 200,
+        "best_iteration": 1997,
+        "val_tune_end_to_end_ndcg_at_12": 0.0552912199818124
+      },
+      {
+        "configuration_id": "leaves31_lr0.05_min1000",
+        "num_leaves": 31,
+        "learning_rate": 0.05,
+        "min_data_in_leaf": 1000,
+        "best_iteration": 1266,
+        "val_tune_end_to_end_ndcg_at_12": 0.05546198650108849
+      },
+      {
+        "configuration_id": "leaves63_lr0.03_min200",
+        "num_leaves": 63,
+        "learning_rate": 0.03,
+        "min_data_in_leaf": 200,
+        "best_iteration": 2000,
+        "val_tune_end_to_end_ndcg_at_12": 0.05561348184551399
+      },
+      {
+        "configuration_id": "leaves63_lr0.03_min1000",
+        "num_leaves": 63,
+        "learning_rate": 0.03,
+        "min_data_in_leaf": 1000,
+        "best_iteration": 1506,
+        "val_tune_end_to_end_ndcg_at_12": 0.05545957685384679
+      },
+      {
+        "configuration_id": "leaves63_lr0.05_min200",
+        "num_leaves": 63,
+        "learning_rate": 0.05,
+        "min_data_in_leaf": 200,
+        "best_iteration": 1272,
+        "val_tune_end_to_end_ndcg_at_12": 0.05539575725307175
+      },
+      {
+        "configuration_id": "leaves63_lr0.05_min1000",
+        "num_leaves": 63,
+        "learning_rate": 0.05,
+        "min_data_in_leaf": 1000,
+        "best_iteration": 650,
+        "val_tune_end_to_end_ndcg_at_12": 0.05555003072444613
+      }
+    ],
+    "selected_configuration": "leaves31_lr0.03_min200",
+    "selected_model_sha256": "9c777e66c457162e721d2af89ddcfd1cd6f35763c291aee88cf786b04696ed58",
+    "model_available_after": "2020-08-25"
+  },
+  "calibration": {
+    "fit_dates": [
+      "2020-08-26",
+      "2020-09-01"
+    ],
+    "rows": 704199,
+    "positives": 2071,
+    "method": "isotonic; out-of-bounds clip; 15 equal-frequency diagnostic bins",
+    "odds_correction_count": 1,
+    "calibrator_available_after": "2020-09-01",
+    "calibrator_sha256": "cbbdd64bba74d12eb23d38047d55aeeb018b2f4149c4624eb6aced8777d9bedb",
+    "interpretation": "Offline candidate-incidence diagnostic only. Held-out ECE improved, but Brier slightly worsened on both periods and holdout log loss worsened. No calibrated probability is served."
+  },
+  "evaluation": {
+    "report": "quality-report.json",
+    "evaluation_freeze_sha256": "abbf7461f9dc613a439be825adb84c498522b6bfd330a480c33d8762268da929",
+    "quality_gate_passed": true,
+    "conditioning": "Observed active customer-days in the fixed cohort; unreachable purchases remain in end-to-end denominators",
+    "bootstrap": "2000 paired customer-cluster replicates, seed 20260903, 95% percentile interval",
+    "no_final_slice_retuning": true,
+    "independent_review": "pending",
+    "human_usability": "pending"
+  },
+  "provenance": {
+    "training_code_revision": "96f2ca2d3eb82c5ea0819d5fc7de48e16862f702",
+    "training_provenance_status": "recorded_after_launch_from_process_and_git_evidence",
+    "evaluation_code_revision": "66be1304775f2511b776716dffe4623d4fc6ac3d",
+    "dependency_lock_sha256": "3ca01df575c49a9f6f1278b5cd3b1104ead8986424c2d64de13112b683aad5c9",
+    "core_versions": {
+      "torch": "2.13.0",
+      "lightgbm": "4.7.0",
+      "numpy": "2.4.6",
+      "pyarrow": "25.0.1",
+      "duckdb": "1.5.5",
+      "scikit-learn": "1.9.0",
+      "joblib": "1.5.3",
+      "scipy": "1.17.1"
+    },
+    "environment_note": "Core ML versions matched the lock during training; auxiliary developer packages differed. Training launch evidence is preserved. Evaluation and serving use the reconciled frozen environment.",
+    "evaluator_note": "Later vectorized evaluator is numerically identical to the launch evaluator on a 5400-row tied-score parity fixture, including unreachable groups; training objective and model parameters are unchanged."
+  },
+  "limitations": [
+    "Only 2880 test and 2850 holdout customers had observed active days; product replay covers all 20000 customers, but inactive-day relevance is not evaluated.",
+    "There are no cold-segment customers in final evaluation because the fixed cohort purchased during val_tune. Final segment guardrails cover observed low/high activity only; cold-start quality is not validated.",
+    "Candidate recall ceilings are 16.42% on test and 17.13% on holdout. Retrieval remains the principal end-to-end limit.",
+    "Retriever uses a declared 100000-customer train-only subset, not the full transaction population.",
+    "Date-only events require all same-day context to be excluded. First observed purchase is an eligibility proxy, not real inventory availability.",
+    "Nonpurchases are implicit candidate negatives, not observed dislikes. Static article attributes are not historical inventory snapshots.",
+    "Large relative gains are versus the fixed RRF comparator, not every possible recommender or a live experiment.",
+    "Independent final review and five real unassisted users remain required. No public full-cohort deployment or production SLO is claimed."
+  ]
+}

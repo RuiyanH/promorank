@@ -1,0 +1,743 @@
+{
+  "completed_at_utc": "2026-09-17T02:27:33.646540+00:00",
+  "evaluation_freeze_sha256": "abbf7461f9dc613a439be825adb84c498522b6bfd330a480c33d8762268da929",
+  "holdout": {
+    "bootstrap": {
+      "ci95": [
+        0.042462578288214925,
+        0.05429581214073532
+      ],
+      "clusters": 2850,
+      "method": "paired_customer_cluster_percentile",
+      "point_delta": 0.048192172329957074,
+      "replicates": 2000,
+      "seed": 20260903
+    },
+    "calibration_after": {
+      "bins": [
+        {
+          "observed": 0.00005372011818426001,
+          "predicted": 1.0000000000000001e-7,
+          "rows": 37230
+        },
+        {
+          "observed": 0.00008058017727639001,
+          "predicted": 0.00010890377245278888,
+          "rows": 37230
+        },
+        {
+          "observed": 0.00048348106365834006,
+          "predicted": 0.00019908181429126299,
+          "rows": 37230
+        },
+        {
+          "observed": 0.00037604082728982005,
+          "predicted": 0.0003985507595183818,
+          "rows": 37230
+        },
+        {
+          "observed": 0.0009401020682245501,
+          "predicted": 0.0006043575031751125,
+          "rows": 37230
+        },
+        {
+          "observed": 0.0008595218909481601,
+          "predicted": 0.0008026976275574818,
+          "rows": 37230
+        },
+        {
+          "observed": 0.0014504431909750201,
+          "predicted": 0.0009233207853930756,
+          "rows": 37230
+        },
+        {
+          "observed": 0.0018264840182648401,
+          "predicted": 0.0010802573764582654,
+          "rows": 37230
+        },
+        {
+          "observed": 0.0019339242546333602,
+          "predicted": 0.001391954804584286,
+          "rows": 37230
+        },
+        {
+          "observed": 0.0019876443728176203,
+          "predicted": 0.0015286595775543673,
+          "rows": 37230
+        },
+        {
+          "observed": 0.0018533440773569703,
+          "predicted": 0.0019008919937810382,
+          "rows": 37230
+        },
+        {
+          "observed": 0.0029546065001343,
+          "predicted": 0.0026068395714063464,
+          "rows": 37230
+        },
+        {
+          "observed": 0.003411319132934003,
+          "predicted": 0.003172234784626694,
+          "rows": 37229
+        },
+        {
+          "observed": 0.00515726987026243,
+          "predicted": 0.004134332263827215,
+          "rows": 37229
+        },
+        {
+          "observed": 0.018507077815681325,
+          "predicted": 0.0164766951941574,
+          "rows": 37229
+        }
+      ],
+      "brier": 0.0027287258233643498,
+      "conditioning": "observed_active_customer_day_and_candidate_inclusion",
+      "ece_15_equal_frequency": 0.00044955948192780033,
+      "log_loss": 0.016677647514069676,
+      "positives": 1559,
+      "rows": 558447
+    },
+    "calibration_before": {
+      "bins": [
+        {
+          "observed": 0.000026860059092130003,
+          "predicted": 0.000016141286667343628,
+          "rows": 37230
+        },
+        {
+          "observed": 0.00010744023636852001,
+          "predicted": 0.00011585033060954611,
+          "rows": 37230
+        },
+        {
+          "observed": 0.00048348106365834006,
+          "predicted": 0.00028504083161865623,
+          "rows": 37230
+        },
+        {
+          "observed": 0.00037604082728982005,
+          "predicted": 0.0004618371217336112,
+          "rows": 37230
+        },
+        {
+          "observed": 0.0009132420091324201,
+          "predicted": 0.0006330066781051395,
+          "rows": 37230
+        },
+        {
+          "observed": 0.0008058017727639,
+          "predicted": 0.0007843273904850244,
+          "rows": 37230
+        },
+        {
+          "observed": 0.00147730325006715,
+          "predicted": 0.0009279110794108104,
+          "rows": 37230
+        },
+        {
+          "observed": 0.0018802041364491002,
+          "predicted": 0.0010772074619645028,
+          "rows": 37230
+        },
+        {
+          "observed": 0.0018533440773569703,
+          "predicted": 0.001246656621457042,
+          "rows": 37230
+        },
+        {
+          "observed": 0.0017459038409884501,
+          "predicted": 0.0014545844165643111,
+          "rows": 37230
+        },
+        {
+          "observed": 0.00236368520010744,
+          "predicted": 0.001737723179055349,
+          "rows": 37230
+        },
+        {
+          "observed": 0.00271286596830513,
+          "predicted": 0.00216336428692249,
+          "rows": 37230
+        },
+        {
+          "observed": 0.0038948131832711058,
+          "predicted": 0.0028453820680583615,
+          "rows": 37229
+        },
+        {
+          "observed": 0.004405168014182492,
+          "predicted": 0.0042076142241835235,
+          "rows": 37229
+        },
+        {
+          "observed": 0.018829407182572727,
+          "predicted": 0.016125797874764848,
+          "rows": 37229
+        }
+      ],
+      "brier": 0.002728363264861064,
+      "conditioning": "observed_active_customer_day_and_candidate_inclusion",
+      "ece_15_equal_frequency": 0.0005320977007138541,
+      "log_loss": 0.016633930640848043,
+      "positives": 1559,
+      "rows": 558447
+    },
+    "frame_provenance": [
+      {
+        "builder_source_sha256": "9422f03debb7160b7cbba02cf600a66ddd0aa8731190adfb23896f490fa0e8e5",
+        "bundle_manifest_sha256": "84aa290619e506deee7acfb3b7ad4d9379d73d7d37712a47305b1c0ce7cdcbac",
+        "candidate_config_id": "v2-five-source-30-40-40-40-50",
+        "date": "2020-09-16",
+        "manifest_sha256": "5a26cd0aa180d1cc8b905fb38d2907d76a7046812d419b15c69a8cd001e1b141"
+      },
+      {
+        "builder_source_sha256": "9422f03debb7160b7cbba02cf600a66ddd0aa8731190adfb23896f490fa0e8e5",
+        "bundle_manifest_sha256": "84aa290619e506deee7acfb3b7ad4d9379d73d7d37712a47305b1c0ce7cdcbac",
+        "candidate_config_id": "v2-five-source-30-40-40-40-50",
+        "date": "2020-09-17",
+        "manifest_sha256": "8fb33ecad034d7cd14f1a4b6e41009dbad4d522949462ed101465a84fbd55f2f"
+      },
+      {
+        "builder_source_sha256": "9422f03debb7160b7cbba02cf600a66ddd0aa8731190adfb23896f490fa0e8e5",
+        "bundle_manifest_sha256": "84aa290619e506deee7acfb3b7ad4d9379d73d7d37712a47305b1c0ce7cdcbac",
+        "candidate_config_id": "v2-five-source-30-40-40-40-50",
+        "date": "2020-09-18",
+        "manifest_sha256": "e6a6da0e3154df89eefc1961df73bc3e520b17e7f6df362e0bf19cb8ae2e8a9b"
+      },
+      {
+        "builder_source_sha256": "9422f03debb7160b7cbba02cf600a66ddd0aa8731190adfb23896f490fa0e8e5",
+        "bundle_manifest_sha256": "84aa290619e506deee7acfb3b7ad4d9379d73d7d37712a47305b1c0ce7cdcbac",
+        "candidate_config_id": "v2-five-source-30-40-40-40-50",
+        "date": "2020-09-19",
+        "manifest_sha256": "b7b64a9161c29c8ae65de0cabc5cb145bf7fca2a6ff03e03da403b59e8da19b9"
+      },
+      {
+        "builder_source_sha256": "9422f03debb7160b7cbba02cf600a66ddd0aa8731190adfb23896f490fa0e8e5",
+        "bundle_manifest_sha256": "84aa290619e506deee7acfb3b7ad4d9379d73d7d37712a47305b1c0ce7cdcbac",
+        "candidate_config_id": "v2-five-source-30-40-40-40-50",
+        "date": "2020-09-20",
+        "manifest_sha256": "68011bbe504d6324e0fbd1dadf39afb08a3f24a74c558548cbc3613b7429b742"
+      },
+      {
+        "builder_source_sha256": "9422f03debb7160b7cbba02cf600a66ddd0aa8731190adfb23896f490fa0e8e5",
+        "bundle_manifest_sha256": "84aa290619e506deee7acfb3b7ad4d9379d73d7d37712a47305b1c0ce7cdcbac",
+        "candidate_config_id": "v2-five-source-30-40-40-40-50",
+        "date": "2020-09-21",
+        "manifest_sha256": "39b3c03bc108c454775cf20c03a09047576f0cf5d05a2d1fcbe7a2f380a74a2b"
+      },
+      {
+        "builder_source_sha256": "9422f03debb7160b7cbba02cf600a66ddd0aa8731190adfb23896f490fa0e8e5",
+        "bundle_manifest_sha256": "84aa290619e506deee7acfb3b7ad4d9379d73d7d37712a47305b1c0ce7cdcbac",
+        "candidate_config_id": "v2-five-source-30-40-40-40-50",
+        "date": "2020-09-22",
+        "manifest_sha256": "d781d5e2613c5c70b5dd927a0a9cb04ab19333e6ba1c853866e04baed891be97"
+      }
+    ],
+    "model": {
+      "active_day_candidate_conditional_map_at_12": 0.20610055531654908,
+      "active_day_candidate_conditional_ndcg_at_12": 0.2682383707666053,
+      "active_day_candidate_conditional_precision_at_12": 0.04840579710144927,
+      "active_day_candidate_conditional_recall_at_12": 0.4363260869565217,
+      "active_day_end_to_end_map_at_12": 0.050800378188391386,
+      "active_day_end_to_end_ndcg_at_12": 0.06974039646640727,
+      "active_day_end_to_end_precision_at_12": 0.016324535679374388,
+      "active_day_end_to_end_recall_at_12": 0.09943186957403455,
+      "activity_segments": {
+        "high": {
+          "groups": 2784,
+          "ndcg_at_12": 0.07378510079983795
+        },
+        "low": {
+          "groups": 626,
+          "ndcg_at_12": 0.05175244620399353
+        }
+      },
+      "candidate_count_segments": {
+        "100_to_149": {
+          "groups": 643,
+          "ndcg_at_12": 0.035912200507838735
+        },
+        "150_plus": {
+          "groups": 2767,
+          "ndcg_at_12": 0.07760144814741905
+        }
+      },
+      "candidate_recall_ceiling": 0.17126222124574317,
+      "candidate_rows": 558447,
+      "catalog_coverage": 0.22180115916183682,
+      "coverage_denominator": "union_candidate_catalog",
+      "customers": 2850,
+      "groups": 3410,
+      "positive_count": 9103,
+      "reachable_groups": 1150,
+      "reachable_positives": 1559,
+      "source_contribution": {
+        "ann": {
+          "candidate_memberships": 170500,
+          "reachable_positive_memberships": 148
+        },
+        "category_pop": {
+          "candidate_memberships": 136349,
+          "reachable_positive_memberships": 330
+        },
+        "covisit": {
+          "candidate_memberships": 102976,
+          "reachable_positive_memberships": 585
+        },
+        "global_pop": {
+          "candidate_memberships": 136400,
+          "reachable_positive_memberships": 385
+        },
+        "repurchase": {
+          "candidate_memberships": 92754,
+          "reachable_positive_memberships": 600
+        }
+      },
+      "source_contribution_note": "Overlapping memberships; source counts are not additive or causal attribution.",
+      "spine_type": "active_day",
+      "top_one_percent_concentration": 0.4820136852394917
+    },
+    "promotion_gate": {
+      "absolute_ndcg_delta": 0.04819217232995707,
+      "failed_rules": [],
+      "passed": true
+    },
+    "rrf": {
+      "active_day_candidate_conditional_map_at_12": 0.053156150009410874,
+      "active_day_candidate_conditional_ndcg_at_12": 0.08813093311724442,
+      "active_day_candidate_conditional_precision_at_12": 0.020652173913043477,
+      "active_day_candidate_conditional_recall_at_12": 0.18435300207039335,
+      "active_day_end_to_end_map_at_12": 0.01172912725918591,
+      "active_day_end_to_end_ndcg_at_12": 0.021548224136450207,
+      "active_day_end_to_end_precision_at_12": 0.006964809384164223,
+      "active_day_end_to_end_recall_at_12": 0.039974958244752966,
+      "activity_segments": {
+        "high": {
+          "groups": 2784,
+          "ndcg_at_12": 0.022455722500734344
+        },
+        "low": {
+          "groups": 626,
+          "ndcg_at_12": 0.017512320867812757
+        }
+      },
+      "candidate_count_segments": {
+        "100_to_149": {
+          "groups": 643,
+          "ndcg_at_12": 0.014247353229404859
+        },
+        "150_plus": {
+          "groups": 2767,
+          "ndcg_at_12": 0.02324481249685142
+        }
+      },
+      "candidate_recall_ceiling": 0.17126222124574317,
+      "candidate_rows": 558447,
+      "catalog_coverage": 0.0914697577648982,
+      "coverage_denominator": "union_candidate_catalog",
+      "customers": 2850,
+      "groups": 3410,
+      "positive_count": 9103,
+      "reachable_groups": 1150,
+      "reachable_positives": 1559,
+      "source_contribution": {
+        "ann": {
+          "candidate_memberships": 170500,
+          "reachable_positive_memberships": 148
+        },
+        "category_pop": {
+          "candidate_memberships": 136349,
+          "reachable_positive_memberships": 330
+        },
+        "covisit": {
+          "candidate_memberships": 102976,
+          "reachable_positive_memberships": 585
+        },
+        "global_pop": {
+          "candidate_memberships": 136400,
+          "reachable_positive_memberships": 385
+        },
+        "repurchase": {
+          "candidate_memberships": 92754,
+          "reachable_positive_memberships": 600
+        }
+      },
+      "source_contribution_note": "Overlapping memberships; source counts are not additive or causal attribution.",
+      "spine_type": "active_day",
+      "top_one_percent_concentration": 0.9126344086021505
+    }
+  },
+  "human_usability": "pending",
+  "independent_review": "pending",
+  "quality_gate_passed": true,
+  "release_status": "candidate",
+  "schema_version": "ranker-evaluation.v2",
+  "test": {
+    "bootstrap": {
+      "ci95": [
+        0.043719897457999965,
+        0.05631388384320205
+      ],
+      "clusters": 2880,
+      "method": "paired_customer_cluster_percentile",
+      "point_delta": 0.04995564373802055,
+      "replicates": 2000,
+      "seed": 20260903
+    },
+    "calibration_after": {
+      "bins": [
+        {
+          "observed": 0,
+          "predicted": 1e-7,
+          "rows": 39142
+        },
+        {
+          "observed": 0.00012774002350416432,
+          "predicted": 0.00012738601786436933,
+          "rows": 39142
+        },
+        {
+          "observed": 0.00038322007051249296,
+          "predicted": 0.00026976824258078395,
+          "rows": 39142
+        },
+        {
+          "observed": 0.0005620561034183231,
+          "predicted": 0.00046771413343167726,
+          "rows": 39142
+        },
+        {
+          "observed": 0.0008941801645291502,
+          "predicted": 0.0006901633802609433,
+          "rows": 39142
+        },
+        {
+          "observed": 0.0012007562209391447,
+          "predicted": 0.0008407838579668287,
+          "rows": 39142
+        },
+        {
+          "observed": 0.001149660211537479,
+          "predicted": 0.0010451706581738928,
+          "rows": 39142
+        },
+        {
+          "observed": 0.0014306882632466405,
+          "predicted": 0.0012112382441752455,
+          "rows": 39142
+        },
+        {
+          "observed": 0.0018394563384599664,
+          "predicted": 0.0015155035094401035,
+          "rows": 39142
+        },
+        {
+          "observed": 0.0013284962444433089,
+          "predicted": 0.0015286595775543675,
+          "rows": 39142
+        },
+        {
+          "observed": 0.0023759644371774565,
+          "predicted": 0.0023511450781553635,
+          "rows": 39142
+        },
+        {
+          "observed": 0.0025037044606816207,
+          "predicted": 0.0027246381838487645,
+          "rows": 39142
+        },
+        {
+          "observed": 0.0036278166675182666,
+          "predicted": 0.003399079945522655,
+          "rows": 39142
+        },
+        {
+          "observed": 0.00429217444623285,
+          "predicted": 0.004443448607906087,
+          "rows": 39141
+        },
+        {
+          "observed": 0.01801180347972714,
+          "predicted": 0.01780542719929952,
+          "rows": 39141
+        }
+      ],
+      "brier": 0.00259149650568573,
+      "conditioning": "observed_active_customer_day_and_candidate_inclusion",
+      "ece_15_equal_frequency": 0.00016349547655743405,
+      "log_loss": 0.015833615979098267,
+      "positives": 1555,
+      "rows": 587128
+    },
+    "calibration_before": {
+      "bins": [
+        {
+          "observed": 0,
+          "predicted": 0.000019380121311986458,
+          "rows": 39142
+        },
+        {
+          "observed": 0.00012774002350416432,
+          "predicted": 0.00014363393432557554,
+          "rows": 39142
+        },
+        {
+          "observed": 0.00040876807521332586,
+          "predicted": 0.0003473385979638806,
+          "rows": 39142
+        },
+        {
+          "observed": 0.0005365080987174901,
+          "predicted": 0.000526352893950306,
+          "rows": 39142
+        },
+        {
+          "observed": 0.0008941801645291502,
+          "predicted": 0.0006970706411273034,
+          "rows": 39142
+        },
+        {
+          "observed": 0.0011752082162383118,
+          "predicted": 0.0008557539896620126,
+          "rows": 39142
+        },
+        {
+          "observed": 0.0011752082162383118,
+          "predicted": 0.0010081451601401178,
+          "rows": 39142
+        },
+        {
+          "observed": 0.0014306882632466405,
+          "predicted": 0.0011687574157064923,
+          "rows": 39142
+        },
+        {
+          "observed": 0.0014562362679474733,
+          "predicted": 0.0013572331829256208,
+          "rows": 39142
+        },
+        {
+          "observed": 0.0016350723008533034,
+          "predicted": 0.001585875352050418,
+          "rows": 39142
+        },
+        {
+          "observed": 0.0024015124418782893,
+          "predicted": 0.0019010483419805862,
+          "rows": 39142
+        },
+        {
+          "observed": 0.0027591845076899496,
+          "predicted": 0.0023719185924729927,
+          "rows": 39142
+        },
+        {
+          "observed": 0.0033723366205099382,
+          "predicted": 0.003102059092112667,
+          "rows": 39142
+        },
+        {
+          "observed": 0.00429217444623285,
+          "predicted": 0.004558130363688817,
+          "rows": 39141
+        },
+        {
+          "observed": 0.018062900794563245,
+          "predicted": 0.017326031534025173,
+          "rows": 39141
+        }
+      ],
+      "brier": 0.002591136406080988,
+      "conditioning": "observed_active_customer_day_and_candidate_inclusion",
+      "ece_15_equal_frequency": 0.00022409566355393288,
+      "log_loss": 0.015837738973346487,
+      "positives": 1555,
+      "rows": 587128
+    },
+    "frame_provenance": [
+      {
+        "builder_source_sha256": "9422f03debb7160b7cbba02cf600a66ddd0aa8731190adfb23896f490fa0e8e5",
+        "bundle_manifest_sha256": "84aa290619e506deee7acfb3b7ad4d9379d73d7d37712a47305b1c0ce7cdcbac",
+        "candidate_config_id": "v2-five-source-30-40-40-40-50",
+        "date": "2020-09-09",
+        "manifest_sha256": "c6a01b067baaa2ee628172bbd01ed0aaca55f0afcfe0a5061d47249af55d2d9d"
+      },
+      {
+        "builder_source_sha256": "9422f03debb7160b7cbba02cf600a66ddd0aa8731190adfb23896f490fa0e8e5",
+        "bundle_manifest_sha256": "84aa290619e506deee7acfb3b7ad4d9379d73d7d37712a47305b1c0ce7cdcbac",
+        "candidate_config_id": "v2-five-source-30-40-40-40-50",
+        "date": "2020-09-10",
+        "manifest_sha256": "6a9d88be7eb38d976ed78c34333c9c75552ccf766395a2432605a9ac01f247d4"
+      },
+      {
+        "builder_source_sha256": "9422f03debb7160b7cbba02cf600a66ddd0aa8731190adfb23896f490fa0e8e5",
+        "bundle_manifest_sha256": "84aa290619e506deee7acfb3b7ad4d9379d73d7d37712a47305b1c0ce7cdcbac",
+        "candidate_config_id": "v2-five-source-30-40-40-40-50",
+        "date": "2020-09-11",
+        "manifest_sha256": "23931cadcbb8dd51f137ff185ff2ec579e5f1ecd7df7f86b87769d50920536b9"
+      },
+      {
+        "builder_source_sha256": "9422f03debb7160b7cbba02cf600a66ddd0aa8731190adfb23896f490fa0e8e5",
+        "bundle_manifest_sha256": "84aa290619e506deee7acfb3b7ad4d9379d73d7d37712a47305b1c0ce7cdcbac",
+        "candidate_config_id": "v2-five-source-30-40-40-40-50",
+        "date": "2020-09-12",
+        "manifest_sha256": "c8ecc5ecf03b9c8b1715fb85cd348345de58830fa8be21c3726936407e2c6973"
+      },
+      {
+        "builder_source_sha256": "9422f03debb7160b7cbba02cf600a66ddd0aa8731190adfb23896f490fa0e8e5",
+        "bundle_manifest_sha256": "84aa290619e506deee7acfb3b7ad4d9379d73d7d37712a47305b1c0ce7cdcbac",
+        "candidate_config_id": "v2-five-source-30-40-40-40-50",
+        "date": "2020-09-13",
+        "manifest_sha256": "2901bee4489eb0f60dd168b7cbaa9182cc1bee472f0ea3dae6f116a0c87ea455"
+      },
+      {
+        "builder_source_sha256": "9422f03debb7160b7cbba02cf600a66ddd0aa8731190adfb23896f490fa0e8e5",
+        "bundle_manifest_sha256": "84aa290619e506deee7acfb3b7ad4d9379d73d7d37712a47305b1c0ce7cdcbac",
+        "candidate_config_id": "v2-five-source-30-40-40-40-50",
+        "date": "2020-09-14",
+        "manifest_sha256": "e9f579f3eafa288506c2ec397b103360579591b7d72192c1f281d360e514697e"
+      },
+      {
+        "builder_source_sha256": "9422f03debb7160b7cbba02cf600a66ddd0aa8731190adfb23896f490fa0e8e5",
+        "bundle_manifest_sha256": "84aa290619e506deee7acfb3b7ad4d9379d73d7d37712a47305b1c0ce7cdcbac",
+        "candidate_config_id": "v2-five-source-30-40-40-40-50",
+        "date": "2020-09-15",
+        "manifest_sha256": "208e251b555188d296363d3baecb9ae65db39b4f7704ea52a2c795ed5f20de4e"
+      }
+    ],
+    "model": {
+      "active_day_candidate_conditional_map_at_12": 0.21026497535575164,
+      "active_day_candidate_conditional_ndcg_at_12": 0.26981202451638947,
+      "active_day_candidate_conditional_precision_at_12": 0.0473010573177518,
+      "active_day_candidate_conditional_recall_at_12": 0.43408458542014466,
+      "active_day_end_to_end_map_at_12": 0.054320851673625235,
+      "active_day_end_to_end_ndcg_at_12": 0.07334633979947953,
+      "active_day_end_to_end_precision_at_12": 0.016292888633314163,
+      "active_day_end_to_end_recall_at_12": 0.10552452412754765,
+      "activity_segments": {
+        "high": {
+          "groups": 2926,
+          "ndcg_at_12": 0.07612013846023932
+        },
+        "low": {
+          "groups": 552,
+          "ndcg_at_12": 0.05864319689842316
+        }
+      },
+      "candidate_count_segments": {
+        "100_to_149": {
+          "groups": 268,
+          "ndcg_at_12": 0.07052079049181291
+        },
+        "150_plus": {
+          "groups": 3210,
+          "ndcg_at_12": 0.07358224235849968
+        }
+      },
+      "candidate_recall_ceiling": 0.16416807432432431,
+      "candidate_rows": 587128,
+      "catalog_coverage": 0.23443615685695296,
+      "coverage_denominator": "union_candidate_catalog",
+      "customers": 2880,
+      "groups": 3478,
+      "positive_count": 9472,
+      "reachable_groups": 1198,
+      "reachable_positives": 1555,
+      "source_contribution": {
+        "ann": {
+          "candidate_memberships": 173900,
+          "reachable_positive_memberships": 185
+        },
+        "category_pop": {
+          "candidate_memberships": 139087,
+          "reachable_positive_memberships": 288
+        },
+        "covisit": {
+          "candidate_memberships": 123353,
+          "reachable_positive_memberships": 620
+        },
+        "global_pop": {
+          "candidate_memberships": 139120,
+          "reachable_positive_memberships": 404
+        },
+        "repurchase": {
+          "candidate_memberships": 95164,
+          "reachable_positive_memberships": 581
+        }
+      },
+      "source_contribution_note": "Overlapping memberships; source counts are not additive or causal attribution.",
+      "spine_type": "active_day",
+      "top_one_percent_concentration": 0.43832662449683724
+    },
+    "promotion_gate": {
+      "absolute_ndcg_delta": 0.04995564373802054,
+      "failed_rules": [],
+      "passed": true
+    },
+    "rrf": {
+      "active_day_candidate_conditional_map_at_12": 0.0569750153775613,
+      "active_day_candidate_conditional_ndcg_at_12": 0.09287893436345544,
+      "active_day_candidate_conditional_precision_at_12": 0.021215915414579855,
+      "active_day_candidate_conditional_recall_at_12": 0.19565943238731218,
+      "active_day_end_to_end_map_at_12": 0.013005512420406037,
+      "active_day_end_to_end_ndcg_at_12": 0.023390696061458993,
+      "active_day_end_to_end_precision_at_12": 0.007307839754648265,
+      "active_day_end_to_end_recall_at_12": 0.043489560643815955,
+      "activity_segments": {
+        "high": {
+          "groups": 2926,
+          "ndcg_at_12": 0.022769579271806263
+        },
+        "low": {
+          "groups": 552,
+          "ndcg_at_12": 0.02668306513124865
+        }
+      },
+      "candidate_count_segments": {
+        "100_to_149": {
+          "groups": 268,
+          "ndcg_at_12": 0.036459805704317845
+        },
+        "150_plus": {
+          "groups": 3210,
+          "ndcg_at_12": 0.022299567904360496
+        }
+      },
+      "candidate_recall_ceiling": 0.16416807432432431,
+      "candidate_rows": 587128,
+      "catalog_coverage": 0.0973340225980356,
+      "coverage_denominator": "union_candidate_catalog",
+      "customers": 2880,
+      "groups": 3478,
+      "positive_count": 9472,
+      "reachable_groups": 1198,
+      "reachable_positives": 1555,
+      "source_contribution": {
+        "ann": {
+          "candidate_memberships": 173900,
+          "reachable_positive_memberships": 185
+        },
+        "category_pop": {
+          "candidate_memberships": 139087,
+          "reachable_positive_memberships": 288
+        },
+        "covisit": {
+          "candidate_memberships": 123353,
+          "reachable_positive_memberships": 620
+        },
+        "global_pop": {
+          "candidate_memberships": 139120,
+          "reachable_positive_memberships": 404
+        },
+        "repurchase": {
+          "candidate_memberships": 95164,
+          "reachable_positive_memberships": 581
+        }
+      },
+      "source_contribution_note": "Overlapping memberships; source counts are not additive or causal attribution.",
+      "spine_type": "active_day",
+      "top_one_percent_concentration": 0.9010207015526165
+    }
+  }
+}

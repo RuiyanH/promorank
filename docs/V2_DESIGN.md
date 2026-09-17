@@ -1,12 +1,12 @@
 # MarketRank V2 Product and System Design
 
-**Document state:** Architecture accepted in focused review; full fan-out remains `NO-GO`, with foundation A0 conditionally authorized only after G0a
+**Document state:** Owner-authorized execution as of 2026-09-16; independent final acceptance pending. Current evidence and justified adaptations are in [V2_EXECUTION.md](V2_EXECUTION.md).
 
 **Product:** MarketRank Historical Replay System
 
 **Design owner:** Project owner / integrator
 
-**Implementation state:** Not started
+**Implementation state:** Integrated candidate; frozen offline quality gates pass; real-release operational verification in progress
 
 **Publication state:** Not published
 
@@ -341,6 +341,13 @@ V2 succeeds when an authorized analyst can privately select an approved post-cal
 
 Manager acceptance authorizes scoped implementation only. It is not evidence that V2 is integrated, verified, promoted, or published.
 
-## 14. Current manager decision
+## 14. Historical manager decision and current authority
 
 The second independent review returned `NO-GO` for full fan-out. After the amendments above, a focused ruling accepted the architecture and conditionally authorized only foundation Slice A0 after the non-circular G0a prerequisites. The document remains `proposed`, not `manager_accepted`, until G0a evidence is complete and independently confirmed. Full Slices A/B/C require later G0b acceptance, and Slice D has an additional API-fixture hash gate.
+
+The paragraph above records the original pre-execution ruling, not the current
+implementation status. On 2026-09-16 the user authorized a single project owner
+to build, integrate and make justified plan adaptations. That authorizes the
+measured local engineering execution recorded in V2_IMPLEMENTATION.md and
+V2_EXECUTION.md; it does not constitute independent approval or waive the final
+review, human-usability, privacy and promotion gates.
