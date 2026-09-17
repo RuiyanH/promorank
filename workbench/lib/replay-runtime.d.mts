@@ -18,4 +18,5 @@ export function replayEnabled():boolean;
 export function subscribeReplayMode(notify:()=>void):()=>void;
 export function serverReplayMode():boolean;
 export function requestReplay(path:string, signal?:AbortSignal):Promise<unknown>;
-export function saveLocalReview(release:string,day:string,customer:string,article:string,signal:"relevant"|"not_relevant"):void;
+export function readLocalReviews(release:string,day:string,customer:string):Record<string,"relevant"|"not_relevant">;
+export function saveLocalReview(release:string,day:string,customer:string,article:string,signal:"relevant"|"not_relevant"|null):void;

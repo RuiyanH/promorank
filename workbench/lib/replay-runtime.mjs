@@ -95,13 +95,23 @@ export async function requestReplay(path, signal) {
   try { return await response.json(); } catch { throw new Error("The historical service returned unreadable data."); }
 }
 
-export function saveLocalReview(release, day, customer, article, signal) {
-  if (!releasePattern.test(release) || !approvedDates.has(day) || !refPattern.test(customer) || !/^\d{10}$/.test(article) || !["relevant", "not_relevant"].includes(signal)) throw new Error("Invalid review identity.");
-  const identity = `${release}:${day}:${customer}:${article}`;
+function localReviews() {
   let records = {};
   try { records = JSON.parse(localStorage.getItem("marketrank-reviews-v2") || "{}"); } catch { /* discard invalid local state */ }
   if (!records || typeof records !== "object" || Array.isArray(records)) records = {};
   records=Object.fromEntries(Object.entries(records).filter(([id,row])=>row && Object.keys(row).sort().join(",")==="article_id,as_of,customer_ref,release_id,signal" && releasePattern.test(row.release_id) && approvedDates.has(row.as_of) && refPattern.test(row.customer_ref) && /^\d{10}$/.test(row.article_id) && ["relevant","not_relevant"].includes(row.signal) && id===`${row.release_id}:${row.as_of}:${row.customer_ref}:${row.article_id}`));
-  records[identity] = { release_id: release, as_of: day, customer_ref: customer, article_id: article, signal };
+  return records;
+}
+
+export function readLocalReviews(release,day,customer) {
+  return Object.fromEntries(Object.values(localReviews()).filter(row=>row.release_id===release && row.as_of===day && row.customer_ref===customer).map(row=>[row.article_id,row.signal]));
+}
+
+export function saveLocalReview(release, day, customer, article, signal) {
+  if (!releasePattern.test(release) || !approvedDates.has(day) || !refPattern.test(customer) || !/^\d{10}$/.test(article) || !["relevant", "not_relevant", null].includes(signal)) throw new Error("Invalid review identity.");
+  const identity = `${release}:${day}:${customer}:${article}`;
+  const records=localReviews();
+  if(signal===null) delete records[identity];
+  else records[identity] = { release_id: release, as_of: day, customer_ref: customer, article_id: article, signal };
   localStorage.setItem("marketrank-reviews-v2", JSON.stringify(records));
 }

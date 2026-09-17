@@ -216,4 +216,5 @@ footer p { margin:0; }
 .replay-controls label { min-width:0; }
 .replay-section .table-scroll { overflow-x:auto; margin:1.5rem 0; }
 .replay-section select:focus-visible { outline:3px solid var(--blue); outline-offset:3px; }
+.replay-section button[aria-pressed="true"] { background:var(--ink); color:white; }
 @media(max-width:720px) { .replay-items { grid-template-columns:1fr; } .replay-controls { display:grid; } .replay-item { padding:1rem; } }

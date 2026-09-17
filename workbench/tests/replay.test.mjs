@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
-import {validateRecommendations,validateCustomers,saveLocalReview} from "../lib/replay-runtime.mjs";
+import {validateRecommendations,validateCustomers,saveLocalReview,readLocalReviews} from "../lib/replay-runtime.mjs";
 
 const golden=JSON.parse(readFileSync(new URL("../../tests/fixtures/contracts_v2/api-recommendations.json",import.meta.url)));
 test("V2 accepts frozen contract and rejects hybrid, probability, and early dates",()=>{
@@ -21,5 +21,9 @@ test("V2 local review identity separates release and historical date",()=>{
   saveLocalReview("release_a","2020-09-09",golden.customer_ref,"0000000001","not_relevant");
   saveLocalReview("release_a","2020-09-16",golden.customer_ref,"0000000001","relevant");
   assert.equal(Object.keys(JSON.parse(values.get("marketrank-reviews-v2"))).length,2);
+  assert.equal(readLocalReviews("release_a","2020-09-09",golden.customer_ref)["0000000001"],"not_relevant");
+  saveLocalReview("release_a","2020-09-09",golden.customer_ref,"0000000001",null);
+  assert.deepEqual(readLocalReviews("release_a","2020-09-09",golden.customer_ref),{});
+  assert.equal(readLocalReviews("release_a","2020-09-16",golden.customer_ref)["0000000001"],"relevant");
   delete globalThis.localStorage;
 });
