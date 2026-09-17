@@ -17,6 +17,7 @@ export function validateQuality(value:unknown):Record<string,unknown>;
 export function replayEnabled():boolean;
 export function subscribeReplayMode(notify:()=>void):()=>void;
 export function serverReplayMode():boolean;
+export function replayDateUrl(current:string,release:string,day:string):string;
 export function requestReplay(path:string, signal?:AbortSignal):Promise<unknown>;
 export function readLocalReviews(release:string,day:string,customer:string):Record<string,"relevant"|"not_relevant">;
 export function saveLocalReview(release:string,day:string,customer:string,article:string,signal:"relevant"|"not_relevant"|null):void;

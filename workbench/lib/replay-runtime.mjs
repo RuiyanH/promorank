@@ -88,6 +88,13 @@ export function subscribeReplayMode(notify) {
 
 export function serverReplayMode() { return false; }
 
+export function replayDateUrl(current,release,day) {
+  if(!releasePattern.test(release) || !approvedDates.has(day)) throw new Error("Invalid replay date or release.");
+  const url=new URL(current);
+  url.searchParams.set("mode","v2");url.searchParams.set("as_of",day);url.searchParams.set("release",release);
+  return url.toString();
+}
+
 export async function requestReplay(path, signal) {
   // This adapter is deliberately local until a private hosted API is verified.
   let response;

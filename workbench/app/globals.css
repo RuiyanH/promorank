@@ -215,6 +215,11 @@ footer p { margin:0; }
 .replay-section .customer-card code { display:block; margin-top:.6rem; font-size:.75rem; }
 .replay-controls label { min-width:0; }
 .replay-section .table-scroll { overflow-x:auto; margin:1.5rem 0; }
+.replay-quality table { min-width:0; table-layout:fixed; font-variant-numeric:tabular-nums; }
+.replay-quality caption { text-align:left; padding-bottom:.75rem; font-size:.875rem; }
+.replay-quality th,.replay-quality td { padding:.75rem .4rem; overflow-wrap:break-word; }
+.replay-quality th:first-child { width:28%; }
 .replay-section select:focus-visible { outline:3px solid var(--blue); outline-offset:3px; }
 .replay-section button[aria-pressed="true"] { background:var(--ink); color:white; }
 @media(max-width:720px) { .replay-items { grid-template-columns:1fr; } .replay-controls { display:grid; } .replay-item { padding:1rem; } }
+@media(max-width:720px) { .replay-quality { padding:1rem; } .replay-quality th,.replay-quality td { padding:.75rem .2rem; } .replay-quality thead th { font-size:.6rem; letter-spacing:.02em; } }

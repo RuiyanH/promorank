@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
-import {validateRecommendations,validateCustomers,validateQuality,saveLocalReview,readLocalReviews} from "../lib/replay-runtime.mjs";
+import {validateRecommendations,validateCustomers,validateQuality,saveLocalReview,readLocalReviews,replayDateUrl} from "../lib/replay-runtime.mjs";
 
 const golden=JSON.parse(readFileSync(new URL("../../tests/fixtures/contracts_v2/api-recommendations.json",import.meta.url)));
 test("V2 accepts frozen contract and rejects hybrid, probability, and early dates",()=>{
@@ -35,4 +35,15 @@ test("V2 quality rejects false-looking strings and inconsistent acceptance",()=>
   for(const mutate of [x=>x.quality.quality_gate_passed="false",x=>x.quality.test.promotion_gate.passed=false,x=>x.quality.test.model.customers=20,x=>x.status="promoted",x=>x.quality.test.model.active_day_end_to_end_ndcg_at_12=1.1]) {
     const changed=structuredClone(value);mutate(changed);assert.throws(()=>validateQuality(changed));
   }
+});
+
+test("V2 date links preserve route identity and survive reload without a saved mode",()=>{
+  const current=`http://localhost:5173/customers/${golden.customer_ref}?as_of=2020-09-09#main-content`;
+  const url=new URL(replayDateUrl(current,"release_a","2020-09-16"));
+  assert.equal(url.pathname,`/customers/${golden.customer_ref}`);
+  assert.equal(url.searchParams.get("mode"),"v2");
+  assert.equal(url.searchParams.get("as_of"),"2020-09-16");
+  assert.equal(url.searchParams.get("release"),"release_a");
+  assert.equal(url.hash,"#main-content");
+  assert.throws(()=>replayDateUrl(current,"release_a","2020-07-15"));
 });
