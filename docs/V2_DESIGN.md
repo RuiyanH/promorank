@@ -6,7 +6,7 @@
 
 **Design owner:** Project owner / integrator
 
-**Implementation state:** Integrated candidate; frozen offline quality gates pass; real-release operational verification in progress
+**Implementation state:** Integrated local candidate; frozen offline and technical checks pass; independent review and human usability remain pending
 
 **Publication state:** Not published
 

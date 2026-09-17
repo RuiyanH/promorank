@@ -428,7 +428,7 @@ and clean remote CI including Spark is passing.
 Bounded local execution on the mounted Kingston volume replaces the unavailable
 Duo-gated cluster session. Measured pilot acceptance authorizes the full
 development build; immutable freeze checks still precede final outcomes. The
-owner is integrating ranking, replay/API and the V2 UI on `codex/v2-industry`.
+owner completed ranking, replay/API and V2 UI integration on `codex/v2-industry`.
 See `docs/V2_EXECUTION.md` for exact evidence, adjustments and current gate status,
 and `docs/V2_RUNBOOK.md` for operation and rollback.
 
@@ -437,3 +437,12 @@ five-person usability study can be self-certified. Until those and the remaining
 quality/release gates pass, V2 stays a candidate, V1 remains promoted, and the
 full-cohort service stays local/private. No public deployment is authorized by
 the local implementation or by a passing offline score alone.
+
+| Gate | Current evidence-backed result |
+|---|---|
+| G1–G2 | Pass: complete five-source partitions, physical audit, PIT/sampling and provenance checks |
+| G3 | Pass: all eight configurations, frozen selection, RRF and denominator evidence |
+| G4 | Pass: frozen test and holdout; no retuning; observed low/high activity guardrails pass; cold-start absent and unvalidated |
+| G5 | Pass: 20,000 customers × two dates × twelve recommendations; immutable private API and privacy audit |
+| G6 | Technical pass: real desktop/mobile workflow, 18.52 ms warm p95; five-person study pending |
+| G7 | Pending: independent final review and human acceptance; V1 remains promoted |

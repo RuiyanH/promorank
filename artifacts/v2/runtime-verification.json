@@ -1,0 +1,22 @@
+{
+  "api_rss_after_startup_bytes": 651493376,
+  "api_rss_after_workload_bytes": 652263424,
+  "cold_process_startup_seconds": 4.452352791005978,
+  "database_bytes": 463482880,
+  "performance_passed": true,
+  "platform": "macOS-26.5-arm64-arm-64bit",
+  "processor": "Apple M3",
+  "python": "3.11.15",
+  "release_manifest_sha256": "18dcdaf1cdbc01f4a2d5538449864f5ca02bd4465bc61237759dfab29d2405e7",
+  "release_verification_seconds": 3.8801038750098087,
+  "request_set_sha256": "7534a0b986a00dace0b3df3565c6c2b85e7b53522c1e942324022fa8077dc326",
+  "requests": 230,
+  "schema_version": "replay-runtime-verification.v2",
+  "startup_definition": "new process through validated readiness; filesystem cache not cleared",
+  "threshold_ms": 500,
+  "verification_peak_rss_platform_units": 590020608,
+  "warm_max_ms": 19.197207991965115,
+  "warm_p50_ms": 15.291125004296191,
+  "warm_p95_ms": 18.518941437650938,
+  "workload": "first 100 label-ordered customers on both dates; 10 each listing/search/quality; sequential keep-alive HTTP; 10 warmups"
+}

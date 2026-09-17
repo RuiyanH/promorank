@@ -36,10 +36,11 @@ review and the five-person usability study cannot be self-certified by the build
 
 The measured pilot, full development/final frames, eight-configuration model
 selection, calibration and frozen final evaluation are complete. Both offline
-quality gates pass. Both 20,000-customer replay frames are complete; immutable
-packaging and real-release operational verification are in progress. Synthetic
-UI/API checks are complete, separately from real-data evidence. Later sections
-preserve the sequence of earlier checks and superseded pilot measurements.
+quality gates pass. The immutable 20,000-customer/two-date replay, real API/UI,
+privacy, performance and rollback checks pass. V2 remains a local/private
+candidate: independent review and five real unassisted users are outstanding.
+Later sections preserve the sequence of earlier checks and superseded pilot
+measurements; synthetic evidence is identified separately from real-data checks.
 
 ## Execution adaptation and measured pilot
 
@@ -199,3 +200,58 @@ come from that slice. Daily manifests separately count personalized-spine contex
 
 Clean GitHub run `35174124558` on `66be130` passed 194 Python tests (Spark included),
 19 dbt checks, 22 workbench tests, production build, lint and TypeScript checking.
+
+## Real release and operational verification
+
+Release `v2_candidate_20260916` contains 20,000 release-scoped customers,
+40,000 customer/date records and exactly 480,000 recommendations. A full scan
+confirms twelve per record, the exact HMAC cohort mapping, zero internal-reference
+collisions and zero raw-ID patterns in payloads. The external release key is 0600.
+The immutable DuckDB file is 463,482,880 bytes. Its manifest SHA-256 is
+`18dcdaf1cdbc01f4a2d5538449864f5ca02bd4465bc61237759dfab29d2405e7`;
+database SHA-256 is
+`09f8aad8d879cc4abcb789ef9413b4bfb67ab5f843c767c2424b1041de2591ba`.
+
+On Apple M3 / 16 GB RAM, Python 3.11.15:
+
+- Fixed 230-request sequential loopback workload: warm p50 15.29 ms,
+  p95 18.52 ms, max 19.20 ms; the 500 ms gate passes.
+- Fresh-process start through validated readiness: 4.45 s. Filesystem caches
+  were not cleared, so this is not a cold-disk measurement.
+- Separate complete-release validation: 3.88 s.
+- API resident memory: 651,493,376 bytes after startup and 652,263,424 after the
+  workload. These are observations, not a claimed peak or concurrent-load SLO.
+- Browser/client plus public assets: 40 files, 820,069 bytes; no restricted
+  extensions, raw/internal customer IDs or key material found.
+
+Real-browser checks passed overview, customer listing, forward/back pagination,
+search through customer 20000, empty search, twelve ranked items on both dates,
+quality results, date-preserving reload, review persistence/date isolation,
+invalid-date rejection/recovery, keyboard skip navigation and V1 rollback.
+Only this run's QA reviews were cleared afterwards. At 390 px the detail and
+quality pages have no document overflow; all comparison columns are visible.
+Partial metadata and corrupt-response states remain separately synthetic-tested.
+
+Browser verification found and fixed stale error state after invalid-date
+navigation, and a date selection that did not update its deep link. Regression
+coverage now totals 23 frontend tests, with build/lint/typecheck passing. The
+first V2 candidate has no earlier V2 release to roll back to; V1 is the tested
+fallback. Corrupt-release readiness is covered by synthetic fault tests.
+
+Final code CI `35175786936` on `4b4acf1` passes all 194 Python tests, 19 dbt checks,
+23 frontend tests, build, lint and typecheck. Subsequent handoff-only commits
+record these results without changing the verified implementation.
+
+The aggregate handoff files are `artifacts/v2/{quality-report,model-card,
+runtime-verification,verification-summary}.json`. Restricted source exports,
+models, frames, keys and the full replay remain on Kingston, outside Git.
+
+### Remaining work and claim boundary
+
+The owner completed the engineering milestones, not independent certification.
+Before promotion, obtain independent review and five real unassisted users using
+`V2_ACCEPTANCE.md`. Improve retrieval and validate cold-start/inactive-day quality
+under a newly declared development/evaluation protocol; do not retune on these
+opened final slices. Any hosted full-cohort service needs a separately verified
+authenticated private-access boundary. No public V2 deployment, live impact,
+production SLO or Misha cluster execution is claimed. V1 remains promoted.

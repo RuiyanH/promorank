@@ -1,0 +1,131 @@
+{
+  "schema_version": "marketrank-verification-summary.v2",
+  "release_id": "v2_candidate_20260916",
+  "engineering_status": "local_candidate_checks_passed",
+  "release_status": "candidate",
+  "promoted_version": "V1",
+  "full_cohort_access": "loopback_only_private",
+  "quality_gate_passed": true,
+  "release": {
+    "manifest_sha256": "18dcdaf1cdbc01f4a2d5538449864f5ca02bd4465bc61237759dfab29d2405e7",
+    "database_sha256": "09f8aad8d879cc4abcb789ef9413b4bfb67ab5f843c767c2424b1041de2591ba",
+    "logical_sha256": {
+      "customers_sha256": "0cf3efd0c860ffceec09ff823ae7a69512216de7d3db711c003a01a0c858168e",
+      "recommendations_sha256": "e951ce77d454b9e40b04ed8eb2149fa46f678e4ee8b071fe8e3b2b2f50f55ba5"
+    },
+    "customer_count": 20000,
+    "dates": [
+      "2020-09-09",
+      "2020-09-16"
+    ],
+    "customer_date_records": 40000,
+    "recommendations": 480000,
+    "database_bytes": 463482880
+  },
+  "artifact_audit": {
+    "status": "passed",
+    "report_sha256": "dd927fcd2b4ac3d354eed6884a3cb78278d09d1065472211c469038a30ae3129",
+    "partitions": 65,
+    "physical_files": 455,
+    "ope_env_read_audit": {
+      "consumer": "DailyBuilder prior/article_stats/weekly_pairs",
+      "fit_rows": 0,
+      "global_context_rows": 264657,
+      "label_rows": 0,
+      "note": "Daily manifests count personalized-spine context separately; this count covers global source history.",
+      "source_record_sha256": "735a98fc97367e334fb4743d6e6cf307802b31cfc0e477df0712eb2446f4e6ee",
+      "target_scoring_range": [
+        "2020-09-09",
+        "2020-09-22"
+      ],
+      "usage": "context_only"
+    }
+  },
+  "privacy": {
+    "customer_count": 20000,
+    "customer_date_records": 40000,
+    "exactly_twelve_per_record": true,
+    "internal_reference_collisions": 0,
+    "private_release_key_permissions": "0600",
+    "raw_id_patterns_in_payloads": 0,
+    "recommendations": 480000,
+    "release_manifest_sha256": "18dcdaf1cdbc01f4a2d5538449864f5ca02bd4465bc61237759dfab29d2405e7",
+    "release_scoped_cohort_reference_reconciliation": "passed",
+    "schema_version": "release-privacy-audit.v2",
+    "status": "passed"
+  },
+  "browser_bundle": {
+    "bytes_scanned": 820069,
+    "files_scanned": 40,
+    "raw_and_internal_customer_scan": "passed",
+    "restricted_extensions_found": 0,
+    "schema_version": "browser-bundle-audit.v2",
+    "scope": "browser client output and public assets only; not a rewrite of legacy repository history",
+    "secret_material_found": 0
+  },
+  "tests": {
+    "python": 194,
+    "python_scope": "clean GitHub CI, including Spark/PIT; no skips",
+    "dbt": 19,
+    "frontend": 23,
+    "frontend_build_lint_typecheck": "passed",
+    "ci_url": "https://github.com/RuiyanH/promorank/actions/runs/35175786936",
+    "verified_code_revision": "4b4acf1024ab68c120b3f5dd831fcf29a7e19f0a",
+    "ci_status": "passed"
+  },
+  "browser": {
+    "kind": "automated real browser checks; not five human participants",
+    "desktop": "passed",
+    "mobile_390px": "passed; no document overflow, all comparison columns visible",
+    "routes": [
+      "overview",
+      "customers",
+      "customer_detail",
+      "quality"
+    ],
+    "flows": [
+      "unavailable-to-retry recovery",
+      "forward/back pagination",
+      "search through customer 20000",
+      "empty search",
+      "twelve ordered recommendations on both dates",
+      "date-preserving deep links and reload",
+      "browser-local reviews persist across reload and isolate dates",
+      "QA reviews cleared after testing",
+      "invalid-date rejection and recovery",
+      "V1 rollback",
+      "keyboard skip-to-content"
+    ],
+    "synthetic_only_flows": [
+      "partial article metadata",
+      "corrupt response validation"
+    ],
+    "known_fix": "Invalid-date recovery now reloads a clean customer browser; date selections update the URL."
+  },
+  "runtime_report": "runtime-verification.json",
+  "rollback": {
+    "v1_fixture_sha256": "4a006269543f190d71130d9eac1a63fef3219d8e1222243db4d96cbb17125717",
+    "frozen_api_fixture_sha256": "faee9feeb708f6dca02ed32149ed41670c5265131a292480675ccb592193ac31",
+    "v1_browser_rollback": "passed",
+    "earlier_v2_release": "not_available_first_candidate",
+    "corrupt_release_readiness": "synthetic fault test passed"
+  },
+  "execution": {
+    "host": "Apple M3, 16 GB RAM; bounded local CPU execution with Kingston scratch",
+    "cluster": "Misha authentication remained Duo-gated; no cluster job claimed",
+    "retriever_population": "100000 train-only sampled customers; all their fit positives",
+    "training_environment": "core ML lock-aligned; auxiliary differences recorded at launch; frozen lock reconciled before final evaluation"
+  },
+  "remaining_acceptance": {
+    "independent_release_review": "pending",
+    "five_real_unassisted_users": "pending",
+    "private_hosted_access_boundary": "not_implemented_not_published"
+  },
+  "limitations": [
+    "Final quality is observed-active-day evidence on a fixed cohort, not live impact.",
+    "No cold-start customers are present in final evaluation; cold-start and inactive-day relevance remain unvalidated.",
+    "Candidate recall ceilings remain 16.42% and 17.13%.",
+    "Sequential loopback latency is not concurrent-load capacity or a production SLO.",
+    "Browser privacy checks do not rewrite legacy public repository artifacts."
+  ]
+}

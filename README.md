@@ -16,6 +16,30 @@ V2 operation, verification and rollback: [`docs/V2_RUNBOOK.md`](docs/V2_RUNBOOK.
 V2 is a local/private candidate until its offline, independent-review and human
 usability gates are complete. The original V1 remains available with `?mode=v1`.
 
+## V2 candidate — real-data result
+
+V2 now includes the complete private 20,000-customer replay on two historical
+dates, with twelve trained-ranker recommendations per customer/date. Its
+time-separated final evaluation passed the frozen quality gates:
+
+| End-to-end NDCG@12, observed purchase days | Ranker | Identical-candidate RRF |
+|---|---:|---:|
+| Test, Sep 9–15 | 0.07335 | 0.02339 |
+| Holdout, Sep 16–22 | 0.06974 | 0.02155 |
+
+The local precomputed API measured **18.52 ms warm p95** on a fixed 230-request
+sequential workload on Apple M3. This is not online model-inference latency or
+a production SLO. [Evaluation](artifacts/v2/quality-report.json),
+[model card](artifacts/v2/model-card.json), [runtime evidence](artifacts/v2/runtime-verification.json)
+and the [execution record](docs/V2_EXECUTION.md) state the exact scope.
+
+Retrieval remains limited (16–17% candidate recall ceiling); the fixed cohort
+does not validate cold-start or inactive-day relevance. Independent release
+review and five real unassisted users are still required before promotion.
+Run the local service and workbench using the [runbook](docs/V2_RUNBOOK.md).
+The full cohort, models and keys stay on restricted scratch, not in the browser
+bundle or public deployment. The existing V1 site is unchanged.
+
 ## Personalization Workbench v1
 
 The repository now includes a usable internal workbench under `workbench/`.
