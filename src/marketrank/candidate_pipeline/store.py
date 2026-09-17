@@ -122,7 +122,10 @@ class HistoricalStore:
                             counts[split] += len(buffers[split])
                             writers[split].write_table(pa.Table.from_pylist(buffers[split], schema=schema))
                             buffers[split].clear()
-                    for event in events:
+                    # Match inference's day-descending/article-ascending top ten.
+                    # The deque is chronological, so reverse the same-day tie
+                    # order before retaining its final ten entries.
+                    for event in reversed(events):
                         recent.append(event["article_index"])
                     history.append((day, sum(event["n"] for event in events)))
                     last_day = day

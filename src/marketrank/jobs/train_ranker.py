@@ -1,5 +1,6 @@
 """Train/select the frozen V2 LightGBM grid from verified daily frames."""
 import argparse
+import datetime as dt
 import json
 from pathlib import Path
 
@@ -7,7 +8,7 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 
 from marketrank.evidence import sha256, write_json
-from marketrank.ranking.dataset import validate_frame_manifest
+from marketrank.ranking.dataset import BOUNDS, validate_frame_manifest
 from marketrank.ranking.model import train_ranker
 
 
@@ -16,9 +17,16 @@ def load_frames(root: Path, split: str):
     manifests = sorted(root.glob("*/manifest.json"))
     if not manifests:
         raise ValueError("no complete frame partitions")
+    start, end = map(dt.date.fromisoformat, BOUNDS[split])
+    expected_dates = {(start + dt.timedelta(days=i)).isoformat() for i in range((end-start).days+1)}
+    actual_dates = {path.parent.name for path in manifests}
+    if actual_dates != expected_dates:
+        raise ValueError("frame partitions must cover the complete frozen split")
     for path in manifests:
         manifest = json.loads(path.read_text())
         validate_frame_manifest(manifest, split)
+        if manifest["dates"] != [path.parent.name] or manifest.get("data_mode") != "historical_offline":
+            raise ValueError("partition date or release eligibility mismatch")
         for name in ("frame.parquet", "groups.parquet"):
             if sha256(path.parent / name) != manifest["files"][name]:
                 raise ValueError("frame artifact checksum mismatch")
