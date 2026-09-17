@@ -17,6 +17,7 @@ from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from marketrank.evidence import canonical
 from marketrank.replay.release import REF, verify_release
+from .contracts import CustomersResponse, RecommendationsResponse, ReleasesResponse, QualityResponse
 
 
 class ApiError(Exception):
@@ -115,20 +116,20 @@ def create_app(release_root: Path | None = None, *, cursor_key: bytes | None = N
         meta = ready()
         return {"status": "ready", "release_id": meta["release_id"], "release_status": meta["status"]}
 
-    @app.get("/api/v2/releases")
+    @app.get("/api/v2/releases",response_model=ReleasesResponse)
     def releases():
         meta = ready()
         return {"schema_version": "workbench-releases.v2", "releases": [{k:meta[k] for k in (
             "release_id", "status", "dates", "customer_count", "ranking_mode", "score_semantics", "warning",
             "model_available_after", "calibrator_available_after")} ]}
 
-    @app.get("/api/v2/releases/{release_id}/quality")
+    @app.get("/api/v2/releases/{release_id}/quality",response_model=QualityResponse)
     def quality(release_id: str):
         meta = ready(release_id)
         return {"schema_version": "workbench-quality.v2", "release_id": release_id,
                 "quality": meta["quality"], "provenance": meta["provenance"], "status": meta["status"], "warning": meta["warning"]}
 
-    @app.get("/api/v2/releases/{release_id}/customers")
+    @app.get("/api/v2/releases/{release_id}/customers",response_model=CustomersResponse)
     def customers(release_id: str, limit: int = Query(25, ge=1, le=100), cursor: str | None = Query(None, max_length=2048),
                   q: str = Query("", max_length=100), sort: str = "display_label_asc"):
         ready(release_id)
@@ -143,7 +144,7 @@ def create_app(release_root: Path | None = None, *, cursor_key: bytes | None = N
                 "customers": [{"customer_ref": ref, "display_label": label} for ref,label in rows[:limit]],
                 "next_cursor": encode_cursor(key, {**binding, "position": offset+limit}) if len(rows)>limit else None}
 
-    @app.get("/api/v2/releases/{release_id}/customers/{customer_ref}/recommendations")
+    @app.get("/api/v2/releases/{release_id}/customers/{customer_ref}/recommendations",response_model=RecommendationsResponse)
     def recommendations(release_id: str, customer_ref: str, as_of: str):
         meta = ready(release_id)
         if as_of not in meta["dates"]:

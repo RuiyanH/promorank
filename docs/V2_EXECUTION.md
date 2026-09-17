@@ -75,3 +75,35 @@ for post-fit articles; its cost evidence remains valid, and its quality is not a
 final result. Superseded artifacts are retained outside Git.
 
 Baseline remote CI: run `35167396447` passed on `0999555` after recovery/isolation.
+Run `35169549891` passed on `1414fa9`, including all Spark tests and the V2 additions.
+
+## Reproducibility hardening before final evaluation
+
+The retriever retains selection positives outside its fitted article vocabulary
+as misses, rather than dropping them. Training and inference now use identical
+same-day recent-item tie ordering. The accepted fit has 1,680,131 positive rows,
+4,108 selection rows, and 95,909 fitted articles. Epoch three wins with selection
+Recall@100 of 0.031889. This is a bounded retriever diagnostic, not final ranking
+quality. The frozen offline bundle records the pilot-bundle and input hashes.
+
+A real repeat-build comparison exposed 148 differing co-visitation rank rows
+on the first pilot day due to floating-point reduction ordering. The partial
+full build was interrupted and preserved as `ranker-fit-superseded-reduction`.
+Both co-visitation aggregations now use explicit stable reduction order. The
+corrected pilot and full frames are rebuilt; no final outcomes had been opened.
+
+Synthetic parity with the original Spark implementation passes for repurchase,
+category popularity, global popularity and co-visitation. Embedding retrieval
+uses the existing exact-search contract tests. The full Python suite passed
+178 tests before the latest additional schema checks. Workbench tests pass 17;
+lint, production build and strict TypeScript checking pass. Declaration files
+were corrected to `.d.mts` so the type checker actually resolves `.mjs` exports.
+
+The implementation additionally records complete split-date coverage, source
+and frame hashes, explicit `ope_env` context-only usage, complete truth spines,
+both metric denominator families, customer-cluster uncertainty and browser-safe
+aggregate reports. Test and holdout remain locked behind a model/calibrator/code
+hash-bound evaluation freeze. No model changes are permitted after that freeze.
+
+The builder's acceptance authorizes bounded engineering execution; it does not
+substitute for the independent final review or five-person usability study.

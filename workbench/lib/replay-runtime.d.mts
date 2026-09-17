@@ -11,6 +11,9 @@ export interface V2Recommendations {
 export interface CustomerPage { schema_version:"workbench-customers.v2";release_id:string;customers:{customer_ref:string;display_label:string}[];next_cursor:string|null }
 export function validateRecommendations(value:unknown):V2Recommendations;
 export function validateCustomers(value:unknown):CustomerPage;
+export interface ReplayRelease {release_id:string;status:"candidate"|"verified";dates:string[];customer_count:number;warning:string;model_available_after:string;calibrator_available_after:string}
+export function validateReleases(value:unknown):{schema_version:"workbench-releases.v2";releases:ReplayRelease[]};
+export function validateQuality(value:unknown):Record<string,unknown>;
 export function replayEnabled():boolean;
 export function subscribeReplayMode(notify:()=>void):()=>void;
 export function serverReplayMode():boolean;

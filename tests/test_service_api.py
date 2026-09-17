@@ -35,6 +35,19 @@ def test_golden_contract_rejects_hybrids_and_unavailable_dates():
         validate_recommendations(value)
 
 
+def test_json_schema_and_openapi_reconcile_with_frozen_fixture(release):
+    import jsonschema
+    from marketrank.service.contracts import RecommendationsResponse
+    value=json.loads(Path("tests/fixtures/contracts_v2/api-recommendations.json").read_text())
+    jsonschema.validate(value,json.loads(Path("contracts/workbench-api-v2.schema.json").read_text()))
+    jsonschema.validate(value,RecommendationsResponse.model_json_schema())
+    manifest=json.loads((release/"manifest.json").read_text())
+    jsonschema.validate(manifest,json.loads(Path("contracts/replay-release-v2.schema.json").read_text()))
+    api=TestClient(create_app(release)).get("/openapi.json").json()
+    response=api["paths"]["/api/v2/releases/{release_id}/customers/{customer_ref}/recommendations"]["get"]["responses"]["200"]
+    assert response["content"]["application/json"]["schema"]["$ref"].endswith("/RecommendationsResponse")
+
+
 def test_readonly_api_pagination_queries_and_privacy(release):
     client = TestClient(create_app(release, cursor_key=b"c"*32))
     assert client.get("/health/live").status_code == 200

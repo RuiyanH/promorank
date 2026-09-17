@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MarketRank V2 immutable replay manifest",
+  "type": "object", "additionalProperties": false,
+  "required": ["schema_version", "release_id", "status", "data_mode", "ranking_mode", "score_semantics", "warning", "dates", "customer_count", "model_available_after", "calibrator_available_after", "database_sha256", "logical_sha256", "provenance", "quality"],
+  "properties": {
+    "schema_version": {"const": "replay-release.v2"}, "release_id": {"type": "string", "pattern": "^[a-zA-Z0-9_-]{1,100}$"},
+    "status": {"enum": ["candidate", "verified"]}, "data_mode": {"const": "historical_replay"},
+    "ranking_mode": {"const": "trained_ranker"}, "score_semantics": {"const": "ordering_only"},
+    "warning": {"type": "string", "maxLength": 512}, "dates": {"const": ["2020-09-09", "2020-09-16"]},
+    "customer_count": {"type": "integer", "minimum": 1, "maximum": 20000},
+    "model_available_after": {"const": "2020-08-25"}, "calibrator_available_after": {"const": "2020-09-01"},
+    "database_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "logical_sha256": {"type": "object", "additionalProperties": false, "required": ["customers", "recommendations"],
+      "properties": {"customers": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "recommendations": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}},
+    "provenance": {"type": "object"}, "quality": {"type": "object"}
+  }
+}

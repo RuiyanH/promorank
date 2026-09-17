@@ -8,7 +8,7 @@ from datetime import date
 import numpy as np
 import pyarrow as pa
 
-SOURCES = ("repurchase", "category_pop", "global_pop", "covisit", "ann")
+from marketrank.contracts import SOURCES
 SEED = 20260903
 NEGATIVE_RETENTION = 0.05
 FEATURES = (

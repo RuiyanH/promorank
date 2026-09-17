@@ -55,7 +55,7 @@ class DailyBuilder:
             SELECT c,a,d FROM (SELECT DISTINCT c,a,d FROM tx WHERE d >= {anchor - 30} AND d < {anchor})
             QUALIFY row_number() OVER (PARTITION BY c ORDER BY d DESC,a) <= 20""")
         db.execute(f"""CREATE OR REPLACE TEMP TABLE pairs AS
-            SELECT a,b,score FROM (SELECT x.a, y.a b, sum(pow(.5, ({anchor}-greatest(x.d,y.d))/30.)) score
+            SELECT a,b,score FROM (SELECT x.a, y.a b, sum(pow(.5, ({anchor}-greatest(x.d,y.d))/30.) ORDER BY x.c,x.d,y.d) score
             FROM pair_events x JOIN pair_events y ON x.c=y.c AND x.a<>y.a AND abs(x.d-y.d)<=7 GROUP BY x.a,y.a)
             QUALIFY row_number() OVER (PARTITION BY a ORDER BY score DESC,b) <= 20""")
         self.anchor = anchor
@@ -158,7 +158,7 @@ class DailyBuilder:
         self._covisit(day)
         db.execute(f"""CREATE OR REPLACE TEMP TABLE source_covisit AS SELECT c,a,
             row_number() OVER (PARTITION BY c ORDER BY score DESC,a)::INTEGER source_rank FROM
-            (SELECT c,b a,sum(score/r) score FROM recent JOIN pairs USING(a) WHERE d >= {day-30} GROUP BY c,b)
+            (SELECT c,b a,sum(score/r ORDER BY r) score FROM recent JOIN pairs USING(a) WHERE d >= {day-30} GROUP BY c,b)
             QUALIFY source_rank<=40""")
         source_counts = {}
         for name in SOURCES:

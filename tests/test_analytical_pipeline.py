@@ -51,6 +51,10 @@ def test_daily_pipeline_preserves_positives_sources_and_future_invariance(tmp_pa
     builder.db.execute(f"INSERT INTO tx VALUES (1,60,{day+10},500)")
     builder.build("2020-07-15", spine_type="active_day", output=tmp_path / "two", split="ranker_fit", pilot=True)
     assert frame.equals(pq.read_table(tmp_path / "two/frame.parquet"))
+    builder.db.execute("SET threads=4")
+    builder.anchor=None
+    builder.build("2020-07-15",spine_type="active_day",output=tmp_path/"threaded",split="ranker_fit",pilot=True)
+    assert frame.equals(pq.read_table(tmp_path/"threaded/frame.parquet"))
     assert first == builder.build("2020-07-15", spine_type="active_day", output=tmp_path / "one", split="ranker_fit", pilot=True)
     with pytest.raises(ValueError):
         builder.build("2020-09-03", spine_type="active_day", output=tmp_path / "bad", split="test")

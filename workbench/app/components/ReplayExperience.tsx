@@ -2,10 +2,29 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { requestReplay, validateCustomers, validateRecommendations, saveLocalReview, type CustomerPage, type V2Recommendations } from "@/lib/replay-runtime.mjs";
+import { requestReplay, validateCustomers, validateRecommendations, validateReleases, validateQuality, saveLocalReview, type CustomerPage, type V2Recommendations } from "@/lib/replay-runtime.mjs";
 
 interface Release {release_id:string;status:string;dates:string[];customer_count:number;warning:string;model_available_after:string;calibrator_available_after:string}
 type View = "overview" | "customers" | "customer" | "quality";
+
+interface EvaluationSplit {
+  model:{active_day_end_to_end_ndcg_at_12:number;candidate_recall_ceiling:number;groups:number;customers:number};
+  rrf:{active_day_end_to_end_ndcg_at_12:number};
+  bootstrap:{ci95:number[]};promotion_gate:{passed:boolean;failed_rules:string[]};
+}
+
+function EvaluationEvidence({value}:{value:Record<string,unknown>}) {
+  const report=value.quality as {schema_version?:string;quality_gate_passed?:boolean;test?:EvaluationSplit;holdout?:EvaluationSplit};
+  if(report?.schema_version!=="ranker-evaluation.v2" || !report.test || !report.holdout) return <p role="status">Evaluation details are unavailable for this release.</p>;
+  return <div className="replay-quality"><h2>{report.quality_gate_passed?"Offline quality gates passed":"Candidate retained · promotion gates not passed"}</h2>
+    <p>Independent release review and the five-person usability study are still required. Passing an offline comparison does not establish business impact.</p>
+    <div className="table-scroll"><table><caption>Trained ranker versus identical-candidate RRF · end-to-end NDCG@12</caption><thead><tr><th scope="col">Period</th><th scope="col">Ranker</th><th scope="col">RRF baseline</th><th scope="col">Relative change</th><th scope="col">Gate</th></tr></thead><tbody>
+      {(["test","holdout"] as const).map(name=>{const row=report[name]!;const model=row.model.active_day_end_to_end_ndcg_at_12;const base=row.rrf.active_day_end_to_end_ndcg_at_12;return <tr key={name}><th scope="row">{name==="test"?"Test · Sep 9–15":"Holdout · Sep 16–22"}</th><td>{model.toFixed(4)}</td><td>{base.toFixed(4)}</td><td>{base?`${((model/base-1)*100).toFixed(1)}%`:"Not defined"}</td><td>{row.promotion_gate.passed?"Passed":"Not passed"}</td></tr>;})}
+    </tbody></table></div>
+    {(["test","holdout"] as const).map(name=>{const row=report[name]!;return <section key={name}><h3>{name==="test"?"Test evidence":"Holdout evidence"}</h3><p>{row.model.groups.toLocaleString()} active customer-days · {row.model.customers.toLocaleString()} customers · candidate recall ceiling {(row.model.candidate_recall_ceiling*100).toFixed(1)}%.</p><p>95% paired customer-cluster interval for absolute NDCG change: {row.bootstrap.ci95.map(x=>x.toFixed(4)).join(" to ")}.</p>{!row.promotion_gate.passed&&<p className="scope-note">Unmet checks: {row.promotion_gate.failed_rules.map(x=>x.replaceAll("_"," ")).join(", ")}.</p>}</section>;})}
+    <details><summary>Artifact versions and complete offline diagnostics</summary><pre>{JSON.stringify(value,null,2)}</pre></details>
+  </div>;
+}
 
 export function ReplayExperience({view,customerRef=""}:{view:View;customerRef?:string}) {
   const [releases,setReleases] = useState<Release[]>([]);
@@ -27,9 +46,12 @@ export function ReplayExperience({view,customerRef=""}:{view:View;customerRef?:s
     const controller = new AbortController();
     const timer = setTimeout(()=>controller.abort(),10000);
     requestReplay("/api/v2/releases",controller.signal).then(raw=>{
-      const value=raw as {schema_version?:string;releases?:Release[]};
-      if(value.schema_version!=="workbench-releases.v2" || !Array.isArray(value.releases) || !value.releases.length || value.releases.some(r=>!r.release_id || !Array.isArray(r.dates) || !r.dates.length || !Number.isInteger(r.customer_count))) throw new Error("The release list failed validation.");
-      setReleases(value.releases);setReleaseId(value.releases[0].release_id);setDay(value.releases[0].dates[0]);setError("");
+      const value=validateReleases(raw);
+      const params=new URLSearchParams(window.location.search);
+      const chosen=value.releases.find(r=>r.release_id===params.get("release")) || value.releases[0];
+      const requestedDay=params.get("as_of");
+      if(requestedDay && !chosen.dates.includes(requestedDay)) throw new Error("Select an approved historical replay date.");
+      setReleases(value.releases);setReleaseId(chosen.release_id);setDay(requestedDay || chosen.dates[0]);setError("");
     }).catch(e=>{setError(e.name==="AbortError"?"The service took too long to respond.":e.message);setBusy(false);}).finally(()=>clearTimeout(timer));
     return ()=>{clearTimeout(timer);controller.abort();};
   },[attempt]);
@@ -48,7 +70,7 @@ export function ReplayExperience({view,customerRef=""}:{view:View;customerRef?:s
           if(result.release_id!==releaseId || result.as_of!==day || result.customer_ref!==customerRef) throw new Error("The response does not match the requested historical record.");
           if(active)setItems(result);
         } else if(view==="quality") {
-          const result=await requestReplay(`${prefix}/quality`,controller.signal) as Record<string,unknown>;
+          const result=validateQuality(await requestReplay(`${prefix}/quality`,controller.signal));
           if(result.schema_version!=="workbench-quality.v2" || result.release_id!==releaseId) throw new Error("Quality response failed validation.");
           if(active)setQuality(result);
         } else {
@@ -86,11 +108,11 @@ export function ReplayExperience({view,customerRef=""}:{view:View;customerRef?:s
     {!busy && !error && page && <>
       <form className="search-box" onSubmit={e=>{e.preventDefault();setCursor(null);setSubmittedQuery(query);}}><label htmlFor="replay-search">Find a historical label or reference</label><input id="replay-search" type="search" value={query} maxLength={100} onChange={e=>setQuery(e.target.value)} placeholder="Historical customer 00001"/><button className="button primary" type="submit">Search</button></form>
       {!page.customers.length && <div className="empty-state" role="status"><h2>No matching customer</h2><p>Try a different historical label or opaque reference.</p></div>}
-      <div className="customer-grid">{page.customers.map(customer=><Link className="customer-card" key={customer.customer_ref} href={`/customers/${customer.customer_ref}?mode=v2`}><div><h2>{customer.display_label}</h2><p>Inspect top 12 and contributing sources</p><code>{customer.customer_ref}</code></div></Link>)}</div>
+      <div className="customer-grid">{page.customers.map(customer=><Link className="customer-card" key={customer.customer_ref} href={`/customers/${customer.customer_ref}?mode=v2&as_of=${day}&release=${releaseId}`}><div><h2>{customer.display_label}</h2><p>Inspect top 12 and contributing sources</p><code>{customer.customer_ref}</code></div></Link>)}</div>
       <div className="button-row">{cursor&&<button className="button secondary" onClick={()=>setCursor(null)}>First page</button>}{page.next_cursor&&<button className="button primary" onClick={()=>setCursor(page.next_cursor)}>Next customers</button>}</div>
     </>}
     {!busy && !error && items && <><p className="scope-note">{items.customer_ref} · {items.as_of}. Article details are static snapshot attributes.</p>
       <div className="replay-items">{items.recommendations.map(item=><article className="replay-item" key={item.article_id}><span className="customer-number">{item.position.toString().padStart(2,"0")}</span><div><h2>{item.article_metadata.product_type_name || "Article details unavailable"}</h2><p>Article {item.article_id}</p><div className="source-tags">{item.source_evidence.map(source=><span key={source.source}>{source.display_name.replaceAll("_"," ")} #{source.source_rank}</span>)}</div><p className="scope-note">Ordering score {item.ordering_score.toFixed(4)}</p><div className="button-row"><button className="button secondary" onClick={()=>review(item.article_id,"relevant")}>Relevant</button><button className="button secondary" onClick={()=>review(item.article_id,"not_relevant")}>Not relevant</button></div></div></article>)}</div><p role="status" aria-live="polite">{reviewMessage}</p><p className="scope-note">Reviews remain in this browser and are excluded from model training.</p></>}
-    {!busy && !error && quality && <><p className="lede">Evaluation is conditional on an observed purchase day. End-to-end metrics retain groups whose purchases retrieval missed. RRF uses the same candidates as the trained ranker.</p><div className="replay-quality"><h2>Evaluation and release evidence</h2><pre>{JSON.stringify(quality.quality,null,2)}</pre><details><summary>Artifact versions</summary><pre>{JSON.stringify(quality.provenance,null,2)}</pre></details></div></>}
+    {!busy && !error && quality && <><p className="lede">Evaluation is conditional on an observed purchase day. End-to-end metrics retain groups whose purchases retrieval missed. RRF uses the same candidates as the trained ranker.</p><EvaluationEvidence value={quality}/></>}
   </section>;
 }

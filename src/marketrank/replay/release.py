@@ -12,7 +12,7 @@ from pathlib import Path
 import duckdb
 
 from marketrank.evidence import canonical, sha256, write_json
-from marketrank.ranking.dataset import SOURCES
+from marketrank.contracts import SOURCES
 
 WARNING = "Historical replay from the static H&M Kaggle dataset. Scores order candidates only; they are not probabilities, confidence, current availability, or evidence of business uplift."
 REF = re.compile(r"^v2c_[0-9a-f]{24}$")
@@ -135,6 +135,10 @@ def build_release(output: Path, *, release_id: str, key: bytes, responses: list[
 
 def verify_release(root: Path) -> dict:
     manifest = json.loads((root / "manifest.json").read_text())
+    fields={"schema_version","release_id","status","data_mode","ranking_mode","score_semantics","warning","dates",
+            "customer_count","model_available_after","calibrator_available_after","database_sha256","logical_sha256","provenance","quality"}
+    if set(manifest)!=fields or manifest["data_mode"]!="historical_replay" or manifest["ranking_mode"]!="trained_ranker" or manifest["score_semantics"]!="ordering_only":
+        raise ValueError("release manifest fields/semantics mismatch")
     if manifest.get("schema_version") != "replay-release.v2" or sha256(root / "replay.duckdb") != manifest.get("database_sha256"):
         raise ValueError("release contract/checksum mismatch")
     validate_public_metadata(manifest["quality"])

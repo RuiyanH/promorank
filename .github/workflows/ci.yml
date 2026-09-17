@@ -76,3 +76,7 @@ jobs:
       - name: Lint workbench
         working-directory: workbench
         run: npm run lint
+
+      - name: Typecheck workbench
+        working-directory: workbench
+        run: npm run typecheck

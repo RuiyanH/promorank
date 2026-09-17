@@ -1,5 +1,7 @@
 const refPattern = /^v2c_[0-9a-f]{24}$/;
 const sources = new Set(["ann", "repurchase", "category_pop", "global_pop", "covisit"]);
+const releasePattern = /^[a-zA-Z0-9_-]{1,100}$/;
+const approvedDates = new Set(["2020-09-09","2020-09-16"]);
 
 function exact(value, keys) {
   if (!value || typeof value !== "object" || Array.isArray(value) || Object.keys(value).sort().join("|") !== [...keys].sort().join("|")) throw new Error("Historical response failed validation.");
@@ -8,7 +10,7 @@ function exact(value, keys) {
 export function validateRecommendations(value) {
   exact(value, ["schema_version", "release_id", "as_of", "ranking_mode", "score_semantics", "warning", "model_available_after", "calibrator_available_after", "customer_ref", "recommendations"]);
   if (value.schema_version !== "workbench-api.v2" || value.ranking_mode !== "trained_ranker" || value.score_semantics !== "ordering_only" || !refPattern.test(value.customer_ref) || !Array.isArray(value.recommendations) || value.recommendations.length < 1 || value.recommendations.length > 12) throw new Error("Invalid V2 historical response.");
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(value.as_of) || value.as_of <= value.model_available_after || value.as_of <= value.calibrator_available_after) throw new Error("Replay date precedes model availability.");
+  if (!releasePattern.test(value.release_id) || !approvedDates.has(value.as_of) || value.model_available_after!=="2020-08-25" || value.calibrator_available_after!=="2020-09-01" || typeof value.warning!=="string") throw new Error("Replay date precedes model availability or release is invalid.");
   const articles = new Set();
   let previous = null;
   for (const [index, row] of value.recommendations.entries()) {
@@ -32,7 +34,31 @@ export function validateCustomers(value) {
   if (value.schema_version !== "workbench-customers.v2" || !Array.isArray(value.customers) || value.customers.length > 100 || !(value.next_cursor === null || typeof value.next_cursor === "string")) throw new Error("Invalid customer page.");
   for (const customer of value.customers) {
     exact(customer, ["customer_ref", "display_label"]);
-    if (!refPattern.test(customer.customer_ref) || typeof customer.display_label !== "string") throw new Error("Invalid historical customer.");
+    if (!refPattern.test(customer.customer_ref) || !/^Historical customer [0-9]{5}$/.test(customer.display_label)) throw new Error("Invalid historical customer.");
+  }
+  return value;
+}
+
+export function validateReleases(value) {
+  exact(value,["schema_version","releases"]);
+  if(value.schema_version!=="workbench-releases.v2" || !Array.isArray(value.releases) || !value.releases.length) throw new Error("Invalid historical release list.");
+  for(const release of value.releases) {
+    exact(release,["release_id","status","dates","customer_count","ranking_mode","score_semantics","warning","model_available_after","calibrator_available_after"]);
+    if(!releasePattern.test(release.release_id) || !["candidate","verified"].includes(release.status) || release.ranking_mode!=="trained_ranker" || release.score_semantics!=="ordering_only" || !Number.isInteger(release.customer_count) || release.customer_count<1 || release.customer_count>20000 || !Array.isArray(release.dates) || release.dates.join(",")!=="2020-09-09,2020-09-16" || release.model_available_after!=="2020-08-25" || release.calibrator_available_after!=="2020-09-01" || typeof release.warning!=="string") throw new Error("Release contract failed validation.");
+  }
+  return value;
+}
+
+export function validateQuality(value) {
+  exact(value,["schema_version","release_id","quality","provenance","status","warning"]);
+  if(value.schema_version!=="workbench-quality.v2" || !releasePattern.test(value.release_id) || !value.quality || typeof value.quality!=="object") throw new Error("Quality response failed validation.");
+  const report=value.quality;
+  if(report.schema_version==="ranker-evaluation.v2") {
+    for(const split of [report.test,report.holdout]) {
+      if(!split?.model || !split.rrf || !Array.isArray(split.bootstrap?.ci95) || split.bootstrap.ci95.length!==2 || !split.bootstrap.ci95.every(Number.isFinite) || typeof split.promotion_gate?.passed!=="boolean" || !Array.isArray(split.promotion_gate.failed_rules) || !split.promotion_gate.failed_rules.every(x=>typeof x==="string")) throw new Error("Offline evaluation failed validation.");
+      for(const name of ["active_day_end_to_end_ndcg_at_12","candidate_recall_ceiling","groups","customers"]) if(!Number.isFinite(split.model[name])) throw new Error("Invalid offline metric.");
+      if(!Number.isFinite(split.rrf.active_day_end_to_end_ndcg_at_12)) throw new Error("Invalid baseline metric.");
+    }
   }
   return value;
 }
@@ -65,11 +91,12 @@ export async function requestReplay(path, signal) {
 }
 
 export function saveLocalReview(release, day, customer, article, signal) {
-  if (!refPattern.test(customer) || !/^\d{10}$/.test(article) || !["relevant", "not_relevant"].includes(signal)) throw new Error("Invalid review identity.");
+  if (!releasePattern.test(release) || !approvedDates.has(day) || !refPattern.test(customer) || !/^\d{10}$/.test(article) || !["relevant", "not_relevant"].includes(signal)) throw new Error("Invalid review identity.");
   const identity = `${release}:${day}:${customer}:${article}`;
   let records = {};
   try { records = JSON.parse(localStorage.getItem("marketrank-reviews-v2") || "{}"); } catch { /* discard invalid local state */ }
   if (!records || typeof records !== "object" || Array.isArray(records)) records = {};
+  records=Object.fromEntries(Object.entries(records).filter(([id,row])=>row && Object.keys(row).sort().join(",")==="article_id,as_of,customer_ref,release_id,signal" && releasePattern.test(row.release_id) && approvedDates.has(row.as_of) && refPattern.test(row.customer_ref) && /^\d{10}$/.test(row.article_id) && ["relevant","not_relevant"].includes(row.signal) && id===`${row.release_id}:${row.as_of}:${row.customer_ref}:${row.article_id}`));
   records[identity] = { release_id: release, as_of: day, customer_ref: customer, article_id: article, signal };
   localStorage.setItem("marketrank-reviews-v2", JSON.stringify(records));
 }
