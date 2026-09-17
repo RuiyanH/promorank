@@ -412,4 +412,21 @@ Delegation succeeds when all four slices are complete against frozen synthetic c
 
 ## 14. Current go/no-go status
 
-The second independent manager review returned `NO-GO` for full fan-out. G0a is complete, and the corrected A0 component is independently approved for user/integrator integration with no remaining P0/P1 finding. Real H&M data, retriever training, the seven-day pilot, test/holdout access, large compute, service/UI work, deployment, and publication remain blocked. Before G0b, the user/integrator must create a clean integrated commit, preserve and revalidate the frozen contract hashes and V1 rollback baseline, run the complete remote workflow including every Spark test, and record the terminal evidence. Full A/B/C require independent G0b acceptance; D has the additional API-fixture hash gate. Nonblocking later hardening: give clearer errors for zero epochs, non-finite learning rates, and out-of-range vocabulary indices.
+The earlier independent review approved A0 but stopped real execution pending
+integration and cluster access. On 2026-09-16 the user authorized the builder as
+project owner, explicitly permitting justified plan changes. The original Git
+history, V1 rollback tag and frozen API fixture have been restored/revalidated,
+and clean remote CI including Spark is passing.
+
+Bounded local execution on the mounted Kingston volume replaces the unavailable
+Duo-gated cluster session. Measured pilot acceptance authorizes the full
+development build; immutable freeze checks still precede final outcomes. The
+owner is integrating ranking, replay/API and the V2 UI on `codex/v2-industry`.
+See `docs/V2_EXECUTION.md` for exact evidence, adjustments and current gate status,
+and `docs/V2_RUNBOOK.md` for operation and rollback.
+
+Engineering execution is authorized, but neither independent review nor the
+five-person usability study can be self-certified. Until those and the remaining
+quality/release gates pass, V2 stays a candidate, V1 remains promoted, and the
+full-cohort service stays local/private. No public deployment is authorized by
+the local implementation or by a passing offline score alone.

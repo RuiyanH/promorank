@@ -107,3 +107,16 @@ hash-bound evaluation freeze. No model changes are permitted after that freeze.
 
 The builder's acceptance authorizes bounded engineering execution; it does not
 substitute for the independent final review or five-person usability study.
+
+The corrected seven-day pilot contains 88,241 groups, 13,505,713 union candidates
+and 36,436,513 compressed bytes; wall time 135.68 s, peak RSS 3,454,451,712 bytes.
+An independent process rebuilt the first four full-training partitions with
+identical physical parquet hashes. A direct relational comparison of the first
+day found zero differences in any source or the sampled feature frame.
+This costs more than unordered reduction but remains comfortably inside the
+local resource budget. The full build uses the corrected pipeline.
+
+Local verification after schema reconciliation: 179 pytest tests passed (Spark
+included), dbt 19/19 passed, and workbench 17 tests/build/lint/typecheck passed.
+Remote run `35170121174` passed on `08a2825`. The workflow now installs from
+`uv.lock` rather than allowing fresh transitive dependency resolution.

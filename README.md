@@ -12,6 +12,10 @@ model path. Offline measurements do not establish live quality or business uplif
 
 Build log with every measured number: [`BUILD_NOTES.md`](BUILD_NOTES.md).
 
+V2 operation, verification and rollback: [`docs/V2_RUNBOOK.md`](docs/V2_RUNBOOK.md).
+V2 is a local/private candidate until its offline, independent-review and human
+usability gates are complete. The original V1 remains available with `?mode=v1`.
+
 ## Personalization Workbench v1
 
 The repository now includes a usable internal workbench under `workbench/`.
@@ -51,11 +55,12 @@ recorded in [`docs/V1_IMPLEMENTATION.md`](docs/V1_IMPLEMENTATION.md).
 
 ## Honest framing of the dataset
 
-Verbatim from the project spec, because an interviewer will find these:
+Scope constraints that govern the implemented system:
 
 - **H&M is a single retailer, not a two-sided marketplace.** There are no
   sellers, no supply side, no matching problem. The honest description is
-  **retail personalization + promotion allocation**.
+  **historical retail personalization**. Promotion allocation belongs to an
+  older roadmap, not the implemented V2 product.
 - **Prices are scaled, not currency.** Every revenue figure is in arbitrary
   units, so all revenue results are **relative** — "+x% expected revenue at
   equal relevance", never a dollar amount.
@@ -74,8 +79,8 @@ Verbatim from the project spec, because an interviewer will find these:
   and `club_member_status` behaviourally; a garment's `product_type_no` is
   effectively immutable. A Type-2 slowly-changing dimension is the standard fix
   and this dataset cannot support one.
-- **Elasticity is identified off observational within-article price variation**
-  and is the weakest causal claim in the project.
+- **Observational price variation does not establish causal elasticity.** V2
+  makes no elasticity, causal revenue, promotion-allocation or uplift claim.
 
 ---
 
