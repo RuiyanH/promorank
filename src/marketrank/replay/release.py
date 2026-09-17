@@ -178,6 +178,10 @@ def verify_release(root: Path) -> dict:
     with open_readonly_release(root) as db:
         if {row[0] for row in db.execute("SHOW TABLES").fetchall()}!={"customers","recommendations"}:
             raise ValueError("unexpected tables in browser-safe release")
+        for table,columns in (("customers",["customer_ref","display_label"]),("recommendations",["customer_ref","as_of","payload"])):
+            actual=db.execute(f"PRAGMA table_info('{table}')").fetchall()
+            if [(row[1],row[2]) for row in actual]!=[(name,"VARCHAR") for name in columns]:
+                raise ValueError("unexpected columns in browser-safe release")
         if logical_hash(db, "customers", "customer_ref") != manifest["logical_sha256"]["customers"]:
             raise ValueError("customer logical checksum mismatch")
         if logical_hash(db, "recommendations", "customer_ref,as_of") != manifest["logical_sha256"]["recommendations"]:

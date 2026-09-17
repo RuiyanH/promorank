@@ -104,6 +104,18 @@ def test_release_rejects_extra_tables_even_with_an_updated_file_checksum(release
     with pytest.raises(ValueError,match="unexpected tables"):verify_release(release)
 
 
+def test_release_rejects_extra_columns_even_with_updated_checksums(release):
+    from marketrank.evidence import sha256,write_json
+    from marketrank.replay.release import logical_hash
+    manifest=json.loads((release/"manifest.json").read_text())
+    with duckdb.connect(str(release/"replay.duckdb")) as db:
+        db.execute("ALTER TABLE customers ADD COLUMN raw_customer_id VARCHAR")
+        manifest["logical_sha256"]["customers"]=logical_hash(db,"customers","customer_ref")
+    manifest["database_sha256"]=sha256(release/"replay.duckdb")
+    write_json(release/"manifest.json",manifest)
+    with pytest.raises(ValueError,match="unexpected columns"):verify_release(release)
+
+
 @pytest.mark.parametrize("bad",[None,[],{"release_id":None}])
 def test_malformed_manifest_stays_live_but_not_ready(release,bad):
     (release/"manifest.json").write_text(json.dumps(bad))
