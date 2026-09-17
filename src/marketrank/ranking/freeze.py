@@ -1,5 +1,6 @@
 """Immutable development-to-final-evaluation boundary."""
 import json
+from datetime import datetime,timezone
 from pathlib import Path
 
 from marketrank.evidence import revision, sha256, write_json
@@ -15,7 +16,15 @@ def create_freeze(root: Path, *, model: Path, calibrator: Path, source: Path) ->
     if not model_meta.get("frozen") or calibration["model_manifest_sha256"] != sha256(model / "manifest.json"):
         raise ValueError("model/calibrator lineage must be complete before opening final outcomes")
     artifacts = [model / "manifest.json", model / model_meta["selected"]["model_file"],
-                 calibrator / "manifest.json", calibrator / "calibrator.joblib"]
+                 calibrator / "manifest.json", calibrator / "calibrator.joblib", source/"manifest.json"]
+    # Extending the store replaces its live source sidecar. Preserve the exact
+    # development record so earlier frame identities remain independently auditable.
+    if (root/"store/source.json").exists():
+        development_source=root/"development-store-source.json"
+        write_json(development_source,json.loads((root/"store/source.json").read_text()))
+        if sha256(development_source)!=sha256(root/"store/source.json"):
+            raise ValueError("development source record must retain its canonical checksum")
+        artifacts.append(development_source)
     if (root/"training-execution.json").exists():artifacts.append(root/"training-execution.json")
     from . import metrics, model as model_module, dataset
     from marketrank.jobs import evaluate_ranker, train_ranker
@@ -23,6 +32,7 @@ def create_freeze(root: Path, *, model: Path, calibrator: Path, source: Path) ->
     from marketrank.retrieval_v2 import exact
     code = [Path(module.__file__) for module in (metrics,model_module,dataset,evaluate_ranker,train_ranker,analytical,store,exact)] + [Path(__file__)]
     value = {"schema_version": "evaluation-freeze.v2", "code_revision": revision(),
+        "created_at_utc":datetime.now(timezone.utc).isoformat(),
         "artifacts": [{"path": str(p.resolve()), "sha256": sha256(p)} for p in artifacts],
         "evaluation_code": [{"path": str(p.resolve()), "sha256": sha256(p)} for p in code],
         "transaction_snapshot": json.loads((source / "manifest.json").read_text())["transaction_snapshot"],

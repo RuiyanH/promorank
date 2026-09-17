@@ -16,7 +16,7 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from marketrank.evidence import canonical
-from marketrank.replay.release import REF, verify_release
+from marketrank.replay.release import REF, verify_release, open_readonly_release
 from .contracts import CustomersResponse, RecommendationsResponse, ReleasesResponse, QualityResponse
 
 
@@ -107,7 +107,7 @@ def create_app(release_root: Path | None = None, *, cursor_key: bytes | None = N
 
     def connect():
         ready()
-        return duckdb.connect(str(release_root / "replay.duckdb"), read_only=True)
+        return open_readonly_release(release_root)
 
     @app.get("/health/live")
     def live():

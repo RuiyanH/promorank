@@ -6,7 +6,7 @@ import duckdb
 import pytest
 from fastapi.testclient import TestClient
 
-from marketrank.replay.release import build_release, validate_recommendations, verify_release
+from marketrank.replay.release import build_release, validate_recommendations, verify_release, open_readonly_release
 from marketrank.service.app import create_app
 
 
@@ -76,6 +76,9 @@ def test_readonly_api_pagination_queries_and_privacy(release):
     assert client.get("/health/live", headers={"host": "evil.example"}).status_code == 400
     assert client.get("/health/live", headers={"host": "testserver"}).status_code == 400
     assert client.get("/docs").status_code==404
+    with open_readonly_release(release) as db:
+        assert db.execute("SELECT current_setting('enable_external_access')").fetchone()[0] is False
+        with pytest.raises(duckdb.Error):db.execute("SELECT * FROM read_text(?)",[str(release/"manifest.json")])
 
 
 def test_corrupt_release_stays_live_but_not_ready(release):

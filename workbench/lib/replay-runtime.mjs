@@ -2,6 +2,7 @@ const refPattern = /^v2c_[0-9a-f]{24}$/;
 const sources = new Set(["ann", "repurchase", "category_pop", "global_pop", "covisit"]);
 const releasePattern = /^[a-zA-Z0-9_-]{1,100}$/;
 const approvedDates = new Set(["2020-09-09","2020-09-16"]);
+const depths={ann:50,repurchase:30,category_pop:40,global_pop:40,covisit:40};
 
 function exact(value, keys) {
   if (!value || typeof value !== "object" || Array.isArray(value) || Object.keys(value).sort().join("|") !== [...keys].sort().join("|")) throw new Error("Historical response failed validation.");
@@ -15,13 +16,13 @@ export function validateRecommendations(value) {
   let previous = null;
   for (const [index, row] of value.recommendations.entries()) {
     exact(row, ["position", "article_id", "ordering_score", "source_evidence", "article_metadata"]);
-    if (row.position !== index + 1 || !/^\d{10}$/.test(row.article_id) || !Number.isFinite(row.ordering_score) || articles.has(row.article_id)) throw new Error("Invalid ranked article.");
+    if (row.position !== index + 1 || typeof row.article_id!=="string" || !/^\d{10}$/.test(row.article_id) || !Number.isFinite(row.ordering_score) || articles.has(row.article_id)) throw new Error("Invalid ranked article.");
     if (previous && (row.ordering_score > previous.ordering_score || (row.ordering_score === previous.ordering_score && row.article_id < previous.article_id))) throw new Error("Invalid recommendation order.");
     previous = row; articles.add(row.article_id);
     if (!Array.isArray(row.source_evidence) || !row.source_evidence.length || new Set(row.source_evidence.map(x => x.source)).size !== row.source_evidence.length) throw new Error("Missing or duplicate source evidence.");
     for (const source of row.source_evidence) {
       exact(source, ["source", "display_name", "source_rank"]);
-      if (!sources.has(source.source) || !Number.isInteger(source.source_rank) || source.source_rank < 1 || source.display_name !== (source.source === "ann" ? "embedding_retrieval" : source.source)) throw new Error("Invalid candidate source.");
+      if (!sources.has(source.source) || !Number.isInteger(source.source_rank) || source.source_rank < 1 || source.source_rank>depths[source.source] || source.display_name !== (source.source === "ann" ? "embedding_retrieval" : source.source)) throw new Error("Invalid candidate source.");
     }
     exact(row.article_metadata, ["product_type_name", "metadata_status"]);
     if (!(row.article_metadata.product_type_name === null || typeof row.article_metadata.product_type_name === "string") || !["static_snapshot_attribute", "partial_static_snapshot"].includes(row.article_metadata.metadata_status)) throw new Error("Invalid static metadata.");
@@ -31,7 +32,7 @@ export function validateRecommendations(value) {
 
 export function validateCustomers(value) {
   exact(value, ["schema_version", "release_id", "customers", "next_cursor"]);
-  if (value.schema_version !== "workbench-customers.v2" || !Array.isArray(value.customers) || value.customers.length > 100 || !(value.next_cursor === null || typeof value.next_cursor === "string")) throw new Error("Invalid customer page.");
+  if (value.schema_version !== "workbench-customers.v2" || !releasePattern.test(value.release_id) || !Array.isArray(value.customers) || value.customers.length > 100 || new Set(value.customers.map(x=>x?.customer_ref)).size!==value.customers.length || !(value.next_cursor === null || typeof value.next_cursor === "string")) throw new Error("Invalid customer page.");
   for (const customer of value.customers) {
     exact(customer, ["customer_ref", "display_label"]);
     if (!refPattern.test(customer.customer_ref) || !/^Historical customer [0-9]{5}$/.test(customer.display_label)) throw new Error("Invalid historical customer.");
@@ -51,14 +52,18 @@ export function validateReleases(value) {
 
 export function validateQuality(value) {
   exact(value,["schema_version","release_id","quality","provenance","status","warning"]);
-  if(value.schema_version!=="workbench-quality.v2" || !releasePattern.test(value.release_id) || !value.quality || typeof value.quality!=="object") throw new Error("Quality response failed validation.");
+  if(value.schema_version!=="workbench-quality.v2" || !releasePattern.test(value.release_id) || !["candidate","verified"].includes(value.status) || typeof value.warning!=="string" || !value.provenance || typeof value.provenance!=="object" || Array.isArray(value.provenance) || !value.quality || typeof value.quality!=="object" || Array.isArray(value.quality)) throw new Error("Quality response failed validation.");
   const report=value.quality;
   if(report.schema_version==="ranker-evaluation.v2") {
+    if(typeof report.quality_gate_passed!=="boolean") throw new Error("Invalid offline acceptance status.");
     for(const split of [report.test,report.holdout]) {
       if(!split?.model || !split.rrf || !Array.isArray(split.bootstrap?.ci95) || split.bootstrap.ci95.length!==2 || !split.bootstrap.ci95.every(Number.isFinite) || typeof split.promotion_gate?.passed!=="boolean" || !Array.isArray(split.promotion_gate.failed_rules) || !split.promotion_gate.failed_rules.every(x=>typeof x==="string")) throw new Error("Offline evaluation failed validation.");
       for(const name of ["active_day_end_to_end_ndcg_at_12","candidate_recall_ceiling","groups","customers"]) if(!Number.isFinite(split.model[name])) throw new Error("Invalid offline metric.");
       if(!Number.isFinite(split.rrf.active_day_end_to_end_ndcg_at_12)) throw new Error("Invalid baseline metric.");
+      if(!Number.isInteger(split.model.groups) || !Number.isInteger(split.model.customers) || split.model.customers<1 || split.model.groups<split.model.customers || split.bootstrap.ci95[0]>split.bootstrap.ci95[1]) throw new Error("Invalid evaluation denominators or uncertainty.");
+      for(const metric of [split.model.active_day_end_to_end_ndcg_at_12,split.model.candidate_recall_ceiling,split.rrf.active_day_end_to_end_ndcg_at_12]) if(metric<0 || metric>1) throw new Error("Offline ranking metric is out of range.");
     }
+    if(report.quality_gate_passed!==[report.test,report.holdout].every(x=>x.promotion_gate.passed)) throw new Error("Inconsistent offline acceptance status.");
   }
   return value;
 }

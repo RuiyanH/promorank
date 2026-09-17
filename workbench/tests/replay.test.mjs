@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
-import {validateRecommendations,validateCustomers,saveLocalReview,readLocalReviews} from "../lib/replay-runtime.mjs";
+import {validateRecommendations,validateCustomers,validateQuality,saveLocalReview,readLocalReviews} from "../lib/replay-runtime.mjs";
 
 const golden=JSON.parse(readFileSync(new URL("../../tests/fixtures/contracts_v2/api-recommendations.json",import.meta.url)));
 test("V2 accepts frozen contract and rejects hybrid, probability, and early dates",()=>{
@@ -26,4 +26,13 @@ test("V2 local review identity separates release and historical date",()=>{
   assert.deepEqual(readLocalReviews("release_a","2020-09-09",golden.customer_ref),{});
   assert.equal(readLocalReviews("release_a","2020-09-16",golden.customer_ref)["0000000001"],"relevant");
   delete globalThis.localStorage;
+});
+
+test("V2 quality rejects false-looking strings and inconsistent acceptance",()=>{
+  const split={model:{active_day_end_to_end_ndcg_at_12:.05,candidate_recall_ceiling:.12,groups:12,customers:10},rrf:{active_day_end_to_end_ndcg_at_12:.03},bootstrap:{ci95:[.01,.03]},promotion_gate:{passed:true,failed_rules:[]}};
+  const value={schema_version:"workbench-quality.v2",release_id:"example",status:"candidate",warning:"Historical only",provenance:{},quality:{schema_version:"ranker-evaluation.v2",quality_gate_passed:true,test:split,holdout:structuredClone(split)}};
+  assert.equal(validateQuality(value),value);
+  for(const mutate of [x=>x.quality.quality_gate_passed="false",x=>x.quality.test.promotion_gate.passed=false,x=>x.quality.test.model.customers=20,x=>x.status="promoted",x=>x.quality.test.model.active_day_end_to_end_ndcg_at_12=1.1]) {
+    const changed=structuredClone(value);mutate(changed);assert.throws(()=>validateQuality(changed));
+  }
 });

@@ -6,6 +6,7 @@ they never glob historical Iceberg data files (which would include stale rows).
 from __future__ import annotations
 
 import argparse
+from datetime import datetime,timezone
 from pathlib import Path
 
 from pyspark.sql import functions as F
@@ -44,6 +45,7 @@ def main(argv=None):
         tx.repartition(16).write.mode("error").parquet(str(out / "transactions"))
         spark.table(ARTICLES_TABLE).select("article_id", "product_type_no", "product_type_name").coalesce(1).write.mode("error").parquet(str(out / "articles"))
         manifest = {"schema_version": "source-export.v2", "code_revision": revision(),
+                    "export_finished_at_utc":datetime.now(timezone.utc).isoformat(),
                     "transaction_snapshot": str(snapshot), "through": args.through,
                     "transaction_rows": spark.read.parquet(str(out / "transactions")).count(),
                     "restricted": True, "evaluation_freeze_sha256": sha256(args.evaluation_freeze) if args.evaluation_freeze else None,

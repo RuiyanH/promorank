@@ -43,6 +43,8 @@ def test_daily_pipeline_preserves_positives_sources_and_future_invariance(tmp_pa
     first = builder.build("2020-07-15", spine_type="active_day", output=tmp_path / "one", split="ranker_fit", pilot=True)
     assert len(first["source_rows"]) == 5
     frame = pq.read_table(tmp_path / "one/frame.parquet")
+    from marketrank.jobs.audit_v2_artifacts import audit_partition
+    assert audit_partition(tmp_path/"one")["files"]==7
     assert sum(frame["label"].to_pylist()) == 4
     assert first["candidate_rows"] >= first["frame_rows"]
     # Same-day prices are outcomes, never features; future events must have no
@@ -58,6 +60,8 @@ def test_daily_pipeline_preserves_positives_sources_and_future_invariance(tmp_pa
     assert first == builder.build("2020-07-15", spine_type="active_day", output=tmp_path / "one", split="ranker_fit", pilot=True)
     with pytest.raises(ValueError):
         builder.build("2020-09-03", spine_type="active_day", output=tmp_path / "bad", split="test")
+    write_json(tmp_path/"one/manifest.json",{**first,"source_rows":{**first["source_rows"],"ann":first["source_rows"]["ann"]+1}})
+    with pytest.raises(ValueError,match="source row count"):audit_partition(tmp_path/"one")
     builder.db.close()
 
 

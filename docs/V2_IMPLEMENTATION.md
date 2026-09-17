@@ -12,6 +12,13 @@ claims remain gated by the measured evidence below. Historical authorization
 statements later in this document describe the original A0 handoff, not a current
 requirement to ask the user again. Independent review must remain independent.
 
+**Current sequencing adaptation:** the original multi-owner delegation sections
+remain below as the original handoff protocol. This session has one authorized
+owner, not independently approving slice agents. G0b's measured engineering
+acceptance permits bounded full compute; its independent assurance is explicitly
+outstanding and carried into G7. It is not recorded as an independent G0b pass.
+Independent release review and five-person usability remain promotion gates.
+
 ## 1. Delivery strategy
 
 V2 is delivered through a two-stage foundation gate followed by four non-overlapping slices:

@@ -107,6 +107,15 @@ The jobs are deliberately explicit, not an unattended scheduler:
    every customer/date and run API/UI checks. A preserved release key is reused
    when retrying a failed build into a new directory; it is never regenerated.
 
+Run `audit_v2_artifacts --root <working-root> --out <audit-json>` after development
+frames; add `--final` after test/holdout/replay builds. It independently checks
+all seven physical files per date, complete partition ranges, declared source
+counts, frame/spine counts, positive retention and checksums. The final audit
+also records the global `ope_env` context-only row count; daily manifests count
+personalized-spine context separately. Neither is a standalone `ope_env` outcome
+metric. The freeze preserves the original development-store source record before
+the live store sidecar is advanced to the final period.
+
 Keep incomplete or superseded outputs for diagnosis. Move a failed partition
 to a separately named directory before retrying; do not silently overwrite it.
 Daily resumes require exact input, code and file checksums. Raw source exports
@@ -127,3 +136,6 @@ Promotion requires all quality guardrails, artifact/privacy/security checks,
 clean CI, real API/UI performance, five real users, and an independent review.
 Private hosting additionally requires a named authenticated access boundary.
 The local-only implementation intentionally refuses a nonlocal bind.
+
+The independent-review checklist and unassisted human-study protocol are in
+[`V2_ACCEPTANCE.md`](V2_ACCEPTANCE.md). An empty protocol is not passing evidence.

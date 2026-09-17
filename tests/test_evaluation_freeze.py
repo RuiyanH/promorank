@@ -16,7 +16,11 @@ def test_freeze_binds_artifacts_and_refuses_second_open(tmp_path):
     write_json(model/"manifest.json",{"frozen":True,"selected":{"model_file":"selected.txt"}})
     write_json(calibration/"manifest.json",{"model_manifest_sha256":sha256(model/"manifest.json")})
     write_json(source/"manifest.json",{"transaction_snapshot":"synthetic"})
+    write_json(tmp_path/"store/source.json",{"through":"2020-09-01","source_manifest_sha256":sha256(source/"manifest.json")})
     path=create_freeze(tmp_path,model=model,calibrator=calibration,source=source)
+    assert validate_freeze(path)["bootstrap_replicates"]==2000
+    assert sha256(tmp_path/"development-store-source.json")==sha256(tmp_path/"store/source.json")
+    write_json(tmp_path/"store/source.json",{"through":"2020-09-22"})
     assert validate_freeze(path)["bootstrap_replicates"]==2000
     with pytest.raises(ValueError):create_freeze(tmp_path,model=model,calibrator=calibration,source=source)
     (model/"selected.txt").write_text("changed")

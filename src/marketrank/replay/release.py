@@ -19,6 +19,12 @@ REF = re.compile(r"^v2c_[0-9a-f]{24}$")
 ARTICLE = re.compile(r"^[0-9]{10}$")
 
 
+def open_readonly_release(root:Path):
+    # Release queries never need filesystem/network table functions, extension
+    # loading or attachment of another database.
+    return duckdb.connect(str(root/"replay.duckdb"),read_only=True,config={"enable_external_access":False})
+
+
 def validate_release_status(status:str,quality:dict):
     if status not in {"candidate","verified"}:raise ValueError("unknown release status")
     if status=="verified" and not (quality.get("quality_gate_passed") is True and
@@ -169,7 +175,7 @@ def verify_release(root: Path) -> dict:
     validate_release_status(manifest["status"],manifest["quality"])
     if manifest["status"] not in {"candidate","verified"} or manifest["dates"] != ["2020-09-09","2020-09-16"]:
         raise ValueError("release status/dates mismatch")
-    with duckdb.connect(str(root / "replay.duckdb"), read_only=True) as db:
+    with open_readonly_release(root) as db:
         if {row[0] for row in db.execute("SHOW TABLES").fetchall()}!={"customers","recommendations"}:
             raise ValueError("unexpected tables in browser-safe release")
         if logical_hash(db, "customers", "customer_ref") != manifest["logical_sha256"]["customers"]:

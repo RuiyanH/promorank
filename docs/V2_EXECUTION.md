@@ -32,10 +32,13 @@ review and the five-person usability study cannot be self-certified by the build
 - Test isolation now supplies a disposable Iceberg catalog, configuration and
   Spark spill directory before importing application configuration.
 
-## Open verification
+## Verification status
 
-Real-data G0b, full V2 evaluation, integration, UI, release and operational
-verification are pending. This file will be updated with terminal results.
+The measured real-data pilot and development-frame builds are complete. The
+eight-configuration model-selection run is in progress; final evaluation and
+real-release operational verification remain pending. Synthetic UI/API checks
+are complete, separately from real-data evidence. Later sections preserve the
+sequence of earlier checks and superseded pilot measurements.
 
 ## Execution adaptation and measured pilot
 

@@ -1,6 +1,7 @@
 """One frozen test/holdout evaluation, with customer-cluster uncertainty."""
 import argparse
 import json
+from datetime import datetime,timezone
 from pathlib import Path
 
 import joblib
@@ -22,6 +23,7 @@ def run(root: Path):
         raise ValueError("final evaluation output already exists; preserve the single evaluation")
     output.mkdir()
     write_json(output / "opened.json", {"evaluation_freeze_sha256": sha256(freeze),
+        "opened_at_utc":datetime.now(timezone.utc).isoformat(),
         "policy": "single_frozen_evaluation_no_retuning"})
     model, manifest = load_model(root / "ranker")
     calibrator = joblib.load(root / "calibration/calibrator.joblib")
@@ -48,6 +50,7 @@ def run(root: Path):
         print({"split": split, "model_ndcg": model_report["active_day_end_to_end_ndcg_at_12"],
             "rrf_ndcg": baseline["active_day_end_to_end_ndcg_at_12"], "gate": result["promotion_gate"]}, flush=True)
     report = {"schema_version": "ranker-evaluation.v2", "evaluation_freeze_sha256": sha256(freeze),
+        "completed_at_utc":datetime.now(timezone.utc).isoformat(),
         "test": results["test"], "holdout": results["holdout"],
         "quality_gate_passed": all(v["promotion_gate"]["passed"] for v in results.values()),
         "release_status": "candidate", "independent_review": "pending", "human_usability": "pending"}
