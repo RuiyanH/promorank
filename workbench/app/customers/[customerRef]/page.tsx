@@ -12,7 +12,7 @@ export default async function CustomerPage({ params, searchParams }: { params: P
   const initialV2=(await searchParams)?.mode==="v2";
   return (
     <AppShell currentPath="/customers" initialV2={initialV2}>
-      <ReleaseExperience view="customer" customerRef={decodeURIComponent(customerRef)} initialV2={initialV2} />
+      <ReleaseExperience view="customer" customerRef={customerRef} initialV2={initialV2} />
     </AppShell>
   );
 }

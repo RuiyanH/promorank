@@ -43,13 +43,13 @@ def test_json_schema_and_openapi_reconcile_with_frozen_fixture(release):
     jsonschema.validate(value,RecommendationsResponse.model_json_schema())
     manifest=json.loads((release/"manifest.json").read_text())
     jsonschema.validate(manifest,json.loads(Path("contracts/replay-release-v2.schema.json").read_text()))
-    api=TestClient(create_app(release)).get("/openapi.json").json()
+    api=TestClient(create_app(release),base_url="http://localhost").get("/openapi.json").json()
     response=api["paths"]["/api/v2/releases/{release_id}/customers/{customer_ref}/recommendations"]["get"]["responses"]["200"]
     assert response["content"]["application/json"]["schema"]["$ref"].endswith("/RecommendationsResponse")
 
 
 def test_readonly_api_pagination_queries_and_privacy(release):
-    client = TestClient(create_app(release, cursor_key=b"c"*32))
+    client = TestClient(create_app(release, cursor_key=b"c"*32),base_url="http://localhost")
     assert client.get("/health/live").status_code == 200
     assert client.get("/health/ready").status_code == 200
     prefix = "/api/v2/releases/test_release"
@@ -74,6 +74,8 @@ def test_readonly_api_pagination_queries_and_privacy(release):
         with pytest.raises(duckdb.Error):
             db.execute("DELETE FROM customers")
     assert client.get("/health/live", headers={"host": "evil.example"}).status_code == 400
+    assert client.get("/health/live", headers={"host": "testserver"}).status_code == 400
+    assert client.get("/docs").status_code==404
 
 
 def test_corrupt_release_stays_live_but_not_ready(release):
@@ -81,7 +83,7 @@ def test_corrupt_release_stays_live_but_not_ready(release):
         stream.write(b"corrupt")
     with pytest.raises(ValueError):
         verify_release(release)
-    client = TestClient(create_app(release))
+    client = TestClient(create_app(release),base_url="http://localhost")
     assert client.get("/health/live").status_code == 200
     assert client.get("/health/ready").status_code == 503
     assert client.get("/api/v2/releases").status_code == 503

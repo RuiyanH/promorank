@@ -19,6 +19,14 @@ REF = re.compile(r"^v2c_[0-9a-f]{24}$")
 ARTICLE = re.compile(r"^[0-9]{10}$")
 
 
+def validate_release_status(status:str,quality:dict):
+    if status not in {"candidate","verified"}:raise ValueError("unknown release status")
+    if status=="verified" and not (quality.get("quality_gate_passed") is True and
+        quality.get("independent_review")=="passed" and quality.get("human_usability")=="passed_five_users" and
+        quality.get("technical_verification")=="passed"):
+        raise ValueError("verified status requires offline, technical, independent and human acceptance")
+
+
 def validate_public_metadata(value, key=""):
     """Defense in depth: aggregate reports may not carry restricted records."""
     if key in {"customer_id", "customer_ref", "raw_id", "secret", "key", "path", "labels", "payload", "probability", "confidence"}:
@@ -100,8 +108,11 @@ def build_release(output: Path, *, release_id: str, key: bytes, responses: list[
         raise ValueError("release output must be new and release ID must be safe")
     if status not in {"candidate", "verified"} or len(key) < 32 or not responses:
         raise ValueError("invalid release status/key/empty response set")
+    validate_release_status(status,quality)
     validate_public_metadata(quality)
     validate_public_metadata(provenance)
+    data_mode="synthetic_fixture" if provenance.get("data_mode")=="synthetic_fixture" else "historical_replay"
+    warning=("SYNTHETIC QA FIXTURE ONLY: not real training or evaluation evidence. " if data_mode=="synthetic_fixture" else "")+WARNING
     output.mkdir(parents=True)
     db = duckdb.connect(str(output / "replay.duckdb"))
     db.execute("CREATE TABLE customers(customer_ref VARCHAR PRIMARY KEY, display_label VARCHAR UNIQUE NOT NULL)")
@@ -112,7 +123,7 @@ def build_release(output: Path, *, release_id: str, key: bytes, responses: list[
     db.executemany("INSERT INTO customers VALUES (?,?)", [(refs[value], f"Historical customer {index:05d}") for index, value in enumerate(raw_customers, 1)])
     sanitized = []
     for response in responses:
-        value = {**response, "release_id": release_id, "customer_ref": refs[response["customer_ref"]]}
+        value = {**response, "release_id": release_id, "customer_ref": refs[response["customer_ref"]],"warning":warning}
         validate_recommendations(value)
         sanitized.append((value["customer_ref"], value["as_of"], canonical(value).decode()))
     db.executemany("INSERT INTO recommendations VALUES (?,?,?)", sanitized)
@@ -123,8 +134,8 @@ def build_release(output: Path, *, release_id: str, key: bytes, responses: list[
     db.execute("CHECKPOINT")
     db.close()
     manifest = {"schema_version": "replay-release.v2", "release_id": release_id,
-        "status": status, "data_mode": "historical_replay", "ranking_mode": "trained_ranker",
-        "score_semantics": "ordering_only", "warning": WARNING, "dates": dates,
+        "status": status, "data_mode": data_mode, "ranking_mode": "trained_ranker",
+        "score_semantics": "ordering_only", "warning": warning, "dates": dates,
         "customer_count": len(raw_customers), "model_available_after": "2020-08-25",
         "calibrator_available_after": "2020-09-01", "database_sha256": sha256(output / "replay.duckdb"),
         "logical_sha256": hashes, "provenance": provenance, "quality": quality}
@@ -137,12 +148,15 @@ def verify_release(root: Path) -> dict:
     manifest = json.loads((root / "manifest.json").read_text())
     fields={"schema_version","release_id","status","data_mode","ranking_mode","score_semantics","warning","dates",
             "customer_count","model_available_after","calibrator_available_after","database_sha256","logical_sha256","provenance","quality"}
-    if set(manifest)!=fields or manifest["data_mode"]!="historical_replay" or manifest["ranking_mode"]!="trained_ranker" or manifest["score_semantics"]!="ordering_only":
+    if set(manifest)!=fields or manifest["data_mode"] not in {"historical_replay","synthetic_fixture"} or manifest["ranking_mode"]!="trained_ranker" or manifest["score_semantics"]!="ordering_only":
         raise ValueError("release manifest fields/semantics mismatch")
+    if manifest["data_mode"]=="synthetic_fixture" and (manifest["status"]!="candidate" or not manifest["warning"].startswith("SYNTHETIC QA FIXTURE ONLY")):
+        raise ValueError("synthetic release must be an explicitly marked candidate")
     if manifest.get("schema_version") != "replay-release.v2" or sha256(root / "replay.duckdb") != manifest.get("database_sha256"):
         raise ValueError("release contract/checksum mismatch")
     validate_public_metadata(manifest["quality"])
     validate_public_metadata(manifest["provenance"])
+    validate_release_status(manifest["status"],manifest["quality"])
     if manifest["status"] not in {"candidate","verified"} or manifest["dates"] != ["2020-09-09","2020-09-16"]:
         raise ValueError("release status/dates mismatch")
     with duckdb.connect(str(root / "replay.duckdb"), read_only=True) as db:

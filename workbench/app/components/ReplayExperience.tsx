@@ -108,7 +108,7 @@ export function ReplayExperience({view,customerRef=""}:{view:View;customerRef?:s
       <label>Replay date<select value={day} onChange={e=>setDay(e.target.value)}>{selected.dates.map(d=><option key={d}>{d}</option>)}</select></label>
       <div className="replay-status"><strong>{selected.status==="candidate"?"Candidate release · evaluation pending or gate not passed":"Verified release"}</strong><span>Trained ranker · ordering scores only</span></div>
     </div><p className="scope-note">{selected.warning}</p></>}
-    {error && <div role="alert" className="empty-state"><h2>Replay unavailable</h2><p>{error}</p><button className="button primary" onClick={()=>setAttempt(x=>x+1)}>Retry connection</button></div>}
+    {error && <div role="alert" className="empty-state"><h2>Replay unavailable</h2><p>{error}</p><div className="button-row"><button className="button primary" onClick={()=>{setCursor(null);setPageHistory([]);setAttempt(x=>x+1);}}>Retry connection</button><Link className="button secondary" href="/customers?mode=v2">Browse historical customers</Link></div></div>}
     {busy && <p role="status" aria-live="polite">Loading validated historical records…</p>}
     {!busy && !error && page && <>
       <form className="search-box" onSubmit={e=>{e.preventDefault();setCursor(null);setPageHistory([]);setSubmittedQuery(query);}}><label htmlFor="replay-search">Find a historical label or reference</label><input id="replay-search" type="search" value={query} maxLength={100} onChange={e=>setQuery(e.target.value)} placeholder="Historical customer 00001"/><button className="button primary" type="submit">Search</button></form>

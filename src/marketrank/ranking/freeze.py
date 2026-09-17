@@ -16,6 +16,7 @@ def create_freeze(root: Path, *, model: Path, calibrator: Path, source: Path) ->
         raise ValueError("model/calibrator lineage must be complete before opening final outcomes")
     artifacts = [model / "manifest.json", model / model_meta["selected"]["model_file"],
                  calibrator / "manifest.json", calibrator / "calibrator.joblib"]
+    if (root/"training-execution.json").exists():artifacts.append(root/"training-execution.json")
     from . import metrics, model as model_module, dataset
     from marketrank.jobs import evaluate_ranker, train_ranker
     from marketrank.candidate_pipeline import analytical, store

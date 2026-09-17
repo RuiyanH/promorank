@@ -52,8 +52,10 @@ def create_app(release_root: Path | None = None, *, cursor_key: bytes | None = N
     key = cursor_key or secrets.token_bytes(32)
     if len(key) < 32:
         raise ValueError("cursor signing key must be at least 32 bytes")
-    app = FastAPI(title="MarketRank Historical Replay", version="2.0", docs_url="/docs")
-    app.add_middleware(TrustedHostMiddleware, allowed_hosts=["localhost", "127.0.0.1", "[::1]", "testserver"])
+    # Keep OpenAPI JSON, but do not load third-party CDN scripts on a private
+    # API origin through the default interactive documentation pages.
+    app = FastAPI(title="MarketRank Historical Replay", version="2.0", docs_url=None, redoc_url=None)
+    app.add_middleware(TrustedHostMiddleware, allowed_hosts=["localhost", "127.0.0.1", "[::1]"])
     app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:3000", "http://localhost:5173", "http://127.0.0.1:5173", "http://127.0.0.1:3000"], allow_methods=["GET"], allow_headers=[])
     manifest = None
     signatures = None

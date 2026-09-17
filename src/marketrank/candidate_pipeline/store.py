@@ -19,7 +19,7 @@ import duckdb
 import pyarrow as pa
 import pyarrow.parquet as pq
 
-from marketrank.evidence import sha256, sql_literal, write_json
+from marketrank.evidence import canonical, sha256, sql_literal, write_json
 
 
 class HistoricalStore:
@@ -31,6 +31,14 @@ class HistoricalStore:
         self.db.execute(f"SET memory_limit={sql_literal(memory)}")
         self.db.execute(f"SET temp_directory={sql_literal(root / 'spill')}")
         self.db.execute("SET preserve_insertion_order=false")
+        # A committed extension owns its sidecar. Recover the tiny JSON file
+        # after a crash between the database commit and atomic sidecar rename.
+        if self.db.execute("SELECT count(*) FROM information_schema.tables WHERE table_name='application_state'").fetchone()[0]:
+            state=self.db.execute("SELECT value FROM application_state WHERE name='source'").fetchone()
+            if state:
+                current=json.loads(state[0])
+                path=root/"source.json"
+                if not path.exists() or path.read_bytes()!=canonical(current):write_json(path,current)
 
     def initialize(self, source: Path, cohort: Path):
         if (self.root / "source.json").exists():
@@ -80,6 +88,10 @@ class HistoricalStore:
         validate_freeze(freeze)
         previous = json.loads((self.root / "source.json").read_text())
         manifest = json.loads((source / "manifest.json").read_text())
+        if manifest["evaluation_freeze_sha256"]!=sha256(freeze):
+            raise ValueError("source extension differs from the evaluation freeze")
+        if previous["source_manifest_sha256"]==sha256(source/"manifest.json"):
+            return
         if (manifest["transaction_snapshot"] != previous["transaction_snapshot"] or
             manifest["evaluation_freeze_sha256"] != sha256(freeze) or manifest["through"] <= previous["through"]):
             raise ValueError("source extension must preserve snapshot and frozen evaluation")
@@ -102,14 +114,18 @@ class HistoricalStore:
             count = db.execute("SELECT count(*) FROM tx").fetchone()[0]
             if count != manifest["transaction_rows"]:
                 raise ValueError("source extension row counts do not reconcile")
+            current={**previous,"previous_source_manifest_sha256":previous["source_manifest_sha256"],
+                "source_manifest_sha256":sha256(source/"manifest.json"),"through":manifest["through"],
+                "rows":count,"evaluation_freeze_sha256":sha256(freeze),
+                "internal_reference_key_sha256":sha256(self.root/"internal-reference.key")}
+            db.execute("CREATE TABLE IF NOT EXISTS application_state(name VARCHAR PRIMARY KEY,value VARCHAR)")
+            db.execute("INSERT OR REPLACE INTO application_state VALUES ('source',?)",[canonical(current).decode()])
             db.execute("COMMIT")
         except Exception:
             db.execute("ROLLBACK")
             raise
         db.execute("CHECKPOINT")
-        write_json(self.root / "source.json", {**previous, "previous_source_manifest_sha256": previous["source_manifest_sha256"],
-            "source_manifest_sha256": sha256(source / "manifest.json"), "through": manifest["through"],
-            "rows": count, "evaluation_freeze_sha256": sha256(freeze)})
+        write_json(self.root / "source.json", current)
 
     def export_retrieval(self, output: Path, *, customer_limit: int = 100000, selection_customers: int = 10000):
         """Deterministic train-only customer sample; all fit positives retained.

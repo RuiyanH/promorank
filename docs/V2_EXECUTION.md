@@ -120,3 +120,35 @@ Local verification after schema reconciliation: 179 pytest tests passed (Spark
 included), dbt 19/19 passed, and workbench 17 tests/build/lint/typecheck passed.
 Remote run `35170121174` passed on `08a2825`. The workflow now installs from
 `uv.lock` rather than allowing fresh transitive dependency resolution.
+
+## Browser and environment checks during training
+
+A separate fresh locked environment passed 182 pytest tests and 19 dbt checks.
+The active training environment's exact installed versions and launch revision
+are recorded in the restricted `training-execution.json`; auxiliary developer
+utilities differed from the lock, while the consumed core ML versions matched.
+The original in-process evaluator is unchanged by a later memory optimization;
+the new evaluator exactly matched it on a 5,400-row tied-score parity fixture,
+including unreachable groups. The freeze binds the final evaluation code.
+
+The browser checks used an explicitly labeled synthetic QA service, not final
+model evidence. Verified: forward/back pagination, search and empty results,
+both dates, date-preserving detail links, partial metadata, review persistence
+after reload, review isolation across dates, clearing the QA review, invalid
+customer/date states, quality-unavailable state, and V1 rollback. At 390 px,
+the detail page had one H1, labeled inputs, and no page-level horizontal overflow.
+The temporary QA service was stopped after these checks. Real-release browser
+verification remains pending.
+
+The client/public bundle scan checked 40 files (818,001 bytes) against the
+restricted store and keys: no raw/internal customer IDs, secret material or
+restricted artifact extensions. This scope is the V2 browser boundary, not
+repository-history cleanup: the original public repository deliberately tracks
+legacy H&M pseudonymous comparator artifacts. V2 does not add such artifacts.
+
+The source-extension transaction now preserves existing customer keys, rolls
+back mismatched counts, and recovers its sidecar from committed database state
+after a crash. Synthetic recovery and idempotence tests pass. API documentation
+does not load third-party CDN scripts on the private origin. A `verified` status
+is rejected unless offline, technical, independent and five-user acceptances
+are all present; this run does not invent those external acceptances.
