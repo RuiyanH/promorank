@@ -36,3 +36,42 @@ review and the five-person usability study cannot be self-certified by the build
 
 Real-data G0b, full V2 evaluation, integration, UI, release and operational
 verification are pending. This file will be updated with terminal results.
+
+## Execution adaptation and measured pilot
+
+Misha login reaches Duo but approval has not completed. Kingston has 458+ GiB
+free and the pinned Spark/Iceberg source export completed successfully locally:
+31,028,115 transactions through 2020-09-01, snapshot `5931284054021401369`.
+The restricted 20,000-customer cohort reproduces the frozen canonical hash.
+
+The original all-pairs synthetic retriever training routine is unsuitable for
+real data. V2 now has bounded minibatch training, sampled-softmax logQ correction,
+duplicate-positive masking, and selection on the separate retrieval period.
+The owner approves a train-only hash sample of 100,000 retrieval-fit customers
+(all their fit positives) and 10,000 of those customers for selection. Ranker
+training still uses all active customer-days in ranker_fit. This reduced retriever
+is explicitly recorded, not described as training over the complete log.
+
+The Spark source snapshot is exported once. A DuckDB execution adapter handles
+daily bounded joins over this restricted export, preserving five-source depths,
+prior-day windows, weekly co-visitation cadence, eligibility and source ranks.
+The old Spark path remains available. Full Spark/adapter parity is a separate
+verification requirement; synthetic future/same-day mutation tests pass.
+
+Initial train-only pilot: 2020-07-15 through 2020-07-21, all seven partitions;
+88,241 groups, 13,506,763 candidate rows, 36,435,578 compressed bytes, 109.55 seconds,
+2,505,097,216 bytes peak process RSS on macOS. Each partition contains five source
+artifacts, a sampled frame and the complete unsampled truth-group spine.
+The 35 MiB figure includes sampled training frames; it is not the size of a
+fully materialized unsampled feature frame. The pilot has not opened final outcomes.
+
+On this measured local execution path, replace the cluster-specific 500 GiB free
+scratch floor with a 64 GiB free-space floor, 4 GiB DuckDB working-memory cap,
+20 GiB pilot persistent-output ceiling and bounded per-day execution. Full
+development-frame generation is authorized by the owner on this evidence.
+No queue allocation, GPU job, or authentication bypass is needed for this adapter.
+The first pilot's bundle will be superseded after fixing selection denominators
+for post-fit articles; its cost evidence remains valid, and its quality is not a
+final result. Superseded artifacts are retained outside Git.
+
+Baseline remote CI: run `35167396447` passed on `0999555` after recovery/isolation.

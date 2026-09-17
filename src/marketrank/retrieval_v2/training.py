@@ -15,10 +15,10 @@ from .model import PitSafeTwoTower, RetrievalTrainingResult
 def load_tensors(path: Path) -> dict[str, torch.Tensor]:
     table = pq.read_table(path)
     return {
-        "customer_indices": torch.from_numpy(np.array(table["customer_index"], dtype=np.int64)),
+        "customer_indices": torch.from_numpy(np.array(table["customer_index"], dtype=np.int64).copy()),
         "recent_article_indices": torch.from_numpy(np.asarray(table["recent"].to_pylist(), dtype=np.int64)),
         "numeric_features": torch.from_numpy(np.asarray(table["numeric"].to_pylist(), dtype=np.float32)),
-        "positive_article_indices": torch.from_numpy(np.array(table["article_index"], dtype=np.int64)),
+        "positive_article_indices": torch.from_numpy(np.array(table["article_index"], dtype=np.int64).copy()),
     }
 
 

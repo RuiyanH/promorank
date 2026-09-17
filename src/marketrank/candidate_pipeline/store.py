@@ -11,6 +11,7 @@ import itertools
 import json
 import os
 import secrets
+import datetime as dt
 from collections import deque
 from pathlib import Path
 
@@ -83,7 +84,7 @@ class HistoricalStore:
             raise ValueError("retrieval export already exists")
         output.mkdir(parents=True)
         db = self.db
-        fit_end = ( __import__('datetime').date(2020, 6, 30) - __import__('datetime').date(2018, 9, 20)).days
+        fit_end = (dt.date(2020, 6, 30) - dt.date(2018, 9, 20)).days
         select_end = fit_end + 14
         db.execute(f"CREATE OR REPLACE TEMP TABLE fit_customers AS SELECT c, row_number() OVER (ORDER BY c)::INTEGER customer_index FROM (SELECT c FROM tx JOIN customers USING(c) WHERE d <= {fit_end} GROUP BY c, customer_id ORDER BY sha256(customer_id), customer_id LIMIT {int(customer_limit)})")
         db.execute(f"CREATE OR REPLACE TEMP TABLE fit_articles AS SELECT a, row_number() OVER (ORDER BY article_id)::INTEGER article_index, article_id FROM articles JOIN first_seen USING(a) WHERE first_day <= {fit_end}")
@@ -97,7 +98,10 @@ class HistoricalStore:
         writers = {name: pq.ParquetWriter(output / f"{name}.parquet", schema, compression="zstd") for name in ("fit", "select")}
         buffers = {"fit": [], "select": []}
         counts = {"fit": 0, "select": 0}
-        query = f"SELECT customer_index, d, article_index, count(*) n FROM tx JOIN fit_customers USING(c) JOIN fit_articles USING(a) WHERE d <= {select_end} GROUP BY customer_index,d,article_index ORDER BY customer_index,d,article_index"
+        # Unknown selection positives remain in the denominator as index zero;
+        # only the fitted article vocabulary is searchable. Their transactions
+        # still contribute to subsequent strictly-prior behavioral counts.
+        query = f"SELECT customer_index, d, coalesce(article_index,0) article_index, count(*) n FROM tx JOIN fit_customers USING(c) LEFT JOIN fit_articles USING(a) WHERE d <= {select_end} GROUP BY customer_index,d,coalesce(article_index,0),a ORDER BY customer_index,d,a"
         reader = db.execute(query).fetch_record_batch(65536)
         rows = itertools.chain.from_iterable(batch.to_pylist() for batch in reader)
         try:
