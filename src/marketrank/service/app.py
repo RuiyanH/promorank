@@ -66,7 +66,7 @@ def create_app(release_root: Path | None = None, *, cursor_key: bytes | None = N
         try:
             manifest = verify_release(release_root)
             signatures = file_signatures()
-        except (OSError, ValueError, KeyError, duckdb.Error):
+        except (OSError, ValueError, KeyError, TypeError, IndexError, AttributeError, duckdb.Error):
             # Process remains live for diagnosis, but no invalid release is served.
             manifest = None
 

@@ -18,7 +18,8 @@ def test_verified_status_requires_external_acceptance():
     validate_release_status("candidate",{"quality_gate_passed":False})
 
 
-@pytest.mark.parametrize("value",[{"customer_id":"x"},{"nested":{"path":"/private"}},{"id":"a"*64},{"confidence":.8}])
+@pytest.mark.parametrize("value",[{"customer_id":"x"},{"nested":{"path":"/private"}},{"id":"a"*64},{"confidence":.8},
+    {"note":"customer "+"a"*64},{"note":"v2c_"+"a"*24}])
 def test_public_quality_rejects_restricted_metadata(value):
     with pytest.raises(ValueError):validate_public_metadata(value)
 

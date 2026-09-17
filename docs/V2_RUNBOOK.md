@@ -64,8 +64,14 @@ With the API running, measure the fixed HTTP workload:
   --out /Volumes/KINGSTON-DATA/MarketRank/v2-runtime/runtime-verification.json
 ```
 
+With port 8070 unused, add `--launch` to start and stop a verifier-owned API process.
+This additionally measures process-start-to-ready time and API resident memory
+after startup and after the workload. It does not clear the filesystem cache or
+claim a peak-memory measurement. Without `--launch`, only the verifier's own
+peak memory is recorded, not the existing API process's memory.
+
 This reports actual loopback HTTP latency, separate immutable-release validation
-time, artifact size, hardware and process memory. It is not a concurrent-load
+time, artifact size and hardware. It is not a concurrent-load
 capacity claim. The warm p95 acceptance threshold is 500 ms.
 
 ## Artifact lineage and rebuilding
@@ -90,12 +96,16 @@ The jobs are deliberately explicit, not an unattended scheduler:
 5. `python -m marketrank.ranking.freeze --root <working-root> --source <source>`
    binds the models, calibrator, code, chronology and thresholds before any
    final outcomes are exported. `export_v2_source --through 2020-09-22
-   --evaluation-freeze <freeze>` uses the same snapshot. `HistoricalStore.extend_source`
-   appends later transactions without changing existing customer keys.
+   --evaluation-freeze <freeze>` uses the same snapshot. `extend_v2_source --root
+   <working-root> --source <final-source> --scratch-root <approved-root>` appends
+   later transactions without changing existing customer keys.
 6. Build the complete test and holdout frames once, then run `evaluate_ranker`.
    Never tune on either final slice. A failed gate leaves V1 promoted.
-7. Build the two replay_day anchors, then use `build_replay_release` to write a
-   new immutable directory. Verify every customer/date and run API/UI checks.
+7. Build the two replay_day anchors, then use `build_replay_release --root
+   <working-root> --out <new-release-directory> --release-id <safe-id>
+   --scratch-root <approved-root>` to write a new immutable directory. Verify
+   every customer/date and run API/UI checks. A preserved release key is reused
+   when retrying a failed build into a new directory; it is never regenerated.
 
 Keep incomplete or superseded outputs for diagnosis. Move a failed partition
 to a separately named directory before retrying; do not silently overwrite it.

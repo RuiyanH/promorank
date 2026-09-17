@@ -6,7 +6,10 @@ import platform
 import resource
 import statistics
 import subprocess
+import socket
+import sys
 import time
+from contextlib import contextmanager
 from pathlib import Path
 
 import httpx
@@ -15,13 +18,48 @@ from marketrank.evidence import canonical, sha256, write_json
 from marketrank.replay.release import verify_release, validate_recommendations
 
 
-def run(release: Path, output: Path, base_url: str="http://127.0.0.1:8070"):
+def resident_bytes(pid: int) -> int:
+    """ps reports RSS in KiB on the supported macOS/Linux hosts; not peak RSS."""
+    return int(subprocess.check_output(["ps","-p",str(pid),"-o","rss="],text=True).strip())*1024
+
+
+@contextmanager
+def launch_service(release: Path):
+    # Never take over or stop a service that this verifier did not start.
+    with socket.socket() as probe:
+        probe.settimeout(.5)
+        if probe.connect_ex(("127.0.0.1",8070))==0:
+            raise ValueError("port 8070 is occupied; stop the existing service before --launch")
+    started=time.perf_counter()
+    process=subprocess.Popen([sys.executable,"-m","marketrank.service","--release",str(release)],
+        stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+    try:
+        with httpx.Client(timeout=1,trust_env=False) as client:
+            while time.perf_counter()-started<120:
+                if process.poll() is not None:raise RuntimeError("verification service exited before readiness")
+                try:
+                    response=client.get("http://127.0.0.1:8070/health/ready")
+                    if response.status_code==200:break
+                except httpx.TransportError:pass
+                time.sleep(.1)
+            else:raise RuntimeError("verification service did not become ready within 120 seconds")
+        yield {"pid":process.pid,"cold_process_startup_seconds":time.perf_counter()-started,
+            "startup_definition":"new process through validated readiness; filesystem cache not cleared",
+            "api_rss_after_startup_bytes":resident_bytes(process.pid)}
+    finally:
+        if process.poll() is None:
+            process.terminate()
+            try:process.wait(timeout=10)
+            except subprocess.TimeoutExpired:process.kill();process.wait()
+
+
+def run(release: Path, output: Path, base_url: str="http://127.0.0.1:8070", *, runtime_context=None):
     if base_url!="http://127.0.0.1:8070":raise ValueError("runtime verification is loopback-only")
     started=time.perf_counter()
     manifest=verify_release(release)
     verification=time.perf_counter()-started
     prefix=f"/api/v2/releases/{manifest['release_id']}"
-    with httpx.Client(base_url=base_url,timeout=30) as client:
+    with httpx.Client(base_url=base_url,timeout=30,trust_env=False) as client:
         assert client.get("/health/ready").json()["release_id"]==manifest["release_id"]
         customers=client.get(prefix+"/customers",params={"limit":100}).json()["customers"]
         paths=[prefix+f"/customers/{c['customer_ref']}/recommendations?as_of={day}"
@@ -48,11 +86,19 @@ def run(release: Path, output: Path, base_url: str="http://127.0.0.1:8070"):
         "warm_p50_ms":statistics.median(elapsed),"warm_p95_ms":statistics.quantiles(elapsed,n=100,method="inclusive")[94],
         "warm_max_ms":max(elapsed),"threshold_ms":500,
         "performance_passed":statistics.quantiles(elapsed,n=100,method="inclusive")[94]<500}
+    if runtime_context:
+        report.update({k:v for k,v in runtime_context.items() if k!="pid"})
+        report["api_rss_after_workload_bytes"]=resident_bytes(runtime_context["pid"])
     write_json(output,report);print(json.dumps(report,indent=2),flush=True)
+    return report
 
 
 if __name__=="__main__":
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument("--release",type=Path,required=True)
     p.add_argument("--out",type=Path,required=True)
-    a=p.parse_args();run(a.release,a.out)
+    p.add_argument("--launch",action="store_true",help="measure a fresh API process, then stop only that child")
+    a=p.parse_args()
+    if a.launch:
+        with launch_service(a.release) as context:run(a.release,a.out,runtime_context=context)
+    else:run(a.release,a.out)

@@ -89,3 +89,30 @@ def test_corrupt_release_stays_live_but_not_ready(release):
     assert client.get("/api/v2/releases").status_code == 503
     with pytest.raises(ValueError):
         create_app(release, host="0.0.0.0")
+
+
+def test_release_rejects_extra_tables_even_with_an_updated_file_checksum(release):
+    from marketrank.evidence import sha256,write_json
+    with duckdb.connect(str(release/"replay.duckdb")) as db:
+        db.execute("CREATE TABLE restricted_extra(customer_id VARCHAR)")
+    manifest=json.loads((release/"manifest.json").read_text())
+    manifest["database_sha256"]=sha256(release/"replay.duckdb")
+    write_json(release/"manifest.json",manifest)
+    with pytest.raises(ValueError,match="unexpected tables"):verify_release(release)
+
+
+@pytest.mark.parametrize("bad",[None,[],{"release_id":None}])
+def test_malformed_manifest_stays_live_but_not_ready(release,bad):
+    (release/"manifest.json").write_text(json.dumps(bad))
+    client=TestClient(create_app(release),base_url="http://localhost")
+    assert client.get("/health/live").status_code==200
+    assert client.get("/health/ready").status_code==503
+
+
+def test_recommendations_reject_coercion_and_wrong_artifact_dates():
+    fixture=json.loads(Path("tests/fixtures/contracts_v2/api-recommendations.json").read_text())
+    for field,value in (("position",True),("ordering_score",True),("ordering_score","0.5")):
+        changed=copy.deepcopy(fixture);changed["recommendations"][0][field]=value
+        with pytest.raises(ValueError):validate_recommendations(changed)
+    changed=copy.deepcopy(fixture);changed["model_available_after"]="2020-07-01"
+    with pytest.raises(ValueError):validate_recommendations(changed)

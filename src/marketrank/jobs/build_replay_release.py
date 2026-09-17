@@ -2,6 +2,7 @@
 import argparse
 import json
 import os
+import re
 import secrets
 from pathlib import Path
 
@@ -10,13 +11,18 @@ import numpy as np
 import pyarrow.parquet as pq
 
 from marketrank.evidence import sha256
+from marketrank.candidate_pipeline.guards import assert_large_output_path
 from marketrank.ranking.dataset import FEATURES, SOURCES, feature_matrix
 from marketrank.ranking.freeze import validate_freeze
 from marketrank.ranking.model import load_model
 from marketrank.replay.release import WARNING, build_release
 
 
-def run(root: Path, output: Path, release_id: str):
+def run(root: Path, output: Path, release_id: str, *, scratch_root: Path):
+    root=assert_large_output_path(root,scratch_root)
+    output=assert_large_output_path(output,scratch_root)
+    if output.exists() or not re.fullmatch(r"[a-zA-Z0-9_-]{1,100}",release_id):
+        raise ValueError("a new immutable output and safe release ID are required")
     validate_freeze(root/"evaluation-freeze.json")
     report=json.loads((root/"evaluation/report.json").read_text())
     if report["evaluation_freeze_sha256"]!=sha256(root/"evaluation-freeze.json"):
@@ -64,9 +70,15 @@ def run(root: Path, output: Path, release_id: str):
         print({"replay_date":day,"customers":len(starts),"precomputed_recommendations":len(starts)*12},flush=True)
         del table,scores,customers,articles,order,sorted_customers
     key_path=root/"store"/f"{release_id}.key"
-    descriptor=os.open(key_path,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
-    key=secrets.token_bytes(32)
-    with os.fdopen(descriptor,"wb") as stream:stream.write(key)
+    if key_path.exists():
+        if key_path.is_symlink() or key_path.stat().st_mode & 0o077:
+            raise ValueError("release key must be a private regular file")
+        key=key_path.read_bytes()
+        if len(key)!=32:raise ValueError("invalid existing release key")
+    else:
+        descriptor=os.open(key_path,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
+        key=secrets.token_bytes(32)
+        with os.fdopen(descriptor,"wb") as stream:stream.write(key);stream.flush();os.fsync(stream.fileno())
     result=build_release(output,release_id=release_id,key=key,responses=responses,quality=report,
         provenance={"data_mode":"historical_replay","retriever_manifest_sha256":sha256(root/"bundle/manifest.json"),
             "model_manifest_sha256":sha256(root/"ranker/manifest.json"),"calibrator_manifest_sha256":sha256(root/"calibration/manifest.json"),
@@ -81,4 +93,5 @@ if __name__=="__main__":
     p.add_argument("--root",type=Path,required=True)
     p.add_argument("--out",type=Path,required=True)
     p.add_argument("--release-id",required=True)
-    a=p.parse_args();run(a.root,a.out,a.release_id)
+    p.add_argument("--scratch-root",type=Path,required=True)
+    a=p.parse_args();run(a.root,a.out,a.release_id,scratch_root=a.scratch_root)
