@@ -1,10 +1,11 @@
 .venv/
+*.tsbuildinfo
 __pycache__/
 *.py[cod]
 .DS_Store
 .ipynb_checkpoints/
 
-# Data is never committed — see README for how to fetch it.
+# Raw source CSVs are excluded; legacy comparator exceptions appear below.
 data/
 !data/.gitkeep
 
@@ -60,6 +61,12 @@ artifacts/**
 # and the code sha. R.4's headline numbers -- ess_fraction 0.138, best at epoch
 # 3 of 12 -- exist nowhere else. A few KB each.
 !artifacts/**/metrics.json
+
+# Browser-safe V2 aggregate evidence only. Models, frames and keys stay private.
+!artifacts/v2/quality-report.json
+!artifacts/v2/model-card.json
+!artifacts/v2/runtime-verification.json
+!artifacts/v2/verification-summary.json
 
 # THE SHIPPED ARTIFACTS (R.6, B2). Three binaries, ~33 MB, tracked by exact path
 # rather than by pattern -- everything else under artifacts/ stays ignored.

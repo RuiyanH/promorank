@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MarketRank V2 historical recommendation response",
+  "type": "object", "additionalProperties": false,
+  "required": ["schema_version", "release_id", "as_of", "ranking_mode", "score_semantics", "warning", "model_available_after", "calibrator_available_after", "customer_ref", "recommendations"],
+  "properties": {
+    "schema_version": {"const": "workbench-api.v2"},
+    "release_id": {"type": "string", "pattern": "^[a-zA-Z0-9_-]{1,100}$"},
+    "as_of": {"enum": ["2020-09-09", "2020-09-16"]},
+    "ranking_mode": {"const": "trained_ranker"},
+    "score_semantics": {"const": "ordering_only"},
+    "warning": {"type": "string", "maxLength": 512},
+    "model_available_after": {"const": "2020-08-25"},
+    "calibrator_available_after": {"const": "2020-09-01"},
+    "customer_ref": {"type": "string", "pattern": "^v2c_[0-9a-f]{24}$"},
+    "recommendations": {"type": "array", "minItems": 1, "maxItems": 12, "items": {
+      "type": "object", "additionalProperties": false,
+      "required": ["position", "article_id", "ordering_score", "source_evidence", "article_metadata"],
+      "properties": {
+        "position": {"type": "integer", "minimum": 1, "maximum": 12},
+        "article_id": {"type": "string", "pattern": "^[0-9]{10}$"},
+        "ordering_score": {"type": "number"},
+        "source_evidence": {"type": "array", "minItems": 1, "maxItems": 5, "items": {
+          "type": "object", "additionalProperties": false, "required": ["source", "display_name", "source_rank"],
+          "properties": {
+            "source": {"enum": ["repurchase", "category_pop", "global_pop", "covisit", "ann"]},
+            "display_name": {"enum": ["repurchase", "category_pop", "global_pop", "covisit", "embedding_retrieval"]},
+            "source_rank": {"type": "integer", "minimum": 1, "maximum": 50}
+          }
+        }},
+        "article_metadata": {"type": "object", "additionalProperties": false, "required": ["product_type_name", "metadata_status"],
+          "properties": {"product_type_name": {"type": ["string", "null"], "maxLength": 100}, "metadata_status": {"enum": ["static_snapshot_attribute", "partial_static_snapshot"]}}}
+      }
+    }}
+  }
+}

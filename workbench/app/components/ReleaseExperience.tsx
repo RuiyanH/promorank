@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { ReplayExperience } from "./ReplayExperience";
+import { replayEnabled, subscribeReplayMode } from "@/lib/replay-runtime.mjs";
+import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import {
   CANONICAL_SOURCES,
   formatPercent,
@@ -372,7 +374,7 @@ function EmptyState({ title, body }: { title: string; body: string }) {
   return <div className="empty-state" role="status"><span aria-hidden="true">○</span><h2>{title}</h2><p>{body}</p></div>;
 }
 
-export function ReleaseExperience({ view, customerRef = "" }: { view: View; customerRef?: string }) {
+function V1ReleaseExperience({ view, customerRef = "" }: { view: View; customerRef?: string }) {
   const [attempt, setAttempt] = useState(0);
   const [state, setState] = useState<LoadState>({ status: "loading" });
   const load = useCallback(() => {
@@ -417,4 +419,11 @@ export function ReleaseExperience({ view, customerRef = "" }: { view: View; cust
   if (view === "customers") return <Customers release={state.release} />;
   if (view === "customer") return <CustomerWorkbench release={state.release} customerRef={customerRef} />;
   return <Quality release={state.release} />;
+}
+
+export function ReleaseExperience(props: {view: View; customerRef?: string; initialV2?:boolean}) {
+  const v2=useSyncExternalStore(subscribeReplayMode,replayEnabled,()=>props.initialV2 || false);
+  // Mode switches intentionally reload the document to reset both adapters.
+  // eslint-disable-next-line @next/next/no-html-link-for-pages
+  return v2 ? <ReplayExperience {...props}/> : <><div className="page-section mode-switch"><a href="/?mode=v2">Open V2 historical replay</a></div><V1ReleaseExperience {...props}/></>;
 }

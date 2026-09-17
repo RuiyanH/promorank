@@ -1,11 +1,44 @@
 # marketrank
 
-Retail personalization + promotion allocation on the H&M Personalized Fashion
-Recommendations dataset: an Iceberg/dbt lakehouse, a point-in-time-correct Spark
-feature pipeline, two-stage retrieval and ranking, a budget-constrained pricing
-decision, and off-policy evaluation of that decision.
+Historical retail personalization on the H&M Personalized Fashion Recommendations
+dataset: an Iceberg/dbt lakehouse, leakage-tested behavioral features, five-source
+candidate retrieval, and an internal candidate exploration workbench. V2 adds a
+trained ranker and historical replay service; its implementation and verification
+status are recorded in [`docs/V2_EXECUTION.md`](docs/V2_EXECUTION.md).
+
+Promotion optimization and off-policy evaluation are outside V2. Current-state
+customer dimensions are not historically dated and are excluded from its primary
+model path. Offline measurements do not establish live quality or business uplift.
 
 Build log with every measured number: [`BUILD_NOTES.md`](BUILD_NOTES.md).
+
+V2 operation, verification and rollback: [`docs/V2_RUNBOOK.md`](docs/V2_RUNBOOK.md).
+V2 is a local/private candidate until its offline, independent-review and human
+usability gates are complete. The original V1 remains available with `?mode=v1`.
+
+## V2 candidate — real-data result
+
+V2 now includes the complete private 20,000-customer replay on two historical
+dates, with twelve trained-ranker recommendations per customer/date. Its
+time-separated final evaluation passed the frozen quality gates:
+
+| End-to-end NDCG@12, observed purchase days | Ranker | Identical-candidate RRF |
+|---|---:|---:|
+| Test, Sep 9–15 | 0.07335 | 0.02339 |
+| Holdout, Sep 16–22 | 0.06974 | 0.02155 |
+
+The local precomputed API measured **18.52 ms warm p95** on a fixed 230-request
+sequential workload on Apple M3. This is not online model-inference latency or
+a production SLO. [Evaluation](artifacts/v2/quality-report.json),
+[model card](artifacts/v2/model-card.json), [runtime evidence](artifacts/v2/runtime-verification.json)
+and the [execution record](docs/V2_EXECUTION.md) state the exact scope.
+
+Retrieval remains limited (16–17% candidate recall ceiling); the fixed cohort
+does not validate cold-start or inactive-day relevance. Independent release
+review and five real unassisted users are still required before promotion.
+Run the local service and workbench using the [runbook](docs/V2_RUNBOOK.md).
+The full cohort, models and keys stay on restricted scratch, not in the browser
+bundle or public deployment. The existing V1 site is unchanged.
 
 ## Personalization Workbench v1
 
@@ -46,11 +79,12 @@ recorded in [`docs/V1_IMPLEMENTATION.md`](docs/V1_IMPLEMENTATION.md).
 
 ## Honest framing of the dataset
 
-Verbatim from the project spec, because an interviewer will find these:
+Scope constraints that govern the implemented system:
 
 - **H&M is a single retailer, not a two-sided marketplace.** There are no
   sellers, no supply side, no matching problem. The honest description is
-  **retail personalization + promotion allocation**.
+  **historical retail personalization**. Promotion allocation belongs to an
+  older roadmap, not the implemented V2 product.
 - **Prices are scaled, not currency.** Every revenue figure is in arbitrary
   units, so all revenue results are **relative** — "+x% expected revenue at
   equal relevance", never a dollar amount.
@@ -69,8 +103,8 @@ Verbatim from the project spec, because an interviewer will find these:
   and `club_member_status` behaviourally; a garment's `product_type_no` is
   effectively immutable. A Type-2 slowly-changing dimension is the standard fix
   and this dataset cannot support one.
-- **Elasticity is identified off observational within-article price variation**
-  and is the weakest causal claim in the project.
+- **Observational price variation does not establish causal elasticity.** V2
+  makes no elasticity, causal revenue, promotion-allocation or uplift claim.
 
 ---
 

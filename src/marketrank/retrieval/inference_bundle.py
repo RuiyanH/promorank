@@ -15,7 +15,7 @@ from marketrank.candidate_pipeline.privacy import (
 )
 
 SCHEMA_VERSION = "retrieval-bundle.v2"
-ALLOWED_DATA_MODES = frozenset({"synthetic_fixture", "non_release_pilot"})
+ALLOWED_DATA_MODES = frozenset({"synthetic_fixture", "non_release_pilot", "historical_offline"})
 ALLOWED_CUSTOMER_INPUTS = (
     "customer_id_embedding",
     "recent_article_sequence",

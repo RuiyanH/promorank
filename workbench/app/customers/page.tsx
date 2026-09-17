@@ -7,10 +7,11 @@ export const metadata: Metadata = {
   description: "Browse the small, opaque sample of historical demo customers in this MarketRank release.",
 };
 
-export default function CustomersPage() {
+export default async function CustomersPage({searchParams}:{searchParams:Promise<{mode?:string}>}) {
+  const initialV2=(await searchParams)?.mode==="v2";
   return (
-    <AppShell currentPath="/customers">
-      <ReleaseExperience view="customers" />
+    <AppShell currentPath="/customers" initialV2={initialV2}>
+      <ReleaseExperience view="customers" initialV2={initialV2} />
     </AppShell>
   );
 }

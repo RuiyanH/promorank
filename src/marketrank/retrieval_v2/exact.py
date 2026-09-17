@@ -110,10 +110,12 @@ def exact_daily_retrieval(
         stop = min(start + batch_size, len(customers))
         scores = np.matmul(query_matrix[start:stop], eligible_matrix.T, dtype=np.float32)
         for local_index, score_row in enumerate(scores):
-            ordered = sorted(
-                range(len(eligible_ids)),
-                key=lambda i: (-float(score_row[i]), eligible_ids[i]),
-            )[:limit]
+            # Partition in linear time, then sort only the winners. Include all
+            # ties at the boundary so equal scores still break by article ID;
+            # taking argpartition's first k directly would violate that rule.
+            threshold = np.partition(score_row, len(score_row) - limit)[-limit]
+            shortlist = np.flatnonzero(score_row >= threshold)
+            ordered = sorted(shortlist, key=lambda i: (-float(score_row[i]), eligible_ids[i]))[:limit]
             customer_id = customers[start + local_index]
             for rank, position in enumerate(ordered, start=1):
                 rows.append(

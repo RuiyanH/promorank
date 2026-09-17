@@ -43,7 +43,9 @@ jobs:
       # `pip install -e .` installed nothing, `import pyspark` failed, and the
       # PIT test errored instead of running.
       - name: Install
-        run: pip install -e ".[dev]"
+        run: |
+          python -m pip install uv==0.12.5
+          uv sync --frozen --extra dev
 
       # The dimensional model and its tests, on DuckDB, over committed seeds.
       # No warehouse and no 3.5 GB CSV involved.
@@ -51,7 +53,7 @@ jobs:
         working-directory: dbt
         env:
           DBT_PROFILES_DIR: ${{ github.workspace }}/dbt
-        run: dbt build --target ci
+        run: ../.venv/bin/dbt build --target ci
 
       # The Spark tests are NOT skipped. Gate 1's criterion is the PIT leakage
       # test, so a job that collects and skips it is not enforcing the gate --
@@ -59,7 +61,7 @@ jobs:
       # otherwise take 40 seconds is the price of the gate being enforced by the
       # machine rather than by discipline.
       - name: pytest (includes the Spark and PIT tests)
-        run: pytest -v
+        run: .venv/bin/pytest -v
 
       - name: Install workbench dependencies
         working-directory: workbench
@@ -76,3 +78,7 @@ jobs:
       - name: Lint workbench
         working-directory: workbench
         run: npm run lint
+
+      - name: Typecheck workbench
+        working-directory: workbench
+        run: npm run typecheck

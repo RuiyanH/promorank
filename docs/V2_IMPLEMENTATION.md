@@ -2,9 +2,22 @@
 
 **Depends on:** `docs/V2_DESIGN.md`
 
-**Document state:** A0 independently approved for component integration; G0b and full fan-out remain `NO-GO`
+**Document state:** A0 integrated; project owner authorized V2 execution on 2026-09-16.
+Current results and deviations: [V2_EXECUTION.md](V2_EXECUTION.md).
 
-**Execution rule:** The independent manager conditionally authorized only foundation Slice A0 after G0a. Full Slices A/B/C require accepted G0b evidence; Slice D additionally requires the API-fixture hash gate. Slice owners stop at component completion; the project owner handles integration, final verification, promotion, and publication.
+**Execution rule:** The project owner handles implementation, pilot acceptance,
+integration and verification under the user's 2026-09-16 authorization. Component
+work may proceed while compute is pending, but full real-data compute and release
+claims remain gated by the measured evidence below. Historical authorization
+statements later in this document describe the original A0 handoff, not a current
+requirement to ask the user again. Independent review must remain independent.
+
+**Current sequencing adaptation:** the original multi-owner delegation sections
+remain below as the original handoff protocol. This session has one authorized
+owner, not independently approving slice agents. G0b's measured engineering
+acceptance permits bounded full compute; its independent assurance is explicitly
+outstanding and carried into G7. It is not recorded as an independent G0b pass.
+Independent release review and five-person usability remain promotion gates.
 
 ## 1. Delivery strategy
 
@@ -406,4 +419,30 @@ Delegation succeeds when all four slices are complete against frozen synthetic c
 
 ## 14. Current go/no-go status
 
-The second independent manager review returned `NO-GO` for full fan-out. G0a is complete, and the corrected A0 component is independently approved for user/integrator integration with no remaining P0/P1 finding. Real H&M data, retriever training, the seven-day pilot, test/holdout access, large compute, service/UI work, deployment, and publication remain blocked. Before G0b, the user/integrator must create a clean integrated commit, preserve and revalidate the frozen contract hashes and V1 rollback baseline, run the complete remote workflow including every Spark test, and record the terminal evidence. Full A/B/C require independent G0b acceptance; D has the additional API-fixture hash gate. Nonblocking later hardening: give clearer errors for zero epochs, non-finite learning rates, and out-of-range vocabulary indices.
+The earlier independent review approved A0 but stopped real execution pending
+integration and cluster access. On 2026-09-16 the user authorized the builder as
+project owner, explicitly permitting justified plan changes. The original Git
+history, V1 rollback tag and frozen API fixture have been restored/revalidated,
+and clean remote CI including Spark is passing.
+
+Bounded local execution on the mounted Kingston volume replaces the unavailable
+Duo-gated cluster session. Measured pilot acceptance authorizes the full
+development build; immutable freeze checks still precede final outcomes. The
+owner completed ranking, replay/API and V2 UI integration on `codex/v2-industry`.
+See `docs/V2_EXECUTION.md` for exact evidence, adjustments and current gate status,
+and `docs/V2_RUNBOOK.md` for operation and rollback.
+
+Engineering execution is authorized, but neither independent review nor the
+five-person usability study can be self-certified. Until those and the remaining
+quality/release gates pass, V2 stays a candidate, V1 remains promoted, and the
+full-cohort service stays local/private. No public deployment is authorized by
+the local implementation or by a passing offline score alone.
+
+| Gate | Current evidence-backed result |
+|---|---|
+| G1–G2 | Pass: complete five-source partitions, physical audit, PIT/sampling and provenance checks |
+| G3 | Pass: all eight configurations, frozen selection, RRF and denominator evidence |
+| G4 | Pass: frozen test and holdout; no retuning; observed low/high activity guardrails pass; cold-start absent and unvalidated |
+| G5 | Pass: 20,000 customers × two dates × twelve recommendations; immutable private API and privacy audit |
+| G6 | Technical pass: real desktop/mobile workflow, 18.52 ms warm p95; five-person study pending |
+| G7 | Pending: independent final review and human acceptance; V1 remains promoted |
