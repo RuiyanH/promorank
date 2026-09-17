@@ -7,10 +7,11 @@ export const metadata: Metadata = {
   description: "Inspect MarketRank candidate coverage, source diagnostics, definitions, and limitations.",
 };
 
-export default function QualityPage() {
+export default async function QualityPage({searchParams}:{searchParams:Promise<{mode?:string}>}) {
+  const initialV2=(await searchParams)?.mode==="v2";
   return (
-    <AppShell currentPath="/quality">
-      <ReleaseExperience view="quality" />
+    <AppShell currentPath="/quality" initialV2={initialV2}>
+      <ReleaseExperience view="quality" initialV2={initialV2} />
     </AppShell>
   );
 }

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ReplayExperience } from "./ReplayExperience";
-import { replayEnabled, subscribeReplayMode, serverReplayMode } from "@/lib/replay-runtime.mjs";
+import { replayEnabled, subscribeReplayMode } from "@/lib/replay-runtime.mjs";
 import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import {
   CANONICAL_SOURCES,
@@ -421,8 +421,8 @@ function V1ReleaseExperience({ view, customerRef = "" }: { view: View; customerR
   return <Quality release={state.release} />;
 }
 
-export function ReleaseExperience(props: {view: View; customerRef?: string}) {
-  const v2=useSyncExternalStore(subscribeReplayMode,replayEnabled,serverReplayMode);
+export function ReleaseExperience(props: {view: View; customerRef?: string; initialV2?:boolean}) {
+  const v2=useSyncExternalStore(subscribeReplayMode,replayEnabled,()=>props.initialV2 || false);
   // Mode switches intentionally reload the document to reset both adapters.
   // eslint-disable-next-line @next/next/no-html-link-for-pages
   return v2 ? <ReplayExperience {...props}/> : <><div className="page-section mode-switch"><a href="/?mode=v2">Open V2 historical replay</a></div><V1ReleaseExperience {...props}/></>;

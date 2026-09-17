@@ -7,7 +7,7 @@ from pathlib import Path
 import pyarrow as pa
 import pyarrow.parquet as pq
 
-from marketrank.evidence import sha256, write_json
+from marketrank.evidence import revision, sha256, write_json
 from marketrank.ranking.dataset import BOUNDS, validate_frame_manifest
 from marketrank.ranking.model import train_ranker
 
@@ -61,6 +61,10 @@ def main(argv=None):
         if fit_provenance[0][field]!=tune_provenance[0][field]:
             raise ValueError("fit and tune must use the same candidate pipeline")
     manifest = train_ranker(fit, tune, groups, a.out, threads=a.threads)
+    from marketrank.ranking import model, metrics, dataset
+    manifest["code_revision"]=revision()
+    manifest["dependency_lock_sha256"]=sha256(Path("uv.lock"))
+    manifest["implementation_sha256"]={Path(m.__file__).name:sha256(Path(m.__file__)) for m in (model,metrics,dataset)}
     manifest["frame_provenance"] = {"ranker_fit": fit_provenance, "val_tune": tune_provenance}
     write_json(a.out / "manifest.json", manifest)
     print({"selected": manifest["selected"]["configuration_id"], "metrics": manifest["selected"]["metrics"]}, flush=True)

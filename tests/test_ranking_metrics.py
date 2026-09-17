@@ -47,6 +47,17 @@ def test_bootstrap_pairs_all_days_of_a_customer():
         paired_customer_bootstrap(model, base[::-1])
 
 
+def test_vectorized_ranking_uses_article_ties_and_rejects_duplicate_grain():
+    table=pa.Table.from_pylist([
+        {"customer_id":"c","scoring_date":"2020-08-12","article_id":"z","label":0},
+        {"customer_id":"c","scoring_date":"2020-08-12","article_id":"a","label":1}])
+    groups=pa.Table.from_pylist([{"customer_id":"c","scoring_date":"2020-08-12","positive_count":1}])
+    report,_=evaluate(table,np.ones(2),groups)
+    assert report["active_day_end_to_end_ndcg_at_12"]==1
+    with pytest.raises(ValueError,match="duplicate candidate"):
+        evaluate(pa.concat_tables([table,table]),np.ones(4),groups)
+
+
 def test_promotion_rejects_quality_or_segment_regression():
     base = {"active_day_end_to_end_ndcg_at_12": .1, "catalog_coverage": .2,
             "top_one_percent_concentration": .5, "activity_segments": {"low": {"ndcg_at_12": .1}}}

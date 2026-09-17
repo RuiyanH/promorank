@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import itertools
+import importlib.metadata
 import json
 from pathlib import Path
 
@@ -121,6 +122,7 @@ def fit_calibrator(model_root: Path, table: pa.Table, output: Path, *, threads: 
     output.mkdir(parents=True)
     joblib.dump(calibrator, output / "calibrator.joblib")
     result = {"schema_version": "calibration.v2", "fit_split": "val_calib",
+              "scikit_learn_version":importlib.metadata.version("scikit-learn"),"joblib_version":joblib.__version__,
               "calibrator_available_after": "2020-09-01", "odds_correction_count": 1,
               "negative_retention_probability": NEGATIVE_RETENTION,
               "model_manifest_sha256": sha256(model_root / "manifest.json"),

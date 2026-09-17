@@ -211,4 +211,9 @@ footer p { margin:0; }
 .replay-quality { padding:1.5rem; background:#f1f5f9; border-radius:.75rem; }
 .replay-quality pre { white-space:pre-wrap; overflow-wrap:anywhere; font-size:.875rem; }
 .replay-section code { overflow-wrap:anywhere; }
+.replay-section .customer-card { display:block; }
+.replay-section .customer-card code { display:block; margin-top:.6rem; font-size:.75rem; }
+.replay-controls label { min-width:0; }
+.replay-section .table-scroll { overflow-x:auto; margin:1.5rem 0; }
+.replay-section select:focus-visible { outline:3px solid var(--blue); outline-offset:3px; }
 @media(max-width:720px) { .replay-items { grid-template-columns:1fr; } .replay-controls { display:grid; } .replay-item { padding:1rem; } }

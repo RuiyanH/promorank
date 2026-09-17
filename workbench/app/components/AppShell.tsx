@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useSyncExternalStore, type ReactNode } from "react";
-import { replayEnabled, subscribeReplayMode, serverReplayMode } from "@/lib/replay-runtime.mjs";
+import { replayEnabled, subscribeReplayMode } from "@/lib/replay-runtime.mjs";
 
 const navigation = [
   { href: "/", label: "Overview" },
@@ -9,8 +9,8 @@ const navigation = [
   { href: "/quality", label: "Quality" },
 ];
 
-export function AppShell({ currentPath, children }: { currentPath: string; children: ReactNode }) {
-  const v2=useSyncExternalStore(subscribeReplayMode,replayEnabled,serverReplayMode);
+export function AppShell({ currentPath, children, initialV2=false }: { currentPath: string; children: ReactNode; initialV2?:boolean }) {
+  const v2=useSyncExternalStore(subscribeReplayMode,replayEnabled,()=>initialV2);
   return (
     <div className="app-shell">
       <a className="skip-link" href="#main-content">Skip to content</a>

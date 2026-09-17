@@ -17,36 +17,45 @@ def evaluate(table: pa.Table, scores: np.ndarray, groups: pa.Table, k: int = 12)
     """
     if len(table) != len(scores) or not np.isfinite(scores).all():
         raise ValueError("one finite score per candidate is required")
-    by_group = defaultdict(list)
-    data = table.select(["customer_id", "scoring_date", "article_id", "label"]).to_pylist()
-    for row, score in zip(data, scores, strict=True):
-        if row["label"] not in (0, 1):
-            raise ValueError("candidate labels must be binary")
-        by_group[(row["customer_id"], str(row["scoring_date"]))].append(
-            (float(score), row["article_id"], int(row["label"]))
-        )
+    # Encode repeated strings once, rather than creating millions of Python
+    # dictionaries. The sort key remains group, score descending, article ID.
+    customer_dictionary=table["customer_id"].combine_chunks().dictionary_encode()
+    date_dictionary=table["scoring_date"].combine_chunks().dictionary_encode()
+    article_dictionary=table["article_id"].combine_chunks().dictionary_encode()
+    customer_index={value:i for i,value in enumerate(customer_dictionary.dictionary.to_pylist())}
+    date_index={str(value):i for i,value in enumerate(date_dictionary.dictionary.to_pylist())}
+    all_articles=article_dictionary.dictionary.to_pylist()
+    article_ordinals=np.argsort(np.argsort(all_articles))
+    article_codes=np.asarray(article_dictionary.indices)
+    group_codes=np.asarray(customer_dictionary.indices,dtype=np.int64)*max(1,len(date_index))+np.asarray(date_dictionary.indices)
+    labels=np.asarray(table["label"])
+    if not np.isin(labels,[0,1]).all():raise ValueError("candidate labels must be binary")
+    order=np.lexsort((article_ordinals[article_codes],-np.asarray(scores),group_codes))
+    boundaries=np.r_[0,np.flatnonzero(group_codes[order][1:]!=group_codes[order][:-1])+1,len(order)]
+    by_group={int(group_codes[order[lo]]):(lo,hi) for lo,hi in zip(boundaries[:-1],boundaries[1:],strict=True) if hi>lo}
     discounts = 1 / np.log2(np.arange(2, k + 2))
     group_rows = []
     selected = []
-    all_articles = set(table["article_id"].to_pylist())
     seen = set()
     for group in groups.to_pylist():
         key = (group["customer_id"], str(group["scoring_date"]))
         if key in seen or int(group["positive_count"]) < 1:
             raise ValueError("groups must be unique with positive truth counts")
         seen.add(key)
-        candidates = sorted(by_group.pop(key, []), key=lambda row: (-row[0], row[1]))
-        if len({row[1] for row in candidates}) != len(candidates):
+        code=customer_index.get(key[0],-1)*max(1,len(date_index))+date_index.get(key[1],-1)
+        lo,hi=by_group.pop(code,(0,0)) if key[0] in customer_index and key[1] in date_index else (0,0)
+        candidates=order[lo:hi]
+        if len(np.unique(article_codes[candidates])) != len(candidates):
             raise ValueError("duplicate candidate grain")
         positive_count = int(group["positive_count"])
-        reachable = sum(row[2] for row in candidates)
+        reachable = int(labels[candidates].sum())
         if reachable > positive_count:
             raise ValueError("reachable positives exceed the truth denominator")
         top = candidates[:k]
-        hits = np.asarray([row[2] for row in top], dtype=float)
+        hits = labels[top].astype(float)
         dcg = float(hits @ discounts[:len(hits)])
         ap_numerator = float(np.sum(np.cumsum(hits) / np.arange(1, len(hits) + 1) * hits))
-        selected.extend(row[1] for row in top)
+        selected.extend(article_codes[top].tolist())
         group_rows.append({
             "customer_id": key[0], "scoring_date": key[1],
             "positive_count": positive_count, "reachable_positives": reachable,
