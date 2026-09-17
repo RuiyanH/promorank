@@ -20,6 +20,8 @@ def evaluate(table: pa.Table, scores: np.ndarray, groups: pa.Table, k: int = 12)
     by_group = defaultdict(list)
     data = table.select(["customer_id", "scoring_date", "article_id", "label"]).to_pylist()
     for row, score in zip(data, scores, strict=True):
+        if row["label"] not in (0, 1):
+            raise ValueError("candidate labels must be binary")
         by_group[(row["customer_id"], str(row["scoring_date"]))].append(
             (float(score), row["article_id"], int(row["label"]))
         )
@@ -52,6 +54,9 @@ def evaluate(table: pa.Table, scores: np.ndarray, groups: pa.Table, k: int = 12)
             "activity_segment": group.get("activity_segment", "unknown"),
             "ndcg": dcg / float(discounts[:min(k, positive_count)].sum()),
             "conditional_ndcg": dcg / float(discounts[:min(k, reachable)].sum()) if reachable else None,
+            "conditional_map": ap_numerator / min(k, reachable) if reachable else None,
+            "conditional_recall": float(hits.sum()) / reachable if reachable else None,
+            "conditional_precision": float(hits.sum()) / k if reachable else None,
             "map": ap_numerator / min(k, positive_count),
             "recall": float(hits.sum()) / positive_count,
             "precision": float(hits.sum()) / k,
@@ -74,12 +79,28 @@ def evaluate(table: pa.Table, scores: np.ndarray, groups: pa.Table, k: int = 12)
     }
     for metric in ("ndcg", "map", "recall", "precision"):
         report[f"active_day_end_to_end_{metric}_at_12"] = float(np.mean([r[metric] for r in group_rows]))
+        report[f"active_day_candidate_conditional_{metric}_at_12"] = float(np.mean([r[f"conditional_{metric}"] for r in reachable_groups])) if reachable_groups else 0.
     report["candidate_recall_ceiling"] = report["reachable_positives"] / report["positive_count"]
     report["activity_segments"] = {
         segment: {"groups": sum(r["activity_segment"] == segment for r in group_rows),
                   "ndcg_at_12": float(np.mean([r["ndcg"] for r in group_rows if r["activity_segment"] == segment]))}
         for segment in sorted({r["activity_segment"] for r in group_rows})
     }
+    report["candidate_count_segments"] = {
+        name: {"groups": len(subset), "ndcg_at_12": float(np.mean([r["ndcg"] for r in subset]))}
+        for name, lo, hi in (("0_to_99",0,99),("100_to_149",100,149),("150_plus",150,10000))
+        if (subset := [r for r in group_rows if lo <= r["candidate_count"] <= hi])
+    }
+    from .dataset import SOURCES
+    if all(f"{source}_rank" in table.column_names for source in SOURCES):
+        labels = np.asarray(table["label"])
+        report["source_contribution"] = {
+            source: {"candidate_memberships": int(np.isfinite(ranks).sum()),
+                     "reachable_positive_memberships": int(labels[np.isfinite(ranks)].sum())}
+            for source in SOURCES
+            for ranks in [table[f"{source}_rank"].cast(pa.float64()).to_numpy()]
+        }
+        report["source_contribution_note"] = "Overlapping memberships; source counts are not additive or causal attribution."
     return report, group_rows
 
 

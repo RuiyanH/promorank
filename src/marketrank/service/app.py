@@ -11,6 +11,7 @@ from pathlib import Path
 import duckdb
 from fastapi import FastAPI, Query, Request
 from fastapi.responses import JSONResponse
+from fastapi.exceptions import RequestValidationError
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
@@ -54,12 +55,22 @@ def create_app(release_root: Path | None = None, *, cursor_key: bytes | None = N
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=["localhost", "127.0.0.1", "[::1]", "testserver"])
     app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:3000", "http://localhost:5173", "http://127.0.0.1:5173", "http://127.0.0.1:3000"], allow_methods=["GET"], allow_headers=[])
     manifest = None
+    signatures = None
+    def file_signatures():
+        return [(p.stat().st_ino,p.stat().st_size,p.stat().st_mtime_ns,p.stat().st_ctime_ns)
+                for p in (release_root/"manifest.json",release_root/"replay.duckdb")]
     if release_root is not None:
         try:
             manifest = verify_release(release_root)
+            signatures = file_signatures()
         except (OSError, ValueError, KeyError, duckdb.Error):
             # Process remains live for diagnosis, but no invalid release is served.
             manifest = None
+
+    @app.exception_handler(RequestValidationError)
+    async def invalid_request(request: Request, error: RequestValidationError):
+        return JSONResponse(status_code=422,content={"schema_version":"workbench-error.v2","error":{
+            "code":"INVALID_REQUEST","message":"The request parameters are invalid.","request_id":"req_"+secrets.token_hex(8)}})
 
     @app.exception_handler(ApiError)
     async def safe_error(request: Request, error: ApiError):
@@ -82,6 +93,11 @@ def create_app(release_root: Path | None = None, *, cursor_key: bytes | None = N
     def ready(release_id: str | None = None):
         if manifest is None:
             raise ApiError("NOT_READY", 503, "No validated historical release is ready.")
+        try:
+            if file_signatures()!=signatures:
+                raise OSError("immutable artifacts changed")
+        except OSError:
+            raise ApiError("NOT_READY",503,"The historical release must be revalidated.") from None
         if release_id is not None and release_id != manifest["release_id"]:
             raise ApiError("RELEASE_NOT_FOUND", 404, "The historical release was not found.")
         return manifest

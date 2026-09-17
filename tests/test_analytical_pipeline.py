@@ -55,3 +55,31 @@ def test_daily_pipeline_preserves_positives_sources_and_future_invariance(tmp_pa
     with pytest.raises(ValueError):
         builder.build("2020-09-03", spine_type="active_day", output=tmp_path / "bad", split="test")
     builder.db.close()
+
+
+@pytest.mark.spark
+def test_spark_and_bounded_adapter_source_parity(tmp_path, spark, monkeypatch):
+    from pyspark.sql import functions as F
+    from marketrank import candidates_daily as daily, covisit, ingest
+    builder, day = fixture_builder(tmp_path)
+    tx = [(f"synthetic_customer_{c}", f"{a:010}", EPOCH+dt.timedelta(days=d),float(price))
+          for c,a,d,price in builder.db.execute("SELECT * FROM tx").fetchall()]
+    spark.createDataFrame(tx,"customer_id string, article_id string, t_dat date, price double").createOrReplaceTempView("adapter_test_tx")
+    spark.createDataFrame([(f"{i:010}",i%3) for i in range(1,61)],"article_id string, product_type_no int").createOrReplaceTempView("adapter_test_articles")
+    monkeypatch.setattr(ingest,"TRANSACTIONS_TABLE","adapter_test_tx")
+    monkeypatch.setattr(ingest,"ARTICLES_TABLE","adapter_test_articles")
+    builder.build("2020-07-15",spine_type="active_day",output=tmp_path/"parity",split="ranker_fit",pilot=True)
+    events=spark.createDataFrame([(f"synthetic_customer_{i}",day) for i in range(1,5)],"customer_id string, day_index int")
+    anchor=day-((day-692)%7)
+    pairs=covisit.covisit_pairs(spark,(EPOCH+dt.timedelta(days=anchor)).isoformat(),lookback_days=30,max_basket=20).withColumn("anchor_day",F.lit(anchor))
+    sources={
+        "repurchase":daily.daily_repurchase(spark,events,n=30),
+        "global_pop":events.join(daily.daily_global_pop(spark,n=40,lookback_days=30),"day_index"),
+        "category_pop":daily.daily_dominant_category(spark,events).join(daily.daily_category_pop(spark,n=40,lookback_days=30),["day_index","product_type_no"]),
+        "covisit":daily.daily_covisit(spark,events,pairs,n=40,recent_k=10,lookback_days=30,max_basket=20,phase=692),
+    }
+    for name,frame in sources.items():
+        actual={(r.customer_id,r.article_id,r.source_rank) for r in frame.select("customer_id","article_id","source_rank").collect()}
+        expected={(r["customer_id"],r["article_id"],r["source_rank"]) for r in pq.read_table(tmp_path/f"parity/{name}.parquet").to_pylist()}
+        assert actual==expected,name
+    builder.db.close()

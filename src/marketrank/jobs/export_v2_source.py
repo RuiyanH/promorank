@@ -29,11 +29,15 @@ def main(argv=None):
     if args.through != "2020-09-01":
         if args.evaluation_freeze is None or not args.evaluation_freeze.is_file():
             raise ValueError("final outcomes require a frozen evaluation plan")
+        from marketrank.ranking.freeze import validate_freeze
+        freeze = validate_freeze(args.evaluation_freeze)
     from marketrank.spark import get_spark
     from marketrank.ingest import TRANSACTIONS_TABLE, ARTICLES_TABLE
     spark = get_spark("v2-source-export", driver_memory=args.driver_memory, master=f"local[{args.threads}]")
     try:
         snapshot = spark.sql(f"SELECT snapshot_id FROM {TRANSACTIONS_TABLE}.history ORDER BY made_current_at DESC LIMIT 1").first()[0]
+        if args.through != "2020-09-01":
+            snapshot = int(freeze["transaction_snapshot"])
         tx = spark.read.option("snapshot-id", str(snapshot)).table(TRANSACTIONS_TABLE)
         tx = tx.filter(F.col("t_dat") <= F.lit(args.through).cast("date")).select(
             "customer_id", "article_id", F.col("t_dat").alias("scoring_date"), "price")

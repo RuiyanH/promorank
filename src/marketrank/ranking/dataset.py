@@ -40,8 +40,8 @@ def validate_split_dates(split: str, days: list[str]) -> None:
 def keep_negative(customer: str, day: str, article: str, q: float = NEGATIVE_RETENTION) -> bool:
     if not math.isfinite(q) or not 0 < q <= 1:
         raise ValueError("negative retention must be in (0, 1]")
-    digest = hashlib.sha256(f"{SEED}\0{customer}\0{day}\0{article}".encode()).digest()
-    return int.from_bytes(digest[:8], "big") < int(q * 2**64)
+    digest = hashlib.sha256(f"{SEED}\0{customer}\0{day}\0{article}".encode()).hexdigest()
+    return int(digest[:15], 16) < int(q * 16**15)
 
 
 def validate_frame_manifest(manifest: dict, split: str) -> None:

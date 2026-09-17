@@ -19,6 +19,24 @@ REF = re.compile(r"^v2c_[0-9a-f]{24}$")
 ARTICLE = re.compile(r"^[0-9]{10}$")
 
 
+def validate_public_metadata(value, key=""):
+    """Defense in depth: aggregate reports may not carry restricted records."""
+    if key in {"customer_id", "customer_ref", "raw_id", "secret", "key", "path", "labels", "payload", "probability", "confidence"}:
+        raise ValueError("restricted field in public release metadata")
+    if isinstance(value, dict):
+        for name,item in value.items():
+            validate_public_metadata(item,name)
+    elif isinstance(value,list):
+        for item in value:validate_public_metadata(item,key)
+    elif isinstance(value,str):
+        if len(value)>512 or value.startswith(("/", "file:", "ssh:")) or "PRIVATE KEY" in value:
+            raise ValueError("restricted string in public release metadata")
+        if re.fullmatch(r"[0-9a-f]{64}",value) and not key.endswith("sha256"):
+            raise ValueError("unclassified identifier in public release metadata")
+    elif isinstance(value,float) and not math.isfinite(value):
+        raise ValueError("nonfinite public metric")
+
+
 def customer_ref(key: bytes, release_id: str, internal_id: str) -> str:
     if len(key) < 32:
         raise ValueError("release key must have at least 32 bytes")
@@ -32,6 +50,8 @@ def validate_recommendations(value: dict) -> None:
         raise ValueError("recommendation schema mismatch")
     if value["ranking_mode"] != "trained_ranker" or value["score_semantics"] != "ordering_only":
         raise ValueError("invalid score semantics")
+    if not re.fullmatch(r"[a-zA-Z0-9_-]{1,100}", value["release_id"]) or not isinstance(value["warning"],str) or len(value["warning"])>512:
+        raise ValueError("invalid release metadata")
     if not REF.fullmatch(value["customer_ref"]):
         raise ValueError("invalid customer reference")
     if not date.fromisoformat(value["as_of"]) > max(date.fromisoformat(value["model_available_after"]), date.fromisoformat(value["calibrator_available_after"])):
@@ -58,6 +78,8 @@ def validate_recommendations(value: dict) -> None:
         meta = row["article_metadata"]
         if set(meta) != {"product_type_name", "metadata_status"} or meta["metadata_status"] not in {"static_snapshot_attribute", "partial_static_snapshot"}:
             raise ValueError("invalid article metadata")
+        if meta["product_type_name"] is not None and (not isinstance(meta["product_type_name"],str) or len(meta["product_type_name"])>100):
+            raise ValueError("invalid product type")
     if ordering != sorted(ordering):
         raise ValueError("ordering must be score descending/article ascending")
 
@@ -78,6 +100,8 @@ def build_release(output: Path, *, release_id: str, key: bytes, responses: list[
         raise ValueError("release output must be new and release ID must be safe")
     if status not in {"candidate", "verified"} or len(key) < 32 or not responses:
         raise ValueError("invalid release status/key/empty response set")
+    validate_public_metadata(quality)
+    validate_public_metadata(provenance)
     output.mkdir(parents=True)
     db = duckdb.connect(str(output / "replay.duckdb"))
     db.execute("CREATE TABLE customers(customer_ref VARCHAR PRIMARY KEY, display_label VARCHAR UNIQUE NOT NULL)")
@@ -113,6 +137,10 @@ def verify_release(root: Path) -> dict:
     manifest = json.loads((root / "manifest.json").read_text())
     if manifest.get("schema_version") != "replay-release.v2" or sha256(root / "replay.duckdb") != manifest.get("database_sha256"):
         raise ValueError("release contract/checksum mismatch")
+    validate_public_metadata(manifest["quality"])
+    validate_public_metadata(manifest["provenance"])
+    if manifest["status"] not in {"candidate","verified"} or manifest["dates"] != ["2020-09-09","2020-09-16"]:
+        raise ValueError("release status/dates mismatch")
     with duckdb.connect(str(root / "replay.duckdb"), read_only=True) as db:
         if logical_hash(db, "customers", "customer_ref") != manifest["logical_sha256"]["customers"]:
             raise ValueError("customer logical checksum mismatch")
@@ -121,4 +149,18 @@ def verify_release(root: Path) -> dict:
         counts = db.execute("SELECT count(*) FROM customers").fetchone()[0]
         if counts != manifest["customer_count"]:
             raise ValueError("release customer count mismatch")
+        for ref,label in db.execute("SELECT * FROM customers").fetchall():
+            if not REF.fullmatch(ref) or not re.fullmatch(r"Historical customer [0-9]{5}",label):
+                raise ValueError("invalid customer release row")
+        rows=db.execute("SELECT customer_ref,as_of,payload FROM recommendations ORDER BY customer_ref,as_of")
+        records=0
+        while batch:=rows.fetchmany(4096):
+            for ref,day,payload in batch:
+                value=json.loads(payload)
+                validate_recommendations(value)
+                if value["release_id"]!=manifest["release_id"] or value["as_of"]!=day or value["customer_ref"]!=ref or day not in manifest["dates"]:
+                    raise ValueError("cross-release recommendation")
+                records+=1
+        if records!=counts*len(manifest["dates"]):
+            raise ValueError("incomplete replay grid")
     return manifest

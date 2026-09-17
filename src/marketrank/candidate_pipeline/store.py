@@ -74,6 +74,43 @@ class HistoricalStore:
                    "rows": db.execute("SELECT count(*) FROM tx").fetchone()[0], "cohort_rows": count,
                    "cohort_sorted_id_sha256": cohort_hash})
 
+    def extend_source(self, source: Path, freeze: Path):
+        """Append later context/outcomes without changing existing integer IDs."""
+        from marketrank.ranking.freeze import validate_freeze
+        validate_freeze(freeze)
+        previous = json.loads((self.root / "source.json").read_text())
+        manifest = json.loads((source / "manifest.json").read_text())
+        if (manifest["transaction_snapshot"] != previous["transaction_snapshot"] or
+            manifest["evaluation_freeze_sha256"] != sha256(freeze) or manifest["through"] <= previous["through"]):
+            raise ValueError("source extension must preserve snapshot and frozen evaluation")
+        for name, expected in manifest["files"].items():
+            path = (source / name).resolve()
+            if not path.is_relative_to(source.resolve()) or sha256(path) != expected:
+                raise ValueError("source extension checksum mismatch")
+        db = self.db
+        db.execute(f"CREATE OR REPLACE TEMP VIEW extension AS SELECT * FROM read_parquet({sql_literal(source / 'transactions/*.parquet')}) WHERE scoring_date > DATE {sql_literal(previous['through'])}")
+        key = (self.root / "internal-reference.key").read_bytes()
+        db.execute("BEGIN TRANSACTION")
+        try:
+            last = db.execute("SELECT max(c) FROM customers").fetchone()[0]
+            new = db.execute("SELECT DISTINCT customer_id FROM extension ANTI JOIN customers USING(customer_id) ORDER BY customer_id").fetchall()
+            if new:
+                db.executemany("INSERT INTO customers VALUES (?,?)", [(last+i, row[0]) for i,row in enumerate(new,1)])
+                db.executemany("INSERT INTO customer_refs VALUES (?,?)", [(last+i, 'v2c_'+hmac.new(key,row[0].encode(),hashlib.sha256).hexdigest()[:24]) for i,row in enumerate(new,1)])
+            db.execute("INSERT INTO tx SELECT c,a,datediff('day', DATE '2018-09-20', scoring_date)::INTEGER,price::FLOAT FROM extension JOIN customers USING(customer_id) JOIN articles USING(article_id)")
+            db.execute("CREATE OR REPLACE TABLE first_seen AS SELECT a,min(d)::INTEGER first_day FROM tx GROUP BY a")
+            count = db.execute("SELECT count(*) FROM tx").fetchone()[0]
+            if count != manifest["transaction_rows"]:
+                raise ValueError("source extension row counts do not reconcile")
+            db.execute("COMMIT")
+        except Exception:
+            db.execute("ROLLBACK")
+            raise
+        db.execute("CHECKPOINT")
+        write_json(self.root / "source.json", {**previous, "previous_source_manifest_sha256": previous["source_manifest_sha256"],
+            "source_manifest_sha256": sha256(source / "manifest.json"), "through": manifest["through"],
+            "rows": count, "evaluation_freeze_sha256": sha256(freeze)})
+
     def export_retrieval(self, output: Path, *, customer_limit: int = 100000, selection_customers: int = 10000):
         """Deterministic train-only customer sample; all fit positives retained.
 

@@ -197,3 +197,18 @@ footer p { margin:0; }
   footer { display:block; padding-inline:1rem; }
   footer p+p { margin-top:.35rem; }
 }
+/* V2 reuses the established workbench surfaces and typography. */
+.mode-switch { padding-bottom: 0; font-size: .875rem; }
+.replay-controls { display:flex; flex-wrap:wrap; gap:1.5rem; align-items:end; margin:2rem 0 1rem; }
+.replay-controls label { display:grid; gap:.5rem; font-size:.875rem; }
+.replay-controls select { border:1px solid #a5afbd; border-radius:.5rem; background:white; color:#17243a; padding:.75rem; font:inherit; max-width:100%; }
+.replay-status { display:grid; gap:.35rem; font-size:.875rem; padding:.5rem 0; }
+.replay-items { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1rem; margin:2rem 0; }
+.replay-item { display:flex; gap:1.25rem; padding:1.5rem; border:1px solid #cbd5e1; border-radius:.75rem; background:white; }
+.replay-item h2 { margin:0; font-size:1.25rem; }
+.source-tags { display:flex; flex-wrap:wrap; gap:.5rem; }
+.source-tags span { padding:.3rem .6rem; border-radius:.3rem; background:#edf2f7; color:#243955; font-size:.875rem; }
+.replay-quality { padding:1.5rem; background:#f1f5f9; border-radius:.75rem; }
+.replay-quality pre { white-space:pre-wrap; overflow-wrap:anywhere; font-size:.875rem; }
+.replay-section code { overflow-wrap:anywhere; }
+@media(max-width:720px) { .replay-items { grid-template-columns:1fr; } .replay-controls { display:grid; } .replay-item { padding:1rem; } }

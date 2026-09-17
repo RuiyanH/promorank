@@ -80,6 +80,7 @@ class DailyBuilder:
                     "bundle_manifest_sha256": sha256(self.root / "manifest.json"),
                     "source_manifest_sha256": sha256(self.store.root / "source.json"),
                     "candidate_config_id": "v2-five-source-30-40-40-40-50", "pilot": pilot}
+        identity["builder_source_sha256"] = sha256(Path(__file__))
         if (output / "manifest.json").exists():
             manifest = json.loads((output / "manifest.json").read_text())
             if manifest["identity"] != identity:
@@ -214,6 +215,9 @@ class DailyBuilder:
                     "compressed_bytes": sum(p.stat().st_size for p in output.glob('*.parquet')),
                     "wall_seconds": time.monotonic()-started,
                     "context_max_day": (EPOCH + dt.timedelta(days=day-1)).isoformat()}
+        manifest["ope_env_policy"] = {"use": "antecedent_context_only" if day_string > "2020-09-08" else "not_read",
+            "context_rows": db.execute("SELECT count(*) FROM prior WHERE d BETWEEN datediff('day', DATE '2018-09-20', DATE '2020-09-02') AND datediff('day', DATE '2018-09-20', DATE '2020-09-08')").fetchone()[0],
+            "label_rows": 0, "fit_rows": 0}
         write_json(output / "manifest.json", manifest)
         print({key: manifest[key] for key in ("dates", "groups", "candidate_rows", "frame_rows", "wall_seconds", "compressed_bytes")}, flush=True)
         return manifest
